@@ -114,3 +114,4 @@ export function GroomingDiagnosticTab({ scoreData }: GroomingDiagnosticTabProps)
     </div>
   );
 }
+

@@ -411,54 +411,69 @@ export default function BeautyRatingFeaturePage() {
           onChange={handleFileChange}
           accept="image/jpeg,image/png,image/webp"
           style={{ display: 'none' }}
-          id="facial-file-input"
+          id="file-input-beauty"
         />
 
-        {/* Hero Section & Studio */}
-        <section className="hero-section" id="hero-section">
-          <FacialBeautyHeroStudio
-            scoreData={scoreData}
-            selectedPhotoUrl={selectedPhotoUrl}
-            selectedPhotoName={selectedPhotoName}
-            isDragging={isDragging}
-            isAnalyzing={isAnalyzing}
-            errorMessage={errorMessage}
-            onTriggerUpload={triggerUpload}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onSampleSketch={loadSampleFace}
-            onSamplePortrait={loadSamplePortrait}
-            onShareClick={handleShareScore}
-            onReevaluate={triggerUpload}
-          />
-        </section>
+        {/* ==========================================================
+            2. HERO & BIOMETRIC BEAUTY STUDIO (2-COLUMN UNIFIED SECTION)
+            ========================================================== */}
+        <section className="hero-wrapper unified-studio-section beauty-hero-section" id="hero-section">
+          {/* Luxury Facial Beauty Studio Hero Backdrop */}
+          <div className="hero-beauty-backdrop" aria-hidden="true">
+            <img
+              src="/face_beauty_hero_bg.jpg"
+              alt=""
+              className="hero-beauty-bg-img"
+            />
+            <div className="hero-beauty-gradient-overlay" />
+            <div className="hero-beauty-ambient-glow" />
+          </div>
 
-        {/* 8-Parameter Biometrics Scorecard */}
-        <section className="scorecard-strip-wrapper" id="photo-score-section">
-          <div className="scorecard-strip-container">
-            <FacialBeautyScorecard
+          <div className="unified-studio-container">
+            <FacialBeautyHeroStudio
               scoreData={scoreData}
+              selectedPhotoUrl={selectedPhotoUrl}
+              selectedPhotoName={selectedPhotoName}
+              isDragging={isDragging}
               isAnalyzing={isAnalyzing}
-              shuffleScores={shuffleScores}
-              dimorphismRef={dimorphismRef}
-              onSelectDimorphism={handleSelectDimorphism}
-              onSelectTab={setActiveDeepDiveTab}
-              onShareScore={handleShareScore}
+              errorMessage={errorMessage}
+              onTriggerUpload={triggerUpload}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onSampleSketch={loadSampleFace}
+              onSamplePortrait={loadSamplePortrait}
+              onShareClick={handleShareScore}
+              onReevaluate={triggerUpload}
             />
 
-            {/* Research-Grade Biometric Diagnostic Deep-Dive Suite */}
-            {scoreData && !isAnalyzing && (
-              <FacialDeepDiveSection
-                scoreData={scoreData}
-                activeTab={activeDeepDiveTab}
-                onTabChange={setActiveDeepDiveTab}
-                copiedColor={copiedColor}
-                onCopyColor={copyHex}
-                dimorphismRef={dimorphismRef}
-                onSelectDimorphism={handleSelectDimorphism}
-              />
-            )}
+            {/* Integrated 8-Parameter Beauty Rating Scorecard Area */}
+            <div className="integrated-photo-score-area" id="photo-score-section">
+              <div className={`scorecard-wrapper ${isAnalyzing ? 'analyzing' : ''}`} id="photo-score-dashboard">
+                <FacialBeautyScorecard
+                  scoreData={scoreData}
+                  isAnalyzing={isAnalyzing}
+                  shuffleScores={shuffleScores}
+                  dimorphismRef={dimorphismRef}
+                  onSelectDimorphism={handleSelectDimorphism}
+                  onSelectTab={setActiveDeepDiveTab}
+                  onShareScore={handleShareScore}
+                />
+
+                {/* Research-Grade Biometric Diagnostic Deep-Dive Suite */}
+                {scoreData && !isAnalyzing && (
+                  <FacialDeepDiveSection
+                    scoreData={scoreData}
+                    activeTab={activeDeepDiveTab}
+                    onTabChange={setActiveDeepDiveTab}
+                    copiedColor={copiedColor}
+                    onCopyColor={copyHex}
+                    dimorphismRef={dimorphismRef}
+                    onSelectDimorphism={handleSelectDimorphism}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         </section>
       </main>

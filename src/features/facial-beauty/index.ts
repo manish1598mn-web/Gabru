@@ -80,3 +80,4 @@ export type {
 
 // Utils
 export { drawBeautySocialCard } from './utils/BeautyShareCardUtil';
+

@@ -66,3 +66,4 @@ export function useClipboard(): UseClipboardResult {
     isCopied: copiedText !== null,
   };
 }
+

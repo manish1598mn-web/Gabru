@@ -127,3 +127,4 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
     </div>
   );
 }
+

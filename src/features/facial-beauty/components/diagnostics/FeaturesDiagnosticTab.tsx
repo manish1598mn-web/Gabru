@@ -117,3 +117,4 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
     </div>
   );
 }
+

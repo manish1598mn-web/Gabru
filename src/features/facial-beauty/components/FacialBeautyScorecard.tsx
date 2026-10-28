@@ -22,6 +22,7 @@ export interface FacialBeautyScorecardProps {
  * FacialBeautyScorecard
  *
  * Renders the 8-parameter biometrics scorecard:
+ * - Redesigned Executive Section Header Strip (.scorecard-clean-strip)
  * - Evidence allocation pills (Presentational 44 pts vs Structural 56 pts)
  * - Measurement confidence index & Renormalisation indicator
  * - 8 individual parameter score cards with real-time shuffle feedback & deep-dive navigation
@@ -48,8 +49,9 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
   };
 
   return (
-    <div className="scorecard-strip-card scroll-reveal" id="scorecard-section">
-      <div className="scorecard-strip-header">
+    <>
+      {/* Redesigned Executive Section Header Strip */}
+      <div className="scorecard-clean-strip" id="scorecard-clean-strip">
         <div className="scorecard-strip-info">
           <div className="strip-eyebrow">
             <span className="badge-pulse-dot" />
@@ -343,6 +345,6 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

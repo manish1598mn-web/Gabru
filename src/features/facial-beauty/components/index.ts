@@ -9,3 +9,4 @@ export { FacialBeautyAboutSection } from './FacialBeautyAboutSection';
 export { FacialMethodologyModal } from './FacialMethodologyModal';
 export { FacialShareModal } from './FacialShareModal';
 export * from './diagnostics';
+

@@ -145,3 +145,4 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
     </div>
   );
 }
+

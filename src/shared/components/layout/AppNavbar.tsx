@@ -87,3 +87,4 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
     </header>
   );
 }
+

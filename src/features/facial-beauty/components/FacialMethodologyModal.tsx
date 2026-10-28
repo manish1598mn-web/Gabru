@@ -55,3 +55,4 @@ export const FacialMethodologyModal: React.FC<FacialMethodologyModalProps> = ({
     </BaseModal>
   );
 };
+

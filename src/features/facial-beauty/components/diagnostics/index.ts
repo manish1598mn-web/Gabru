@@ -12,3 +12,4 @@ export { SymmetryDiagnosticTab } from './SymmetryDiagnosticTab';
 export { GroomingDiagnosticTab } from './GroomingDiagnosticTab';
 export { DimorphismDiagnosticTab } from './DimorphismDiagnosticTab';
 export { FeaturesDiagnosticTab } from './FeaturesDiagnosticTab';
+

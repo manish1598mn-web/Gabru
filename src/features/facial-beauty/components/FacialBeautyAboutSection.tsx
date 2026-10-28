@@ -151,3 +151,4 @@ export const FacialBeautyAboutSection: React.FC = () => {
     </section>
   );
 };
+

@@ -38,28 +38,27 @@ export function FacialBeautyHeroStudio({
 }: FacialBeautyHeroStudioProps) {
   return (
     <div className="hero-container">
-      {/* Left Column — Upload & Evaluated Summary Studio */}
+      {/* Left Column — Clean Upload Studio & Score Hub */}
       <div className="hero-left-column">
         <div className="hero-studio-badge scroll-reveal">
           <span className="badge-pulse-dot" />
-          <span>8-Parameter Biometric Attractiveness</span>
+          <span>8-Parameter Facial Intelligence</span>
           <span className="badge-dot-sep">•</span>
           <span>100-Point Scale</span>
         </div>
 
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
-          Upload Portrait,
+          Upload Face Photo,
           <br />
-          <span className="gradient-text">Get a Beauty Score</span>
+          <span className="gradient-text">Rate Facial Beauty</span>
         </h1>
 
         <p className="hero-description scroll-reveal" id="hero-description">
-          Scientific, multi-parameter facial attractiveness evaluation grounded in published aesthetic research.
-          Analyzes skin clarity, neoclassical harmony, golden ratio (φ), symmetry, averageness, and grooming entirely in your browser.
+          Biometric analysis across skin health cues, facial harmony thirds and fifths, golden ratio φ (1.618), bilateral symmetry, and grooming refinement. 100% private in-browser evaluation.
         </p>
 
         {scoreData ? (
-          /* Evaluated State: Executive Facial Beauty Score Hub */
+          /* Evaluated State: Clean Executive Beauty Score Hub */
           <>
             <div
               id="upload-dropzone"
@@ -82,7 +81,7 @@ export function FacialBeautyHeroStudio({
                   className="btn-change-photo"
                   onClick={onTriggerUpload}
                   id="btn-upload-direct"
-                  title="Upload another portrait"
+                  title="Upload another face photo"
                 >
                   <svg
                     width="14"
@@ -201,7 +200,7 @@ export function FacialBeautyHeroStudio({
             </div>
           </>
         ) : (
-          /* Initial State: Redesigned Dropzone */
+          /* Initial State: Clean Redesigned Dropzone */
           <>
             <div
               id="upload-dropzone"
@@ -332,18 +331,22 @@ export function FacialBeautyHeroStudio({
                   </div>
                   <div className="scanner-status-chip">
                     <span className="scanner-spin-icon" />
-                    <span>Extracting Neoclassical Thirds &amp; CIELAB Skin Patches...</span>
+                    <span>Scanning 8 Facial Parameters...</span>
                   </div>
                 </div>
               )}
 
+              {/* Post-Analysis Subject Verification Pill */}
               {!isAnalyzing && scoreData && (
-                <div
-                  className={`subject-status-pill ${scoreData.faceScore > 0 ? 'pill-human-detected' : 'pill-no-human'}`}
-                  id="subject-scan-status"
-                >
+                <div className="subject-status-pill pill-human-detected" id="subject-scan-status">
                   <span className="status-dot-indicator" />
-                  <span>✓ 468 Landmark Mesh Verified</span>
+                  <span>
+                    {scoreData.intakeReport?.faceDetected
+                      ? `✓ Human Face Detected (${scoreData.intakeReport.ipdPx > 0 ? Math.round(scoreData.intakeReport.ipdPx) : 120}px IPD)`
+                      : scoreData.isRenormalised
+                      ? '⚡ Frontal Renormalised'
+                      : '✓ Facial Biometrics Scanned'}
+                  </span>
                 </div>
               )}
             </div>

@@ -32,3 +32,4 @@ export function useIntersectionReveal(dependency?: unknown): void {
     };
   }, [dependency]);
 }
+
