@@ -10,7 +10,7 @@ export interface SkinDiagnosticTabProps {
 }
 
 export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinDiagnosticTabProps) {
-  const p1Score = scoreData.parameterScores[1] ?? 16.8;
+  const p1Score = scoreData.parameterScores[1] ?? 11.2;
   const p1Rating = scoreData.parameterRatings[1] ?? 8.0;
   const skinMetrics = scoreData.metrics.phase3?.skin;
 
@@ -19,15 +19,15 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
       <div className="diag-panel-header">
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
-            <span>✨ Parameter 1: Skin Quality & Health Cues</span>
-            <span className="diag-stat-code">21 Pts Max · β = 0.10</span>
+            <span>✨ Parameter 1: Skin Quality &amp; Glow</span>
+            <span className="diag-stat-code">14 Pts Max · β = 0.10 · Changeable</span>
           </div>
           <div className="diag-panel-desc">
-            5-zone multi-patch sampling (forehead, both cheeks, nose bridge, chin, infraorbital) evaluated in CIELAB space after white-balance correction. Measures tone uniformity, clarity, radiance, and eye-region health signals.
+            5-zone epidermal sampling (forehead, both cheeks, nose bridge, chin) evaluated in CIELAB space after white-balance correction. Evaluates tone uniformity, surface clarity, shine balance, and natural warm color saturation.
           </div>
         </div>
         <div className="diag-panel-score-badge">
-          <span className="diag-panel-points">{p1Score.toFixed(1)} / 21 pts</span>
+          <span className="diag-panel-points">{p1Score.toFixed(1)} / 14 pts</span>
           <span className="diag-panel-rating">(R: {p1Rating.toFixed(1)}/10)</span>
         </div>
       </div>
@@ -50,7 +50,7 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Surface Clarity</span>
+            <span className="diag-stat-label">Clarity</span>
             <span className="diag-stat-code">SK2 · W=30</span>
           </div>
           <div className="diag-stat-val">
@@ -58,15 +58,15 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
           </div>
           <div className={`diag-stat-status ${(skinMetrics?.blemishPct ?? 1.2) <= 1.0 ? 'status-ideal' : 'status-caution'}`}>
             {(skinMetrics?.blemishPct ?? 1.2) <= 1.0
-              ? '✓ High clarity, minimal micro-blemishes (≤ 1%)'
+              ? '✓ High clarity, clear skin barrier'
               : 'Subtle transient texture variance detected'}
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Radiance & Shine</span>
-            <span className="diag-stat-code">SK3 · W=15 · V=0.5</span>
+            <span className="diag-stat-label">Radiance &amp; Shine Control</span>
+            <span className="diag-stat-code">SK3 · W=20 · V=0.5</span>
           </div>
           <div className="diag-stat-val">
             {skinMetrics?.specularPct.toFixed(1) ?? '3.5'}%
@@ -78,14 +78,16 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Periorbital Contrast</span>
-            <span className="diag-stat-code">SK4 · W=25</span>
+            <span className="diag-stat-label">Healthy Natural Colour</span>
+            <span className="diag-stat-code">SK4 · W=20</span>
           </div>
           <div className="diag-stat-val">
-            ΔL* {skinMetrics?.underEyeDeltaL.toFixed(1) ?? '4.5'}
+            a* {skinMetrics?.naturalColourWarmth.toFixed(1) ?? '14.5'}
           </div>
-          <div className={`diag-stat-status ${(skinMetrics?.underEyeDeltaL ?? 4.5) <= 5.5 ? 'status-ideal' : 'status-caution'}`}>
-            {skinMetrics?.vitalityTier ?? scoreData.colorPalette.vitalityLevel}
+          <div className={`diag-stat-status ${(skinMetrics?.naturalColourWarmth ?? 14.5) >= 10.0 ? 'status-ideal' : 'status-caution'}`}>
+            {(skinMetrics?.naturalColourWarmth ?? 14.5) >= 10.0
+              ? '✓ Healthy vital cheek flush & oxygenation'
+              : 'Slightly muted epidermal warmth'}
           </div>
         </div>
       </div>
@@ -93,7 +95,7 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
       {/* Interactive Color Swatches */}
       <div className="color-palette-section" id="beauty-color-palette" style={{ marginTop: '4px' }}>
         <div className="section-header-compact">
-          <h4 className="section-title" style={{ fontSize: '13.5px' }}>Sampled Epidermal Pigments & Undertone</h4>
+          <h4 className="section-title" style={{ fontSize: '13.5px' }}>Sampled Epidermal Pigments &amp; Undertone</h4>
           <span className="section-subtitle">Click any swatch to copy its hexadecimal color code</span>
         </div>
 
@@ -133,7 +135,7 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
             <div className="swatch-meta">
               <span className="swatch-label">Vitality Level</span>
               <span className="swatch-hex">{scoreData.colorPalette.vitalityLevel}</span>
-              <span className="swatch-sub">Low infraorbital shadow contrast</span>
+              <span className="swatch-sub">Epidermal luminosity &amp; healthy tone</span>
             </div>
           </div>
         </div>
@@ -145,4 +147,3 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
     </div>
   );
 }
-

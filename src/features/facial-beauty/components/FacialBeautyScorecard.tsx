@@ -21,12 +21,12 @@ export interface FacialBeautyScorecardProps {
 /**
  * FacialBeautyScorecard
  *
- * Renders the 8-parameter biometrics scorecard:
- * - Redesigned Executive Section Header Strip (.scorecard-clean-strip)
- * - Evidence allocation pills (Presentational 44 pts vs Structural 56 pts)
+ * Renders the 10-parameter biometrics scorecard (v2):
+ * - Executive Section Header Strip (.scorecard-clean-strip)
+ * - Evidence allocation pills (Changeable ~43 pts vs Fixed ~57 pts)
  * - Measurement confidence index & Renormalisation indicator
- * - 8 individual parameter score cards with real-time shuffle feedback & deep-dive navigation
- * - Dimorphism reference distribution toggle (Neutral/M-typical/F-typical)
+ * - 10 individual parameter score cards with real-time shuffle feedback & deep-dive navigation
+ * - Gender-typical reference toggle (Neutral / M-typical / F-typical)
  * - Top 3 actionable presentational levers for instant score improvement
  */
 export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
@@ -50,29 +50,32 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
 
   return (
     <>
-      {/* Redesigned Executive Section Header Strip */}
+      {/* Executive Section Header Strip */}
       <div className="scorecard-clean-strip" id="scorecard-clean-strip">
         <div className="scorecard-strip-info">
           <div className="strip-eyebrow">
             <span className="badge-pulse-dot" />
             <span>FACIAL HARMONY AUDIT</span>
             <span className="strip-eyebrow-sep">•</span>
-            <span>8-PARAMETER SYSTEM</span>
+            <span>10-PARAMETER FRAMEWORK</span>
             <span className="strip-eyebrow-sep">•</span>
-            <span>100-POINT SCALE</span>
+            <span>29 BEAUTY POINTS</span>
           </div>
-          <h3 className="scorecard-strip-title">8-Parameter Attractiveness Breakdown</h3>
+          <h3 className="scorecard-strip-title">10-Parameter Attractiveness Breakdown</h3>
           <p className="scorecard-strip-sub">
             {scoreData
               ? scoreData.verdictDescription
-              : 'Scientific multi-dimensional facial evaluation across skin quality, proportions, dynamic cues, averageness, symmetry, and grooming.'}
+              : 'Scientific multi-dimensional facial evaluation across skin quality, eye region, harmony & proportions, expression, grooming, central features, symmetry, averageness, jaw & chin, and neck carriage.'}
           </p>
         </div>
 
         {/* Evidence Allocation & Score Indicators */}
         <div className="scorecard-tier-pills" id="scorecard-tier-pills">
-          <div className="tier-pill-box" title="Skin, Expression, Grooming (controllable presentational cues)">
-            <span className="tier-pill-name">Presentational</span>
+          <div
+            className="tier-pill-box"
+            title="Skin, Expression, Grooming, Eye under-eye & brows, Neck posture (controllable presentational cues)"
+          >
+            <span className="tier-pill-name">Changeable</span>
             <span className="tier-pill-score">
               {scoreData ? (
                 <>
@@ -80,24 +83,25 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
                   <span className="tier-max">
                     (
                     {(
-                      (scoreData.parameterScores[1] || 0) +
-                      (scoreData.parameterScores[3] || 0) +
-                      (scoreData.parameterScores[6] || 0)
+                      (scoreData.changeablePoints ??
+                        (scoreData.parameterScores[1] || 0) +
+                        (scoreData.parameterScores[4] || 0) +
+                        (scoreData.parameterScores[5] || 0))
                     ).toFixed(1)}
-                    /44)
+                    /43)
                   </span>
                 </>
               ) : (
-                <span className="tier-unscored">44 Pts</span>
+                <span className="tier-unscored">43 Pts</span>
               )}
             </span>
           </div>
 
           <div
             className="tier-pill-box"
-            title="Proportions, Averageness, Symmetry, Dimorphism, Features (structural craniofacial architecture)"
+            title="Proportions, Eye shape, Features, Symmetry, Averageness, Jaw & Chin, Neck structure (fixed craniofacial architecture)"
           >
-            <span className="tier-pill-name">Structural</span>
+            <span className="tier-pill-name">Fixed</span>
             <span className="tier-pill-score">
               {scoreData ? (
                 <>
@@ -105,17 +109,18 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
                   <span className="tier-max">
                     (
                     {(
-                      (scoreData.parameterScores[2] || 0) +
-                      (scoreData.parameterScores[4] || 0) +
-                      (scoreData.parameterScores[5] || 0) +
-                      (scoreData.parameterScores[7] || 0) +
-                      (scoreData.parameterScores[8] || 0)
+                      (scoreData.fixedPoints ??
+                        (scoreData.parameterScores[3] || 0) +
+                        (scoreData.parameterScores[6] || 0) +
+                        (scoreData.parameterScores[7] || 0) +
+                        (scoreData.parameterScores[8] || 0) +
+                        (scoreData.parameterScores[9] || 0))
                     ).toFixed(1)}
-                    /56)
+                    /57)
                   </span>
                 </>
               ) : (
-                <span className="tier-unscored">56 Pts</span>
+                <span className="tier-unscored">57 Pts</span>
               )}
             </span>
           </div>
@@ -184,8 +189,8 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
         </div>
       </div>
 
-      {/* ALL 8 FACIAL PARAMETER CARDS (100 PTS SCALE) */}
-      <div className="compact-cards-grid cards-8-grid" id="compact-cards-grid">
+      {/* ALL 10 FACIAL PARAMETER CARDS (100 PTS SCALE) */}
+      <div className="compact-cards-grid cards-10-grid" id="compact-cards-grid">
         {BEAUTY_PARAMETERS.map((param) => {
           const score = scoreData ? scoreData.parameterScores[param.id] : null;
           const rating = scoreData ? scoreData.parameterRatings[param.id] : null;
@@ -243,7 +248,7 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
         })}
       </div>
 
-      {/* Sexual Dimorphism Reference Selection Bar */}
+      {/* Gender-Typical Reference Selection Bar */}
       {scoreData && !isAnalyzing && (
         <div className="dimorphism-toggle-bar">
           <span
@@ -254,15 +259,15 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
               marginRight: '6px',
             }}
           >
-            Dimorphism Reference:
+            Gender-Typical Reference:
           </span>
           <button
             type="button"
             className={`dimorphism-btn ${dimorphismRef === 'skip' ? 'is-active' : ''}`}
             onClick={() => onSelectDimorphism('skip')}
-            title="Skip dimorphism: marks parameter N/A and renormalises the remaining 93 points to 100"
+            title="Evaluate without gender dimorphism norms (neutral baseline, renormalised to 100)"
           >
-            Skip / Neutral (Renormalised)
+            Skip / Neutral
           </button>
           <button
             type="button"
@@ -294,8 +299,7 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
               </h3>
             </div>
             <span className="section-subtitle">
-              Presentational improvements from controllable factors (Skin, Expression, Grooming) with estimated score
-              impact
+              Targeted improvements strictly from controllable factors (Skin, Expression, Grooming, Under-eye, Posture) with estimated score impact
             </span>
           </div>
 

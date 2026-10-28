@@ -60,7 +60,7 @@ export function FacialShareModal({
               <div className="share-card-spinner-ring" />
               <h4 className="generating-title">Generating Facial Style Card...</h4>
               <p className="generating-sub">
-                Composing your portrait and 8-parameter attractiveness breakdown...
+                Composing your portrait and 10-parameter attractiveness breakdown...
               </p>
             </div>
           ) : (

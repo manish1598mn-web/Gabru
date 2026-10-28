@@ -2,7 +2,7 @@
  * GABRU — FACIAL BEAUTY SHARE CARD CANVAS GENERATOR
  * 
  * Generates the high-resolution 1080x1350 (4:5 portrait) social media share card canvas
- * for the 8-parameter facial attractiveness breakdown.
+ * for the 10-parameter facial attractiveness breakdown (v2 Framework).
  */
 
 import { BeautyParameterDef, ScoreCalculationResult } from '../types/FacialBeautyTypes';
@@ -52,7 +52,7 @@ export function drawBeautySocialCard(
   ctx.fillText('•', 18 + brandWidth + 8, headerY);
 
   ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-  ctx.fillText('FACIAL BEAUTY AUDIT', 18 + brandWidth + 20, headerY);
+  ctx.fillText('FACIAL BEAUTY AUDIT (10-PARAM)', 18 + brandWidth + 20, headerY);
 
   // Right: Master Score & Verdict
   const rightX = 1062;
@@ -120,7 +120,7 @@ export function drawBeautySocialCard(
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // Top Floating Badge: Presentational vs Structural Breakdown
+  // Top Floating Badge: Changeable vs Structural Breakdown
   const topBadgeW = 464;
   const topBadgeH = 34;
   const topBadgeX = photoX + (photoW - topBadgeW) / 2;
@@ -138,8 +138,8 @@ export function drawBeautySocialCard(
   ctx.textBaseline = 'middle';
   ctx.font = '700 11px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.90)';
-  const presStr = `PRESENTATIONAL ${scoreData.presentationalScore ?? 78.5}%`;
-  const structStr = `STRUCTURAL ${scoreData.structuralScore ?? 78.8}%`;
+  const presStr = `CHANGEABLE ${scoreData.presentationalScore ?? 78.5}%`;
+  const structStr = `FIXED ${scoreData.structuralScore ?? 78.8}%`;
   const confStr = `CONF ${Math.round((scoreData.confidence || 0.88) * 100)}%`;
   ctx.fillText(`${presStr}   •   ${structStr}   •   ${confStr}`, topBadgeX + topBadgeW / 2, topBadgeY + topBadgeH / 2);
 
@@ -168,16 +168,16 @@ export function drawBeautySocialCard(
   const badgeText = `${indexStr}   •   ${symmStr}   •   ${phiStr}`;
   ctx.fillText(badgeText, badgeX + badgeW / 2, badgeY + badgeH / 2);
 
-  // 8 Parameters: 4 on Left, 4 on Right
-  const leftParams = parameters.slice(0, 4);
-  const rightParams = parameters.slice(4, 8);
+  // 10 Parameters: 5 on Left, 5 on Right
+  const leftParams = parameters.slice(0, 5);
+  const rightParams = parameters.slice(5, 10);
 
   const cardW = 244;
-  const cardH = 295;
-  const cardGap = 24;
+  const cardH = 236;
+  const cardGap = 18;
 
   const drawParamCard = (param: BeautyParameterDef, cx: number, cy: number) => {
-    drawRoundedRect(ctx, cx, cy, cardW, cardH, 14);
+    drawRoundedRect(ctx, cx, cy, cardW, cardH, 12);
     ctx.fillStyle = '#222226';
     ctx.fill();
 
@@ -190,36 +190,37 @@ export function drawBeautySocialCard(
 
     const num = param.id < 10 ? `0${param.id}` : `${param.id}`;
     let displayName = param.name;
-    if (displayName === 'Skin Quality & Health Cues') displayName = 'Skin & Health';
-    if (displayName === 'Proportions & Harmony') displayName = 'Proportions & φ';
-    if (displayName === 'Expression & Dynamic Cues') displayName = 'Expression';
-    if (displayName === 'Sexual Dimorphism') displayName = 'Dimorphism';
+    if (displayName === 'Facial Harmony & Proportions') displayName = 'Harmony & φ';
+    if (displayName === 'Expression, Smile & Gaze') displayName = 'Expression & Gaze';
+    if (displayName === 'Nose, Cheeks, Lips & Philtrum') displayName = 'Central Features';
+    if (displayName === 'Jaw, Chin & Gender-Typical Cues') displayName = 'Jaw, Chin & Cues';
+    if (displayName === 'Neck, Ears & Head Carriage') displayName = 'Neck & Posture';
 
     // Title
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.font = '700 17px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
+    ctx.font = '700 14px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(`${num} • ${displayName}`, cx + 18, cy + 24);
+    ctx.fillText(`${num} • ${displayName}`, cx + 16, cy + 18);
 
     // Score Value
     const scoreValStr = Number.isInteger(pPoints) ? String(pPoints) : pPoints.toFixed(1);
-    ctx.font = '900 48px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
+    ctx.font = '900 36px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(scoreValStr, cx + 18, cy + 62);
+    ctx.fillText(scoreValStr, cx + 16, cy + 50);
 
     const sValLen = ctx.measureText(scoreValStr).width;
-    ctx.font = '700 18px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
+    ctx.font = '700 15px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-    ctx.fillText(` / ${param.weight}`, cx + 18 + sValLen + 6, cy + 86);
+    ctx.fillText(` / ${param.weight}`, cx + 16 + sValLen + 4, cy + 68);
 
     // Rating Pill
     const rText = `RATING ${pRating.toFixed(1)} / 10`;
-    ctx.font = '700 13px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
-    const rWidth = ctx.measureText(rText).width + 18;
-    const rHeight = 28;
-    const rPillX = cx + 18;
-    const rPillY = cy + 154;
+    ctx.font = '700 11.5px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
+    const rWidth = ctx.measureText(rText).width + 16;
+    const rHeight = 24;
+    const rPillX = cx + 16;
+    const rPillY = cy + 118;
 
     drawRoundedRect(ctx, rPillX, rPillY, rWidth, rHeight, 6);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
@@ -234,26 +235,26 @@ export function drawBeautySocialCard(
     ctx.fillText(rText, rPillX + rWidth / 2, rPillY + rHeight / 2);
 
     // Progress Bar
-    const barX = cx + 18;
-    const barY = cy + 224;
-    const barW = cardW - 36;
-    const barH = 5;
+    const barX = cx + 16;
+    const barY = cy + 172;
+    const barW = cardW - 32;
+    const barH = 4;
 
-    drawRoundedRect(ctx, barX, barY, barW, barH, 2.5);
+    drawRoundedRect(ctx, barX, barY, barW, barH, 2);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.fill();
 
     const pct = Math.min(1, Math.max(0.08, pPoints / param.weight));
-    drawRoundedRect(ctx, barX, barY, barW * pct, barH, 2.5);
+    drawRoundedRect(ctx, barX, barY, barW * pct, barH, 2);
     ctx.fillStyle = '#2589ff';
     ctx.fill();
 
-    // Evidence tag
+    // Evidence & Changeability tag
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.font = '600 11.5px "Plus Jakarta Sans", sans-serif';
+    ctx.font = '600 11px "Plus Jakarta Sans", sans-serif';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.40)';
-    ctx.fillText(`${param.evidence} Evidence`, cx + 18, cy + 248);
+    ctx.fillText(`${param.evidence} • ${param.changeability}`, cx + 16, cy + 192);
   };
 
   leftParams.forEach((param, idx) => {

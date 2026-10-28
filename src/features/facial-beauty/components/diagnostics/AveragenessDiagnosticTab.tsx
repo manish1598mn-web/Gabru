@@ -8,25 +8,25 @@ export interface AveragenessDiagnosticTabProps {
 }
 
 export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTabProps) {
-  const p4Score = scoreData.parameterScores[4] ?? 9.8;
-  const p4Rating = scoreData.parameterRatings[4] ?? 8.2;
-  const avgMetrics = scoreData.metrics.phase3?.averageness;
+  const p8Score = scoreData.parameterScores[8] ?? 5.8;
+  const p8Rating = scoreData.parameterRatings[8] ?? 8.2;
+  const avgMetrics = scoreData.metrics.phase4?.averageness;
 
   return (
     <div className="diag-panel-content" id="diag-panel-averageness">
       <div className="diag-panel-header">
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
-            <span>🧬 Parameter 4: Averageness & Morphometrics</span>
-            <span className="diag-stat-code">12 Pts Max · β = 0.10</span>
+            <span>🧬 Parameter 8: Averageness</span>
+            <span className="diag-stat-code">7 Pts Max · β = 0.10 · Fixed</span>
           </div>
           <div className="diag-panel-desc">
-            Quantifies proximity to evolutionary population median via 16-landmark Procrustes shape distance D and 6 anthropometric size distributions. Outliers (|z| &gt; 1.5) safely halve penalties in Parameter 8 to prevent double-counting (Rule A4).
+            Quantifies proximity to evolutionary population median via 16-landmark Procrustes shape distance D and 6 anthropometric size distributions. Protected by Rule A4 against double penalty.
           </div>
         </div>
         <div className="diag-panel-score-badge">
-          <span className="diag-panel-points">{p4Score.toFixed(1)} / 12 pts</span>
-          <span className="diag-panel-rating">(R: {p4Rating.toFixed(1)}/10)</span>
+          <span className="diag-panel-points">{p8Score.toFixed(1)} / 7 pts</span>
+          <span className="diag-panel-rating">(R: {p8Rating.toFixed(1)}/10)</span>
         </div>
       </div>
 
@@ -34,7 +34,7 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Procrustes Shape Distance</span>
-            <span className="diag-stat-code">AV1 · W=50</span>
+            <span className="diag-stat-code">AV1 · W=55</span>
           </div>
           <div className="diag-stat-val">
             D = {avgMetrics?.procrustesDistance.toFixed(3) ?? '0.076'}
@@ -47,7 +47,7 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Shape Typicality Z-Score</span>
-            <span className="diag-stat-code">AV1 · W=50</span>
+            <span className="diag-stat-code">AV1 · W=55</span>
           </div>
           <div className="diag-stat-val">
             z = {avgMetrics?.shapeZ.toFixed(2) ?? '0.25'}
@@ -64,7 +64,7 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
           <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>
-            6 Anthropometric Size Ratios &amp; Z-Scores (AV2, W=50)
+            6 Anthropometric Feature-Size Ratios &amp; Z-Scores (AV2, W=45)
           </span>
           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.50)' }}>
             Target: |z| ≤ 1.50
@@ -100,24 +100,13 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
                       title={`Z-Score: ${ratio.z.toFixed(2)}`}
                     />
                   </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>
-                    <span>-2.0σ</span>
-                    <span style={{ fontWeight: 700, color: ratio.flagged ? '#f87171' : '#34d399' }}>
+                  <div className="zscore-labels">
+                    <span>-2.5</span>
+                    <span style={{ color: ratio.flagged ? '#f87171' : '#34d399', fontWeight: 700 }}>
                       z = {ratio.z.toFixed(2)}
                     </span>
-                    <span>+2.0σ</span>
+                    <span>+2.5</span>
                   </div>
-
-                  {ratio.flagged ? (
-                    <span className="outlier-tag">
-                      ⚡ Outlier (|z| &gt; 1.5) · Parameter 8 penalty halved (Rule A4)
-                    </span>
-                  ) : (
-                    <span className="normal-tag">
-                      ✓ Population typical range
-                    </span>
-                  )}
                 </div>
               </div>
             );
@@ -127,4 +116,3 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
     </div>
   );
 }
-

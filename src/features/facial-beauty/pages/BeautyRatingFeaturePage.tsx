@@ -447,7 +447,7 @@ export default function BeautyRatingFeaturePage() {
               onReevaluate={triggerUpload}
             />
 
-            {/* Integrated 8-Parameter Beauty Rating Scorecard Area */}
+            {/* Integrated 10-Parameter Beauty Rating Scorecard Area */}
             <div className="integrated-photo-score-area" id="photo-score-section">
               <div className={`scorecard-wrapper ${isAnalyzing ? 'analyzing' : ''}`} id="photo-score-dashboard">
                 <FacialBeautyScorecard

@@ -8,8 +8,8 @@ export interface SymmetryDiagnosticTabProps {
 }
 
 export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps) {
-  const p5Score = scoreData.parameterScores[5] ?? 8.9;
-  const p5Rating = scoreData.parameterRatings[5] ?? 8.2;
+  const p7Score = scoreData.parameterScores[7] ?? 7.4;
+  const p7Rating = scoreData.parameterRatings[7] ?? 8.2;
   const symMetrics = scoreData.metrics.phase4?.symmetry;
 
   return (
@@ -17,16 +17,16 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
       <div className="diag-panel-header">
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
-            <span>⚖️ Parameter 5: Facial Symmetry</span>
-            <span className="diag-stat-code">11 Pts Max · β = 0.10</span>
+            <span>⚖️ Parameter 7: Facial Symmetry</span>
+            <span className="diag-stat-code">9 Pts Max · β = 0.10 · Fixed</span>
           </div>
           <div className="diag-panel-desc">
-            Bilateral horizontal (Ah) and vertical (Av) parity evaluated across pupils, exocanthion, brow peaks, nasal midline verticality, oral commissure tilt, and bizygomatic/gonial angle contours.
+            Bilateral horizontal (Ah) and vertical (Av) parity evaluated across pupils, outer canthi, brow peaks, nasal midline alignment, oral commissure level, and bigonial jaw contours.
           </div>
         </div>
         <div className="diag-panel-score-badge">
-          <span className="diag-panel-points">{p5Score.toFixed(1)} / 11 pts</span>
-          <span className="diag-panel-rating">(R: {p5Rating.toFixed(1)}/10)</span>
+          <span className="diag-panel-points">{p7Score.toFixed(1)} / 9 pts</span>
+          <span className="diag-panel-rating">(R: {p7Rating.toFixed(1)}/10)</span>
         </div>
       </div>
 
@@ -40,7 +40,7 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
           color: '#fca5a5',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px'
+          gap: '8px',
         }}>
           <span>⚠️</span>
           <span>
@@ -100,37 +100,36 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
             {scoreData.subfactorRatings?.['SY2']?.raw?.toFixed(1) ?? '8.8'}/10
           </div>
           <div className="diag-stat-status status-ideal">
-            Nasion &amp; subnasale sagittal verticality
+            Nasal tip &amp; nasion midline alignment
           </div>
         </div>
-      </div>
 
-      {/* Symmetry Subfactors Grid */}
-      <div>
-        <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', display: 'block', marginBottom: '10px' }}>
-          Symmetry Sub-Factor Diagnostic Breakdown
-        </span>
-        <div className="diag-sub-grid">
-          {(symMetrics?.subfactors || [
-            { id: 'SY1', name: 'Bilateral Eye & Brow Level', ah: 2.1, av: 1.4, rating: 8.5, note: 'Pupil Ah=2.1%, Av=1.4%' },
-            { id: 'SY2', name: 'Nose & Midline Verticality', ah: 1.2, rating: 8.8, note: 'Nasal tip offset 1.2% of bizygomatic width' },
-            { id: 'SY3', name: 'Oral Commissure & Mandibular Parity', ah: 1.5, av: 1.1, rating: 8.6, note: 'Mouth tilt 1.1% of IPD' },
-            { id: 'SY4', name: 'Cheekbone & Gonial Angle Symmetry', ah: 2.3, rating: 8.7, note: 'Cheeks Ah=2.3%, Jaw Ah=2.0%' },
-          ]).map((item) => (
-            <div key={item.id} className="diag-stat-card">
-              <div className="diag-stat-header">
-                <span className="diag-stat-label">{item.name}</span>
-                <span className="diag-stat-code">{item.id}</span>
-              </div>
-              <div className="diag-stat-val">{item.rating.toFixed(1)}/10</div>
-              <div className="diag-stat-status status-ideal">
-                {item.note}
-              </div>
-            </div>
-          ))}
+        <div className="diag-stat-card">
+          <div className="diag-stat-header">
+            <span className="diag-stat-label">Mouth &amp; Chin Parity</span>
+            <span className="diag-stat-code">SY3 · W=25</span>
+          </div>
+          <div className="diag-stat-val">
+            {scoreData.subfactorRatings?.['SY3']?.raw?.toFixed(1) ?? '8.6'}/10
+          </div>
+          <div className="diag-stat-status status-ideal">
+            Horizontal commissures &amp; menton sagittal line
+          </div>
+        </div>
+
+        <div className="diag-stat-card">
+          <div className="diag-stat-header">
+            <span className="diag-stat-label">Cheeks &amp; Jaw Balance</span>
+            <span className="diag-stat-code">SY4 · W=25</span>
+          </div>
+          <div className="diag-stat-val">
+            {scoreData.subfactorRatings?.['SY4']?.raw?.toFixed(1) ?? '8.4'}/10
+          </div>
+          <div className="diag-stat-status status-ideal">
+            Bilateral zygion &amp; gonial angle balance
+          </div>
         </div>
       </div>
     </div>
   );
 }
-

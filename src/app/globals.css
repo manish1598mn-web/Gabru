@@ -1470,6 +1470,10 @@ body {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.compact-cards-grid.cards-10-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+
 @media (max-width: 1080px) {
   .compact-cards-grid {
     grid-template-columns: repeat(5, 1fr);
@@ -1479,18 +1483,24 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
   }
+  .compact-cards-grid.cards-10-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
 }
 
 @media (max-width: 860px) {
   .compact-cards-grid,
-  .compact-cards-grid.cards-8-grid {
+  .compact-cards-grid.cards-8-grid,
+  .compact-cards-grid.cards-10-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 }
 
 @media (max-width: 580px) {
-  .compact-cards-grid.cards-8-grid {
+  .compact-cards-grid.cards-8-grid,
+  .compact-cards-grid.cards-10-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }

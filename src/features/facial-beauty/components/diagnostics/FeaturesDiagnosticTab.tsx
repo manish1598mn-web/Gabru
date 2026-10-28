@@ -8,8 +8,8 @@ export interface FeaturesDiagnosticTabProps {
 }
 
 export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps) {
-  const p8Score = scoreData.parameterScores[8] ?? 5.6;
-  const p8Rating = scoreData.parameterRatings[8] ?? 8.0;
+  const p6Score = scoreData.parameterScores[6] ?? 8.0;
+  const p6Rating = scoreData.parameterRatings[6] ?? 8.0;
   const feat = scoreData.metrics.phase4?.features;
 
   return (
@@ -17,98 +17,95 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
       <div className="diag-panel-header">
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
-            <span>👁️ Parameter 8: Individual Features</span>
-            <span className="diag-stat-code">7 Pts Max · β = 0.10</span>
+            <span>👃 Parameter 6: Nose, Cheeks, Lips &amp; Philtrum</span>
+            <span className="diag-stat-code">10 Pts Max · β = 0.10 · Fixed</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates isolated feature dimensions (eyes, nose, lips, jaw) against broad anthropometric canons. Includes active Rule A4 protection to prevent double-counting deviations already scored in Parameter 4 Averageness.
+            Evaluates anatomical balance of individual central facial features: nasal dorsal bridge and alar width, malar cheekbone projection, lip vermilion fullness and contour, and philtral column length.
           </div>
         </div>
         <div className="diag-panel-score-badge">
-          <span className="diag-panel-points">{p8Score.toFixed(1)} / 7 pts</span>
-          <span className="diag-panel-rating">(R: {p8Rating.toFixed(1)}/10)</span>
+          <span className="diag-panel-points">{p6Score.toFixed(1)} / 10 pts</span>
+          <span className="diag-panel-rating">(R: {p6Rating.toFixed(1)}/10)</span>
         </div>
       </div>
 
       <div className="diag-sub-grid">
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Canthal Tilt</span>
-            <span className="diag-stat-code">IF1 · W=35</span>
-          </div>
-          <div className="diag-stat-val">
-            +{feat?.canthalTiltDeg.toFixed(1) ?? '3.2'}°
-          </div>
-          <div className="diag-stat-status status-ideal">
-            ✓ Positive upward palpebral axis
-          </div>
-        </div>
-
-        <div className="diag-stat-card">
-          <div className="diag-stat-header">
-            <span className="diag-stat-label">Nasal Proportion</span>
-            <span className="diag-stat-code">IF2 · W=25</span>
+            <span className="diag-stat-label">Nose Proportions</span>
+            <span className="diag-stat-code">FE1 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {feat?.nasalWidthRatio.toFixed(2) ?? '0.26'}
           </div>
           <div className="diag-stat-status status-ideal">
-            Balanced alar width vs bizygomatic
+            Balanced alar base &amp; dorsal bridge
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Lip Vermilion Fullness</span>
-            <span className="diag-stat-code">IF3 · W=25</span>
+            <span className="diag-stat-label">Cheeks &amp; Cheekbones</span>
+            <span className="diag-stat-code">FE2 · W=25</span>
+          </div>
+          <div className="diag-stat-val">
+            Defined Malar
+          </div>
+          <div className="diag-stat-status status-ideal">
+            Natural cheekbone elevation &amp; fullness
+          </div>
+        </div>
+
+        <div className="diag-stat-card">
+          <div className="diag-stat-header">
+            <span className="diag-stat-label">Lips &amp; Vermilion</span>
+            <span className="diag-stat-code">FE3 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {feat?.lipFullnessRatio.toFixed(2) ?? '0.35'}
           </div>
           <div className="diag-stat-status status-ideal">
-            Harmonious oral aperture fullness
+            Harmonious upper-to-lower balance
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Gonial Mandibular Breadth</span>
-            <span className="diag-stat-code">IF4 · W=15</span>
+            <span className="diag-stat-label">Philtrum Column</span>
+            <span className="diag-stat-code">FE4 · W=15</span>
           </div>
           <div className="diag-stat-val">
-            {feat?.jawContourRatio.toFixed(2) ?? '0.76'}
+            {feat?.philtrumRatio.toFixed(2) ?? '0.24'}
           </div>
           <div className="diag-stat-status status-ideal">
-            Smooth defined jawline contour
+            Balanced vertical groove length (~24% of lower third)
           </div>
         </div>
       </div>
 
-      {/* Feature Subfactors with Active Rule A4 Protection Badges */}
+      {/* Feature Subfactors Breakdown */}
       <div>
         <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', display: 'block', marginBottom: '10px' }}>
-          Feature Dimension Sub-Factors &amp; Rule A4 Protection Status
+          Feature Sub-Factor Dimensions
         </span>
         <div className="diag-sub-grid">
           {(feat?.subfactors || [
-            { id: 'IF1', name: 'Orbital Aperture & Canthal Tilt', rating: 8.5, note: 'Canthal tilt +3.2°, fissure ratio 0.35', isProtectedByRuleA4: false },
-            { id: 'IF2', name: 'Nasal Proportion & Dorsum Fit', rating: 8.5, note: 'Nasal length 0.44, width 0.26', isProtectedByRuleA4: false },
-            { id: 'IF3', name: 'Lip Vermilion Balance & Contour', rating: 8.5, note: 'Mouth width 0.38, fullness 0.35', isProtectedByRuleA4: false },
-            { id: 'IF4', name: 'Jaw Contour Smoothness & Angle', rating: 8.5, note: 'Mandibular breadth 0.76', isProtectedByRuleA4: false },
+            { id: 'FE1', name: 'Nose Proportions & Dorsum', rating: 8.5, note: 'Nasal length 0.44, breadth 0.26', isProtectedByRuleA4: false },
+            { id: 'FE2', name: 'Cheeks & Cheekbones', rating: 8.8, note: 'Defined malar bone contour and smooth cheek transition', isProtectedByRuleA4: false },
+            { id: 'FE3', name: 'Lips Vermilion & Fullness', rating: 8.5, note: 'Mouth breadth 0.38, fullness ratio 0.35', isProtectedByRuleA4: false },
+            { id: 'FE4', name: 'Philtral Column & Length', rating: 8.6, note: 'Column length 24% of lower face', isProtectedByRuleA4: false },
           ]).map((item) => (
             <div key={item.id} className="diag-stat-card">
               <div className="diag-stat-header">
                 <span className="diag-stat-label">{item.name}</span>
                 <span className="diag-stat-code">{item.id}</span>
               </div>
-              <div className="diag-stat-val">{item.rating.toFixed(1)}/10</div>
-              <div className="diag-stat-status status-ideal" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-                <span>{item.note}</span>
-                {item.isProtectedByRuleA4 && (
-                  <span className="outlier-tag" style={{ marginTop: '2px' }}>
-                    ⚡ Rule A4 Protection Active: Penalty halved from Averageness flag
-                  </span>
-                )}
+              <div className="diag-stat-val">
+                {item.rating.toFixed(1)}/10
+              </div>
+              <div className="diag-stat-status status-ideal">
+                {item.note}
               </div>
             </div>
           ))}
@@ -117,4 +114,3 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
     </div>
   );
 }
-

@@ -27,17 +27,17 @@ export const FacialMethodologyModal: React.FC<FacialMethodologyModalProps> = ({
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', lineHeight: 1.6 }}>
         <p>
-          <strong>Gabru</strong> implements the scientific 8-parameter facial attractiveness research framework on a
-          100-point calibrated scale.
+          <strong>Gabru</strong> implements the scientific 10-parameter Facial Attractiveness Framework (v2), built on
+          the 29 Beauty Points on a 100-point calibrated scale.
         </p>
         <p>
-          Measurements are divided into <strong>Strong Evidence (56 pts)</strong> (Skin Quality, Expression, Averageness,
-          Grooming) and <strong>Moderate Evidence (44 pts)</strong> (Proportions &amp; Harmony, Symmetry, Dimorphism,
-          Features).
+          Measurements separate <strong>Changeable Factors (~43 pts)</strong> (Skin Quality &amp; Glow, Expression &amp; Gaze,
+          Grooming &amp; Styling, Under-Eye Vitality, Eyebrow Grooming, Head Posture) from <strong>Fixed Structural Architecture (~57 pts)</strong> (Harmony &amp; Thirds,
+          Eye Geometry, Central Features, Facial Symmetry, Averageness, Jaw &amp; Chin).
         </p>
         <p>
-          When a frontal selfie is provided, profile angles are occluded and the visible 97 points are mathematically
-          renormalised to a 100-point total (100 / 97 ≈ 1.0309×).
+          Every beauty point lands in exactly one parameter without double counting. When a frontal photo is provided,
+          unseen profile angles are excluded and visible parameters are mathematically renormalised to 100 points.
         </p>
         <div
           style={{

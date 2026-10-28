@@ -17,13 +17,17 @@ export { FacialShareModal } from './components/FacialShareModal';
 
 // Diagnostic Tabs
 export { SkinDiagnosticTab } from './components/diagnostics/SkinDiagnosticTab';
+export { EyeRegionDiagnosticTab } from './components/diagnostics/EyeRegionDiagnosticTab';
+export { HarmonyDiagnosticTab } from './components/diagnostics/HarmonyDiagnosticTab';
 export { ProportionsDiagnosticTab } from './components/diagnostics/ProportionsDiagnosticTab';
 export { ExpressionDiagnosticTab } from './components/diagnostics/ExpressionDiagnosticTab';
-export { AveragenessDiagnosticTab } from './components/diagnostics/AveragenessDiagnosticTab';
-export { SymmetryDiagnosticTab } from './components/diagnostics/SymmetryDiagnosticTab';
 export { GroomingDiagnosticTab } from './components/diagnostics/GroomingDiagnosticTab';
-export { DimorphismDiagnosticTab } from './components/diagnostics/DimorphismDiagnosticTab';
 export { FeaturesDiagnosticTab } from './components/diagnostics/FeaturesDiagnosticTab';
+export { SymmetryDiagnosticTab } from './components/diagnostics/SymmetryDiagnosticTab';
+export { AveragenessDiagnosticTab } from './components/diagnostics/AveragenessDiagnosticTab';
+export { JawChinDiagnosticTab } from './components/diagnostics/JawChinDiagnosticTab';
+export { DimorphismDiagnosticTab } from './components/diagnostics/DimorphismDiagnosticTab';
+export { NeckPostureDiagnosticTab } from './components/diagnostics/NeckPostureDiagnosticTab';
 
 // Services
 export {

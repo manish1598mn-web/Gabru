@@ -141,7 +141,7 @@ export function AppFooter({
               </li>
               <li>
                 <Link href="/beauty-rating" className="footer-link-btn">
-                  8-Parameter Biometric Rubric
+                  10-Parameter Biometric Rubric
                 </Link>
               </li>
             </ul>

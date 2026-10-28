@@ -3,14 +3,18 @@
 import React from 'react';
 import { BeautyScoreData, DeepDiveTabKey } from '../types/FacialBeautyTypes';
 
-import { SkinDiagnosticTab } from './diagnostics/SkinDiagnosticTab';
-import { ProportionsDiagnosticTab } from './diagnostics/ProportionsDiagnosticTab';
-import { ExpressionDiagnosticTab } from './diagnostics/ExpressionDiagnosticTab';
-import { AveragenessDiagnosticTab } from './diagnostics/AveragenessDiagnosticTab';
-import { SymmetryDiagnosticTab } from './diagnostics/SymmetryDiagnosticTab';
-import { GroomingDiagnosticTab } from './diagnostics/GroomingDiagnosticTab';
-import { DimorphismDiagnosticTab } from './diagnostics/DimorphismDiagnosticTab';
-import { FeaturesDiagnosticTab } from './diagnostics/FeaturesDiagnosticTab';
+import {
+  SkinDiagnosticTab,
+  EyeRegionDiagnosticTab,
+  HarmonyDiagnosticTab,
+  ExpressionDiagnosticTab,
+  GroomingDiagnosticTab,
+  FeaturesDiagnosticTab,
+  SymmetryDiagnosticTab,
+  AveragenessDiagnosticTab,
+  JawChinDiagnosticTab,
+  NeckPostureDiagnosticTab,
+} from './diagnostics';
 
 export interface FacialDeepDiveSectionProps {
   scoreData: BeautyScoreData;
@@ -40,7 +44,7 @@ export function FacialDeepDiveSection({
           <div>
             <h3 className="diag-suite-title">Biometric Diagnostic Deep Dives</h3>
             <div className="diag-suite-subtitle">
-              Detailed anthropometric, neuromuscular, and styling evidence across all 8 parameters
+              Detailed anthropometric, neuromuscular, and styling evidence across all 10 parameters
             </div>
           </div>
         </div>
@@ -53,22 +57,35 @@ export function FacialDeepDiveSection({
             className={`diag-tab-btn ${activeTab === 'skin' ? 'is-active' : ''}`}
             onClick={() => onTabChange('skin')}
           >
-            <span>Skin Quality</span>
+            <span>Skin Quality &amp; Glow</span>
             <span className="diag-tab-score-chip">
-              {(scoreData.parameterScores[1] ?? 16.8).toFixed(1)}/21
+              {(scoreData.parameterScores[1] ?? 11.2).toFixed(1)}/14
             </span>
           </button>
 
           <button
             type="button"
             role="tab"
-            aria-selected={activeTab === 'proportions'}
-            className={`diag-tab-btn ${activeTab === 'proportions' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('proportions')}
+            aria-selected={activeTab === 'eyes'}
+            className={`diag-tab-btn ${activeTab === 'eyes' ? 'is-active' : ''}`}
+            onClick={() => onTabChange('eyes')}
           >
-            <span>Proportions &amp; Harmony</span>
+            <span>Eye Region</span>
             <span className="diag-tab-score-chip">
-              {(scoreData.parameterScores[2] ?? 15.6).toFixed(1)}/19
+              {(scoreData.parameterScores[2] ?? 10.4).toFixed(1)}/13
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'harmony'}
+            className={`diag-tab-btn ${activeTab === 'harmony' ? 'is-active' : ''}`}
+            onClick={() => onTabChange('harmony')}
+          >
+            <span>Harmony &amp; φ</span>
+            <span className="diag-tab-score-chip">
+              {(scoreData.parameterScores[3] ?? 10.4).toFixed(1)}/13
             </span>
           </button>
 
@@ -79,35 +96,9 @@ export function FacialDeepDiveSection({
             className={`diag-tab-btn ${activeTab === 'expression' ? 'is-active' : ''}`}
             onClick={() => onTabChange('expression')}
           >
-            <span>Expression &amp; Dynamic</span>
+            <span>Expression &amp; Gaze</span>
             <span className="diag-tab-score-chip">
-              {(scoreData.parameterScores[3] ?? 10.4).toFixed(1)}/13
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'averageness'}
-            className={`diag-tab-btn ${activeTab === 'averageness' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('averageness')}
-          >
-            <span>Averageness</span>
-            <span className="diag-tab-score-chip">
-              {(scoreData.parameterScores[4] ?? 9.8).toFixed(1)}/12
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'symmetry'}
-            className={`diag-tab-btn ${activeTab === 'symmetry' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('symmetry')}
-          >
-            <span>Facial Symmetry</span>
-            <span className="diag-tab-score-chip">
-              {(scoreData.parameterScores[5] ?? 8.9).toFixed(1)}/11
+              {(scoreData.parameterScores[4] ?? 9.6).toFixed(1)}/12
             </span>
           </button>
 
@@ -120,20 +111,7 @@ export function FacialDeepDiveSection({
           >
             <span>Grooming &amp; Styling</span>
             <span className="diag-tab-score-chip">
-              {(scoreData.parameterScores[6] ?? 8.9).toFixed(1)}/10
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'dimorphism'}
-            className={`diag-tab-btn ${activeTab === 'dimorphism' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('dimorphism')}
-          >
-            <span>Sexual Dimorphism</span>
-            <span className="diag-tab-score-chip">
-              {(scoreData.parameterScores[7] ?? 5.5).toFixed(1)}/7
+              {(scoreData.parameterScores[5] ?? 8.8).toFixed(1)}/11
             </span>
           </button>
 
@@ -144,9 +122,61 @@ export function FacialDeepDiveSection({
             className={`diag-tab-btn ${activeTab === 'features' ? 'is-active' : ''}`}
             onClick={() => onTabChange('features')}
           >
-            <span>Individual Features</span>
+            <span>Central Features</span>
+            <span className="diag-tab-score-chip">
+              {(scoreData.parameterScores[6] ?? 8.0).toFixed(1)}/10
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'symmetry'}
+            className={`diag-tab-btn ${activeTab === 'symmetry' ? 'is-active' : ''}`}
+            onClick={() => onTabChange('symmetry')}
+          >
+            <span>Facial Symmetry</span>
+            <span className="diag-tab-score-chip">
+              {(scoreData.parameterScores[7] ?? 7.2).toFixed(1)}/9
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'averageness'}
+            className={`diag-tab-btn ${activeTab === 'averageness' ? 'is-active' : ''}`}
+            onClick={() => onTabChange('averageness')}
+          >
+            <span>Averageness</span>
             <span className="diag-tab-score-chip">
               {(scoreData.parameterScores[8] ?? 5.6).toFixed(1)}/7
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'jaw'}
+            className={`diag-tab-btn ${activeTab === 'jaw' ? 'is-active' : ''}`}
+            onClick={() => onTabChange('jaw')}
+          >
+            <span>Jaw, Chin &amp; Cues</span>
+            <span className="diag-tab-score-chip">
+              {(scoreData.parameterScores[9] ?? 5.6).toFixed(1)}/7
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'neck'}
+            className={`diag-tab-btn ${activeTab === 'neck' ? 'is-active' : ''}`}
+            onClick={() => onTabChange('neck')}
+          >
+            <span>Neck &amp; Carriage</span>
+            <span className="diag-tab-score-chip">
+              {(scoreData.parameterScores[10] ?? 3.4).toFixed(1)}/4
             </span>
           </button>
         </div>
@@ -161,30 +191,36 @@ export function FacialDeepDiveSection({
             onCopyColor={onCopyColor}
           />
         )}
-        {activeTab === 'proportions' && (
-          <ProportionsDiagnosticTab scoreData={scoreData} />
+        {activeTab === 'eyes' && (
+          <EyeRegionDiagnosticTab scoreData={scoreData} />
+        )}
+        {activeTab === 'harmony' && (
+          <HarmonyDiagnosticTab scoreData={scoreData} />
         )}
         {activeTab === 'expression' && (
           <ExpressionDiagnosticTab scoreData={scoreData} />
         )}
-        {activeTab === 'averageness' && (
-          <AveragenessDiagnosticTab scoreData={scoreData} />
+        {activeTab === 'grooming' && (
+          <GroomingDiagnosticTab scoreData={scoreData} />
+        )}
+        {activeTab === 'features' && (
+          <FeaturesDiagnosticTab scoreData={scoreData} />
         )}
         {activeTab === 'symmetry' && (
           <SymmetryDiagnosticTab scoreData={scoreData} />
         )}
-        {activeTab === 'grooming' && (
-          <GroomingDiagnosticTab scoreData={scoreData} />
+        {activeTab === 'averageness' && (
+          <AveragenessDiagnosticTab scoreData={scoreData} />
         )}
-        {activeTab === 'dimorphism' && (
-          <DimorphismDiagnosticTab
+        {activeTab === 'jaw' && (
+          <JawChinDiagnosticTab
             scoreData={scoreData}
             dimorphismRef={dimorphismRef}
             onSelectDimorphism={onSelectDimorphism}
           />
         )}
-        {activeTab === 'features' && (
-          <FeaturesDiagnosticTab scoreData={scoreData} />
+        {activeTab === 'neck' && (
+          <NeckPostureDiagnosticTab scoreData={scoreData} />
         )}
       </div>
     </div>

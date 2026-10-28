@@ -1,8 +1,8 @@
 /**
  * GABRU — FACIAL BEAUTY TYPES
  * 
- * Canonical type definitions for the 8-parameter facial attractiveness
- * evaluation framework, landmark geometry, and score assemblies.
+ * Canonical type definitions for the 10-parameter facial attractiveness
+ * evaluation framework (v2), landmark geometry, and score assemblies.
  */
 
 import type {
@@ -82,13 +82,15 @@ export interface FaceDetectionResult {
 
 export type DeepDiveTabKey =
   | 'skin'
-  | 'proportions'
+  | 'eyes'
+  | 'harmony'
   | 'expression'
-  | 'averageness'
-  | 'symmetry'
   | 'grooming'
-  | 'dimorphism'
-  | 'features';
+  | 'features'
+  | 'symmetry'
+  | 'averageness'
+  | 'jaw'
+  | 'neck';
 
 export interface BeautyScoreData extends CompleteFacialAnalysisResult {
   rawDetection?: FaceDetectionResult;

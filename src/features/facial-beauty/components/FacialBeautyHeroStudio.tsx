@@ -42,7 +42,9 @@ export function FacialBeautyHeroStudio({
       <div className="hero-left-column">
         <div className="hero-studio-badge scroll-reveal">
           <span className="badge-pulse-dot" />
-          <span>8-Parameter Facial Intelligence</span>
+          <span>10-Parameter Facial Intelligence</span>
+          <span className="badge-dot-sep">•</span>
+          <span>29 Beauty Points</span>
           <span className="badge-dot-sep">•</span>
           <span>100-Point Scale</span>
         </div>

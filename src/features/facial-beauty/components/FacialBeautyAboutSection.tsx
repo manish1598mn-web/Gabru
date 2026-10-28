@@ -50,7 +50,8 @@ export const FacialBeautyAboutSection: React.FC = () => {
             <div className="manifesto-tags-row">
               <span className="manifesto-tag">✓ 100% Client-Side Private</span>
               <span className="manifesto-tag">✓ Zero Server Data Storage</span>
-              <span className="manifesto-tag">✓ 8-Parameter Biometric Rubric</span>
+              <span className="manifesto-tag">✓ 10-Parameter Framework</span>
+              <span className="manifesto-tag">✓ 29 Beauty Points</span>
             </div>
           </div>
 
@@ -65,7 +66,7 @@ export const FacialBeautyAboutSection: React.FC = () => {
             </div>
             <div className="spec-metric-item">
               <span className="spec-label">Rating Framework</span>
-              <span className="spec-value">8 Research Parameters</span>
+              <span className="spec-value">10 Research Parameters</span>
             </div>
             <div className="spec-metric-item">
               <span className="spec-label">Server Data Storage</span>
