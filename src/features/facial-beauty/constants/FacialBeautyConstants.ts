@@ -2,6 +2,8 @@
  * GABRU — FACIAL BEAUTY CONSTANTS
  */
 
+import type { DeepDiveTabKey } from '../types/FacialBeautyTypes';
+
 export {
   BEAUTY_PARAMETERS,
   FRAMEWORK_LIMITS,
@@ -13,6 +15,17 @@ export {
   BAYESIAN_PRIOR,
   PHI,
 } from '../services/FacialScoringEngine';
+
+export const PARAM_TO_TAB: Record<number, DeepDiveTabKey> = {
+  1: 'skin',
+  2: 'proportions',
+  3: 'expression',
+  4: 'averageness',
+  5: 'symmetry',
+  6: 'grooming',
+  7: 'dimorphism',
+  8: 'features',
+};
 
 export const BEAUTY_CARD_BACKGROUNDS: Record<number, string> = {
   1: 'linear-gradient(135deg, #2b1f1a 0%, #6b3f2a 55%, #3a2418 100%)',

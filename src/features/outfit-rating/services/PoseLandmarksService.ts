@@ -145,3 +145,4 @@ export async function detectPose(canvas: HTMLCanvasElement): Promise<PoseDetecti
     primaryPose,
   };
 }
+

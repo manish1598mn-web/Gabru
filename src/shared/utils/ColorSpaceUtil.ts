@@ -146,3 +146,4 @@ export function deltaE2000(lab1: LabColor, lab2: LabColor): number {
 
   return Math.sqrt(vL * vL + vC * vC + vH * vH + RT * vC * vH);
 }
+

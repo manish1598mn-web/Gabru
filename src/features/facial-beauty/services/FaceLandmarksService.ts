@@ -499,3 +499,4 @@ export async function detectFaceAndLandmarks(
     return emptyResult;
   }
 }
+

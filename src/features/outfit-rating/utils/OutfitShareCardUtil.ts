@@ -223,3 +223,4 @@ export function drawOutfitSocialCard(
   ctx.font = '700 12px "Plus Jakarta Sans", "Inter", -apple-system, sans-serif';
   ctx.fillText('WWW.GABRU.AI', 1062, footerY);
 }
+

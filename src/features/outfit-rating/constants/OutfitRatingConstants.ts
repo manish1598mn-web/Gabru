@@ -104,3 +104,4 @@ export const OUTFIT_CARD_BACKGROUNDS: Record<number, string> = {
   9: 'linear-gradient(135deg, #2b221d 0%, #49382f 55%, #2b221d 100%)',
   10: 'linear-gradient(135deg, #1f272a 0%, #314247 55%, #1f272a 100%)',
 };
+

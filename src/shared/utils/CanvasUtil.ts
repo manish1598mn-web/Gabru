@@ -86,3 +86,4 @@ export function drawImageCover(
 
   ctx.restore();
 }
+
