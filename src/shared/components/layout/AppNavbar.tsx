@@ -102,12 +102,11 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
               </Link>
             </li>
             <li>
-              <button
-                type="button"
-                className={`nav-link nav-link-disabled ${activeFeature === 'content-rating' ? 'active' : ''}`}
+              <Link
+                href="/content-rating"
+                className={`nav-link nav-link-content ${activeFeature === 'content-rating' ? 'active' : ''}`}
                 id="nav-btn-content-rating"
-                title="Content Rating coming soon"
-                disabled
+                title="Social Media Content Rating & Advisory"
               >
                 <svg
                   width="15"
@@ -119,11 +118,11 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  <polygon points="23 7 16 12 23 17 23 7" />
+                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                 </svg>
                 <span>Content Rating</span>
-                <span className="nav-soon-pill">SOON</span>
-              </button>
+              </Link>
             </li>
           </ul>
         </nav>
