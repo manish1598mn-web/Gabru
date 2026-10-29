@@ -45,13 +45,8 @@ export function ContentRatingScorecard({
       {/* Executive Section Header Strip */}
       <div className="scorecard-clean-strip content-strip" id="scorecard-clean-strip">
         <div className="scorecard-strip-info">
-          <div className="strip-eyebrow">
-            <span className="badge-pulse-dot content-pulse-dot" />
-            <span>SOCIAL MEDIA CONTENT AUDIT</span>
-            <span className="strip-eyebrow-sep">•</span>
-            <span>10-PARAMETER CRAFT RUBRIC</span>
-            <span className="strip-eyebrow-sep">•</span>
-            <span>100-POINT SCALE</span>
+          <div className="about-section-eyebrow">
+            <span>10-PARAMETER CRAFT &amp; REACH RUBRIC</span>
           </div>
           <h3 className="scorecard-strip-title">10-Parameter Craft &amp; Reach Breakdown</h3>
           <p className="scorecard-strip-sub">

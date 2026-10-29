@@ -92,8 +92,7 @@ export function ContentShareModal({
         {/* Modal Header */}
         <div className="share-modal-header">
           <div className="share-modal-title-box">
-            <div className="share-badge-pill">
-              <span className="badge-pulse-dot content-pulse-dot" />
+            <div className="about-section-eyebrow">
               <span>EXPORT VERIFIED AUDIT</span>
             </div>
             <h3 className="share-modal-heading">High-Resolution Share Card (1080 &times; 1350)</h3>

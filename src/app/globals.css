@@ -4486,23 +4486,11 @@ body {
   background: rgba(255, 255, 255, 0.02);
 }
 
-.dock-badge-pulse {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+.dock-title-label {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.7);
-}
-
-.dock-live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #a855f7;
-  box-shadow: 0 0 8px #a855f7;
-  animation: pulseDot 2s infinite ease-in-out;
 }
 
 .dock-format-badge {

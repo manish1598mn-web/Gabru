@@ -201,31 +201,41 @@ export default function ContentRatingFeaturePage() {
   }, []);
 
   return (
-    <div className="gabru-app-container content-studio-theme" id="gabru-content-studio">
+    <div className="home-container" id="content-rating-root">
+      {/* Background Ambience & Atmospheric Mesh */}
+      <div className="ambient-background" aria-hidden="true">
+        <div className="ambient-orb orb-primary" />
+        <div className="ambient-orb orb-secondary" />
+        <div className="ambient-orb orb-tertiary" />
+        <div className="ambient-grid-lines" />
+      </div>
+
       <AppNavbar activeFeature="content-rating" />
 
-      <main className="content-page-main" id="main-content">
+      <main className="main-content">
         {/* Top Hero Section: Link Input, File Dropzone & Media Dock */}
-        <section className="hero-wrapper content-hero-section" id="hero-studio-section">
-          <ContentRatingHeroStudio
-            scoreData={scoreData}
-            currentItem={currentItem}
-            inputMode={inputMode}
-            contentUrl={contentUrl}
-            isAnalyzing={isAnalyzing}
-            isDragging={isDragging}
-            errorMessage={errorMessage}
-            onUrlChange={handleUrlChange}
-            onModeChange={handleModeChange}
-            onAnalyzeUrl={handleAnalyzeUrl}
-            onSelectDemo={handleSelectDemo}
-            onFileUpload={handleFileUpload}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onReset={handleReset}
-            onShareClick={handleOpenShareModal}
-          />
+        <section className="hero-wrapper unified-studio-section content-hero-section" id="hero-section">
+          <div className="unified-studio-container">
+            <ContentRatingHeroStudio
+              scoreData={scoreData}
+              currentItem={currentItem}
+              inputMode={inputMode}
+              contentUrl={contentUrl}
+              isAnalyzing={isAnalyzing}
+              isDragging={isDragging}
+              errorMessage={errorMessage}
+              onUrlChange={handleUrlChange}
+              onModeChange={handleModeChange}
+              onAnalyzeUrl={handleAnalyzeUrl}
+              onSelectDemo={handleSelectDemo}
+              onFileUpload={handleFileUpload}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onReset={handleReset}
+              onShareClick={handleOpenShareModal}
+            />
+          </div>
         </section>
 
         {scoreData && (
@@ -267,10 +277,8 @@ export default function ContentRatingFeaturePage() {
           </>
         )}
 
-        {/* Clean Educational Guide: Core Pillars, How to Use It, Real Example & Privacy Guarantee */}
-        <section className="content-about-wrapper" id="about-wrapper-section">
-          <ContentAboutSection />
-        </section>
+        {/* Clean Educational Guide: Core Features, How to Use It, Scenario & Privacy */}
+        <ContentAboutSection />
       </main>
 
       {/* 1080x1350 High-Resolution Social Share Card Modal */}

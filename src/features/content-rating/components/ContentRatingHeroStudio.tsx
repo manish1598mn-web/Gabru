@@ -469,10 +469,7 @@ export function ContentRatingHeroStudio({
         <div className="content-preview-dock scroll-reveal" id="content-media-dock">
           {/* Dock Top Header */}
           <div className="dock-glass-header">
-            <div className="dock-badge-pulse">
-              <span className="dock-live-dot" />
-              <span>STUDIO WORKSPACE</span>
-            </div>
+            <span className="dock-title-label">STUDIO WORKSPACE</span>
             <span className="dock-format-badge">
               {currentItem
                 ? currentItem.format.toUpperCase().replace('_', ' ')

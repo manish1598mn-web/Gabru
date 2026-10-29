@@ -36,11 +36,8 @@ export function ContentEvidenceSection({
   return (
     <section className="content-evidence-section" id="content-evidence-section">
       <div className="section-header-compact">
-        <div className="section-header-eyebrow">
-          <span className="badge-pulse-dot content-pulse-dot" />
+        <div className="about-section-eyebrow">
           <span>OBJECTIVE EVIDENCE AUDIT</span>
-          <span className="strip-eyebrow-sep">•</span>
-          <span>GROUND TRUTH OBSERVATIONS</span>
         </div>
         <h3 className="section-title-gradient">Evidence Matrix: Strengths &amp; Flaws</h3>
         <p className="section-sub-clean">

@@ -77,11 +77,8 @@ export function ContentRewritesSection({
   return (
     <section className="content-rewrites-section" id="content-rewrites-section">
       <div className="section-header-compact">
-        <div className="section-header-eyebrow">
-          <span className="badge-pulse-dot content-pulse-dot" />
+        <div className="about-section-eyebrow">
           <span>RANKED FIXES &amp; OPTIMIZATION</span>
-          <span className="strip-eyebrow-sep">•</span>
-          <span>DETERMINISTIC &Delta;GAIN MODEL</span>
         </div>
         <h3 className="section-title-gradient">Ranked Suggestions &amp; AI Studio Sandbox</h3>
         <p className="section-sub-clean">
