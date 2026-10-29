@@ -36,6 +36,15 @@ export function ContentDeepDiveSection({
   onTabChange,
 }: ContentDeepDiveSectionProps) {
   const pScores = scoreData.qualityBreakdown.parameterScores;
+  const navTabsRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!navTabsRef.current) return;
+    const activeBtn = navTabsRef.current.querySelector<HTMLElement>('.diag-tab-btn.is-active');
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [activeTab]);
 
   return (
     <div className="phase3-diagnostic-suite content-diagnostic-suite" id="content-diagnostic-suite">
@@ -52,7 +61,7 @@ export function ContentDeepDiveSection({
         </div>
 
         {/* Tab Navigation Pill Bar */}
-        <div className="diag-nav-tabs" role="tablist" aria-label="Diagnostic Tabs">
+        <div className="diag-nav-tabs" role="tablist" aria-label="Diagnostic Tabs" ref={navTabsRef}>
           <button
             type="button"
             role="tab"

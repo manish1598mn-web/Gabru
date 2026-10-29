@@ -3691,7 +3691,7 @@ body {
 .param-number {
   font-size: 11px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.60);
   letter-spacing: 0.05em;
 }
 
@@ -4241,12 +4241,36 @@ body {
   gap: 4px;
   overflow-x: auto;
   max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  overscroll-behavior-x: contain;
+}
+
+.diag-nav-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.diag-nav-tabs::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+
+.diag-nav-tabs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+}
+
+.diag-nav-tabs::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .diag-tab-btn {
+  flex-shrink: 0;
   background: transparent;
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.60);
+  color: rgba(255, 255, 255, 0.70);
   font-size: 12.5px;
   font-weight: 600;
   border-radius: 8px;
@@ -4378,15 +4402,15 @@ body {
   font-size: 11.5px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.50);
+  color: rgba(255, 255, 255, 0.65);
   font-weight: 600;
 }
 
 .diag-stat-code {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.40);
-  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.08);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -4722,7 +4746,7 @@ body {
 }
 
 .content-link-icon-box {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4739,7 +4763,7 @@ body {
 }
 
 .content-link-input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.50);
 }
 
 .btn-analyze-content {
@@ -4877,10 +4901,10 @@ body {
 }
 
 .dock-meta-label {
-  font-size: 9.5px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .dock-meta-val {
@@ -5115,7 +5139,7 @@ body {
 .btn-clear-url {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.65);
   cursor: pointer;
   padding: 4px;
   font-size: 12px;
@@ -5352,7 +5376,7 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 11.5px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .step-item.is-done {
@@ -5471,7 +5495,7 @@ body {
 
 .creator-niche {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .creator-reach-chip {
@@ -5495,10 +5519,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 9.5px;
+  font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .waveform-bars {
@@ -5649,7 +5673,7 @@ body {
 .diag-score-denom {
   font-size: 11px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .diag-score-rating {
@@ -5802,10 +5826,10 @@ body {
 }
 
 .pacing-label {
-  font-size: 9.5px;
+  font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .pacing-value {
@@ -5908,7 +5932,7 @@ body {
 
 .meter-caption {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 /* Caption Audit in Copy Tab */
@@ -6200,8 +6224,8 @@ body {
 }
 
 .diag-sub-weight {
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .diag-sub-rating {
@@ -6670,7 +6694,7 @@ body {
 .sug-subfactor-tag {
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .btn-sug-action {
@@ -7126,7 +7150,7 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 11.5px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .share-footer-buttons {
