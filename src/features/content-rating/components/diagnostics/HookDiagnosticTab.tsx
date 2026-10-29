@@ -80,3 +80,4 @@ export function HookDiagnosticTab({ scoreData }: DiagnosticTabProps) {
     </div>
   );
 }
+

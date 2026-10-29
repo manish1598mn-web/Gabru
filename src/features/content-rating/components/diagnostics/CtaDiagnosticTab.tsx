@@ -74,3 +74,4 @@ export function CtaDiagnosticTab({ scoreData }: DiagnosticTabProps) {
     </div>
   );
 }
+

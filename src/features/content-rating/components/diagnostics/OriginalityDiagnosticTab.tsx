@@ -69,3 +69,4 @@ export function OriginalityDiagnosticTab({ scoreData }: DiagnosticTabProps) {
     </div>
   );
 }
+

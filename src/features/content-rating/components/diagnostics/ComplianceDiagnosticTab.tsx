@@ -77,3 +77,4 @@ export function ComplianceDiagnosticTab({ scoreData }: DiagnosticTabProps) {
     </div>
   );
 }
+

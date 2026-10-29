@@ -78,3 +78,4 @@ export function StructureDiagnosticTab({ scoreData }: DiagnosticTabProps) {
     </div>
   );
 }
+

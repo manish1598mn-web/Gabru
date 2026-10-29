@@ -14,3 +14,4 @@ export { FormatDiagnosticTab } from './FormatDiagnosticTab';
 export { OriginalityDiagnosticTab } from './OriginalityDiagnosticTab';
 export { TimingDiagnosticTab } from './TimingDiagnosticTab';
 export { ComplianceDiagnosticTab } from './ComplianceDiagnosticTab';
+

@@ -78,3 +78,4 @@ export function FormatDiagnosticTab({ scoreData }: DiagnosticTabProps) {
     </div>
   );
 }
+

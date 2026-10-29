@@ -9,6 +9,7 @@
  * - 100-Point Performance Score (Empirical creator-baseline z-score model)
  * - Blended Content Score (70% Quality + 30% Performance)
  * - Actionable Advice, Prioritized Fixes, and Concrete AI Rewrites
+ * - High-Res 1080x1350 Verified Share Card Canvas
  */
 
 import React, { useState, useCallback } from 'react';
@@ -31,6 +32,10 @@ import {
   ContentRatingHeroStudio,
   ContentRatingScorecard,
   ContentDeepDiveSection,
+  ContentEvidenceSection,
+  ContentRewritesSection,
+  ContentShareModal,
+  ContentAboutSection,
   detectPlatformFromUrl,
 } from '../components';
 
@@ -44,6 +49,7 @@ export default function ContentRatingFeaturePage() {
   const [currentItem, setCurrentItem] = useState<UnifiedContentItem | null>(null);
   const [scoreData, setScoreData] = useState<ContentScoreData | null>(null);
   const [activeTab, setActiveTab] = useState<DeepDiveContentTabKey>('hook');
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 
   // Initialize scroll reveal hooks
   useIntersectionReveal();
@@ -186,9 +192,12 @@ export default function ContentRatingFeaturePage() {
     setErrorMessage(null);
   }, []);
 
-  const handleShareClick = useCallback(() => {
-    // Will be wired to Phase 5 share card modal
-    console.log('Share card export triggered');
+  const handleOpenShareModal = useCallback(() => {
+    setIsShareModalOpen(true);
+  }, []);
+
+  const handleCloseShareModal = useCallback(() => {
+    setIsShareModalOpen(false);
   }, []);
 
   return (
@@ -196,6 +205,7 @@ export default function ContentRatingFeaturePage() {
       <AppNavbar activeFeature="content-rating" />
 
       <main className="content-page-main" id="main-content">
+        {/* Top Hero Section: Link Input, File Dropzone & Media Dock */}
         <section className="hero-wrapper content-hero-section" id="hero-studio-section">
           <ContentRatingHeroStudio
             scoreData={scoreData}
@@ -214,7 +224,7 @@ export default function ContentRatingFeaturePage() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onReset={handleReset}
-            onShareClick={handleShareClick}
+            onShareClick={handleOpenShareModal}
           />
         </section>
 
@@ -226,7 +236,7 @@ export default function ContentRatingFeaturePage() {
                 scoreData={scoreData}
                 isAnalyzing={isAnalyzing}
                 onSelectTab={setActiveTab}
-                onShareScore={handleShareClick}
+                onShareScore={handleOpenShareModal}
               />
             </section>
 
@@ -238,9 +248,37 @@ export default function ContentRatingFeaturePage() {
                 onTabChange={setActiveTab}
               />
             </section>
+
+            {/* Evidence Matrix: Ground-Truth Strengths & Priority Flaws */}
+            <section className="content-evidence-container" id="evidence-wrapper-section">
+              <ContentEvidenceSection
+                scoreData={scoreData}
+                onSelectTab={setActiveTab}
+              />
+            </section>
+
+            {/* AI Optimization Studio: Ranked Fixes & Interactive Rewrites */}
+            <section className="content-rewrites-container" id="rewrites-wrapper-section">
+              <ContentRewritesSection
+                scoreData={scoreData}
+                onSelectTab={setActiveTab}
+              />
+            </section>
           </>
         )}
+
+        {/* Clean Educational Guide: Core Pillars, How to Use It, Real Example & Privacy Guarantee */}
+        <section className="content-about-wrapper" id="about-wrapper-section">
+          <ContentAboutSection />
+        </section>
       </main>
+
+      {/* 1080x1350 High-Resolution Social Share Card Modal */}
+      <ContentShareModal
+        isOpen={isShareModalOpen}
+        onClose={handleCloseShareModal}
+        scoreData={scoreData}
+      />
 
       <AppFooter />
     </div>
