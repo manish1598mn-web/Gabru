@@ -34,7 +34,7 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Nose Proportions</span>
-            <span className="diag-stat-code">FE1 · W=30</span>
+            <span className="diag-stat-code">NC1 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {feat?.nasalWidthRatio.toFixed(2) ?? '0.26'}
@@ -47,7 +47,7 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Cheeks &amp; Cheekbones</span>
-            <span className="diag-stat-code">FE2 · W=25</span>
+            <span className="diag-stat-code">NC2 · W=25</span>
           </div>
           <div className="diag-stat-val">
             Defined Malar
@@ -60,7 +60,7 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Lips &amp; Vermilion</span>
-            <span className="diag-stat-code">FE3 · W=30</span>
+            <span className="diag-stat-code">NC3 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {feat?.lipFullnessRatio.toFixed(2) ?? '0.35'}
@@ -73,7 +73,7 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Philtrum Column</span>
-            <span className="diag-stat-code">FE4 · W=15</span>
+            <span className="diag-stat-code">NC4 · W=15</span>
           </div>
           <div className="diag-stat-val">
             {feat?.philtrumRatio.toFixed(2) ?? '0.24'}
@@ -91,10 +91,10 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         </span>
         <div className="diag-sub-grid">
           {(feat?.subfactors || [
-            { id: 'FE1', name: 'Nose Proportions & Dorsum', rating: 8.5, note: 'Nasal length 0.44, breadth 0.26', isProtectedByRuleA4: false },
-            { id: 'FE2', name: 'Cheeks & Cheekbones', rating: 8.8, note: 'Defined malar bone contour and smooth cheek transition', isProtectedByRuleA4: false },
-            { id: 'FE3', name: 'Lips Vermilion & Fullness', rating: 8.5, note: 'Mouth breadth 0.38, fullness ratio 0.35', isProtectedByRuleA4: false },
-            { id: 'FE4', name: 'Philtral Column & Length', rating: 8.6, note: 'Column length 24% of lower face', isProtectedByRuleA4: false },
+            { id: 'NC1', name: 'Nose Proportions & Dorsum', rating: 8.5, note: 'Nasal length 0.44, breadth 0.26', isProtectedByRuleA4: false },
+            { id: 'NC2', name: 'Cheeks & Cheekbones', rating: 8.8, note: 'Defined malar bone contour and smooth cheek transition', isProtectedByRuleA4: false },
+            { id: 'NC3', name: 'Lips Vermilion & Fullness', rating: 8.5, note: 'Mouth breadth 0.38, fullness ratio 0.35', isProtectedByRuleA4: false },
+            { id: 'NC4', name: 'Philtral Column & Length', rating: 8.6, note: 'Column length 24% of lower face', isProtectedByRuleA4: false },
           ]).map((item) => (
             <div key={item.id} className="diag-stat-card">
               <div className="diag-stat-header">

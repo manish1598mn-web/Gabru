@@ -34,7 +34,7 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Neck Line</span>
-            <span className="diag-stat-code">NP1 · W=35 · Fixed</span>
+            <span className="diag-stat-code">NE1 · W=35 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             Defined Contour
@@ -47,7 +47,7 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Ears</span>
-            <span className="diag-stat-code">NP2 · W=25 · Fixed</span>
+            <span className="diag-stat-code">NE2 · W=25 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             Proportional Placement
@@ -60,7 +60,7 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Posture &amp; Head Carriage</span>
-            <span className="diag-stat-code">NP3 · W=40 · Changeable</span>
+            <span className="diag-stat-code">NE3 · W=40 · Changeable</span>
           </div>
           <div className="diag-stat-val">
             {neckMetrics?.postureAlignmentDeg.toFixed(1) ?? '1.8'}° tilt
@@ -80,9 +80,9 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         </span>
         <div className="diag-sub-grid">
           {(neckMetrics?.subfactors || [
-            { id: 'NP1', name: 'Neck Line & Cervical Support', rating: 8.8, note: 'Smooth transition from mandible to cervical column' },
-            { id: 'NP2', name: 'Ears Symmetry & Placement', rating: 7.0, note: 'V = 0 hair-occluded (renormalised without penalty)' },
-            { id: 'NP3', name: 'Head Carriage & Posture Alignment', rating: 8.5, note: 'Level pitch and roll alignment' },
+            { id: 'NE1', name: 'Neck Line & Cervical Support', rating: 8.8, note: 'Smooth transition from mandible to cervical column' },
+            { id: 'NE2', name: 'Ears Symmetry & Placement', rating: 7.0, note: 'V = 0 hair-occluded (renormalised without penalty)' },
+            { id: 'NE3', name: 'Head Carriage & Posture Alignment', rating: 8.5, note: 'Level pitch and roll alignment' },
           ]).map((item) => (
             <div key={item.id} className="diag-stat-card">
               <div className="diag-stat-header">
@@ -102,3 +102,4 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
     </div>
   );
 }
+

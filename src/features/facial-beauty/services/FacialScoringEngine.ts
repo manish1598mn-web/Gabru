@@ -19,10 +19,10 @@
  *   9. Jaw, Chin & Gender-Typical Cues (7 pts, Changeability: Fixed)
  *   10. Neck, Ears & Head Carriage (4 pts, Changeability: Mixed)
  * 
- * Presentational / Changeable Subscore: ~43 Points (43.15 pts)
- * Structural / Fixed Subscore: ~57 Points (56.85 pts)
+ * Part A: Shared Engine (Intake Gate, Universal Engine Rules, Double-Counting Boundaries, Fairness)
+ * Part B: The Ten Canonical Parameter Algorithms (Exact Subfactors SK1-4, ER1-5, HP1-5, EX1-4, GR1-5, NC1-4, SY1-4, AV1-2, JC1-3, NE1-3)
+ * Part C: Score Assembly (Changeable ~43 pts vs Fixed ~57 pts, Confidence Normalization, Actionable Levers)
  * 
- * Improvement levers ONLY target controllable factors a person can change.
  * 100% Client-side execution in WebAssembly / WebGL with Zero Server Data Retention.
  */
 
@@ -37,13 +37,13 @@ export type EvidenceLevel = 'Strong' | 'Moderate';
 
 export interface BeautySubfactor {
   name: string;
-  code?: string;
-  sharePct?: number; // e.g. 30 for 30%
-  weight: number;    // points allocation within parameter
+  code: string;
+  sharePct: number;  // e.g. 30 for 30%
+  weight: number;    // points allocation within 100-point total
   whatItChecks: string;
-  description?: string; // alias for whatItChecks
-  score?: number;    // evaluated points
-  isChangeable?: boolean; // whether this lever can be altered without surgery
+  description?: string;
+  score?: number;
+  isChangeable?: boolean;
 }
 
 export interface BeautyParameterDef {
@@ -67,7 +67,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'skin',
     name: 'Skin Quality & Glow',
     weight: 14,
-    whatItMeasures: 'Tone evenness (ΔE2000), surface clarity, radiance/shine control, and healthy natural colour',
+    whatItMeasures: 'Tone evenness (ΔE2000), surface clarity, radiance/shine control, and healthy natural cheek colour',
     evidence: 'Strong',
     changeability: 'Medium',
     subfactors: [
@@ -76,7 +76,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'SK1',
         weight: 4.2,
         sharePct: 30,
-        whatItChecks: 'Variation in colour across 5 facial patches (median ΔE2000)',
+        whatItChecks: 'U = median ΔE2000 between each of 6 patches and the face median. ≤ 2.5: 0; ≤ 4: −1; ≤ 6: −2.5; > 6: −4.5',
         isChangeable: true,
       },
       {
@@ -84,7 +84,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'SK2',
         weight: 4.2,
         sharePct: 30,
-        whatItChecks: 'Breakouts and irritation (moles, freckles, scars and birthmarks are not scored)',
+        whatItChecks: 'b = % of skin area with transient breakouts/irritation. Moles, freckles, scars, birthmarks are masked out',
         isChangeable: true,
       },
       {
@@ -92,15 +92,15 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'SK3',
         weight: 2.8,
         sharePct: 20,
-        whatItChecks: 'Healthy glow versus dull or oily glare across the T-zone',
+        whatItChecks: 'Specular pixels on T-zone (≤ 3%: 0; ≤ 8%: −1; ≤ 15%: −2.5; > 15%: −4.5). Dull cast adds −1 to −2.5. V ≤ 0.5 always',
         isChangeable: true,
       },
       {
-        name: 'Healthy Natural Colour',
+        name: 'Healthy Colour',
         code: 'SK4',
         weight: 2.8,
         sharePct: 20,
-        whatItChecks: 'Cheek colour, absence of greyish or sallow cast (CIELAB a* warmth)',
+        whatItChecks: 'q = chroma of cheek ÷ chroma of forehead within own skin (ideal 1.00–1.30). V ≤ 0.5 always. V = 0 if blush/foundation',
         isChangeable: true,
       },
     ],
@@ -110,48 +110,48 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'eyes',
     name: 'Eye Region',
     weight: 13,
-    whatItMeasures: 'Aperture dimensions, canthal tilt, eyelid clarity, under-eye vitality, and eyebrow architecture',
+    whatItMeasures: 'Aperture dimensions, spacing, canthal tilt, eyelid coverage, under-eye vitality, and eyebrow architecture',
     evidence: 'Strong',
     changeability: 'Mixed',
     subfactors: [
       {
-        name: 'Eye Size and Shape',
-        code: 'EY1',
+        name: 'Size and Shape',
+        code: 'ER1',
         weight: 3.25,
         sharePct: 25,
-        whatItChecks: 'Palpebral fissure height ÷ width (0.28–0.42) and size relative to the face',
+        whatItChecks: 'Mean of E1: eye height ÷ width (band 0.28–0.42) and E2: eye width ÷ face width (band 0.18–0.25)',
         isChangeable: false,
       },
       {
-        name: 'Spacing and Canthal Tilt',
-        code: 'EY2',
+        name: 'Spacing and Tilt',
+        code: 'ER2',
         weight: 2.6,
         sharePct: 20,
-        whatItChecks: 'About one eye-width apart (~1:1 intercanthal), slight upward tilt (+2° to +8°)',
+        whatItChecks: 'Inner-corner distance ÷ eye width (band 0.85–1.15) and canthal tilt (wide band −2° to +10°)',
         isChangeable: false,
       },
       {
-        name: 'Eyelids and Lashes',
-        code: 'EY3',
+        name: 'Eyelids',
+        code: 'ER3',
         weight: 2.6,
         sharePct: 20,
-        whatItChecks: 'Open, even lids, visible lash line, alert aperture without ptosis or squint',
+        whatItChecks: 'c = share of iris covered by upper lid (≤ 15%: 0; ≤ 25%: −1; ≤ 35%: −2.5; > 35%: −4.5). Blink triggers retake',
         isChangeable: false,
       },
       {
-        name: 'Under-Eye and Eye Clarity',
-        code: 'EY4',
+        name: 'Under-Eye and Clarity',
+        code: 'ER4',
         weight: 2.6,
         sharePct: 20,
-        whatItChecks: 'Under-eye darkness (ΔL*), absence of fatigue puffiness, bright clear sclera',
+        whatItChecks: 'Under-eye darkness ΔL* (cheek − infraorbital ≤ 4: 0; ≤ 7: −1; ≤ 11: −2.5; > 11: −4.5), puffiness, sclera clarity',
         isChangeable: true,
       },
       {
-        name: 'Eyebrow Shape and Position',
-        code: 'EY5',
+        name: 'Brows (Position and Shape)',
+        code: 'ER5',
         weight: 1.95,
         sharePct: 15,
-        whatItChecks: 'Arch curvature, thickness balance, brow-to-eye vertical distance',
+        whatItChecks: 'Mean of brow-to-eye ÷ face height (band 0.050–0.085) and brow-tail offset from nose-wing-to-outer-canthus line',
         isChangeable: true,
       },
     ],
@@ -161,48 +161,48 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'harmony',
     name: 'Facial Harmony & Proportions',
     weight: 13,
-    whatItMeasures: 'Facial thirds and fifths, golden ratio φ (≈ 1.618), face shape balance, and profile',
+    whatItMeasures: 'Facial thirds, feature spacing fifths, face shape balance, lateral profile, and golden ratio φ (≈ 1.618)',
     evidence: 'Strong',
     changeability: 'Fixed',
     subfactors: [
       {
-        name: 'Facial Thirds and Forehead',
-        code: 'HA1',
+        name: 'Thirds and Forehead',
+        code: 'HP1',
         weight: 3.25,
         sharePct: 25,
-        whatItChecks: 'Forehead about one-third of face height (Tr-G, G-Sn, Sn-Gn thirds deviation ≤ 0.02)',
+        whatItChecks: 'Mean absolute deviation m of the three thirds from 0.333. Forehead share 0.28–0.38. (Cap: HP1 ≤ 2 => R ≤ 5.5)',
         isChangeable: false,
       },
       {
-        name: 'Feature Spacing (Fifths)',
-        code: 'HA2',
+        name: 'Feature Spacing',
+        code: 'HP2',
         weight: 2.6,
         sharePct: 20,
-        whatItChecks: '5 equal eye widths across bizygomatic breadth; eye, nose and mouth relationships',
+        whatItChecks: 'Mean of H2: sn-sto/sn-gn (0.30–0.37), H4: nose/intercanthal (0.90–1.20), H5: mouth/IPD (0.70–0.90)',
         isChangeable: false,
       },
       {
         name: 'Face Shape Balance',
-        code: 'HA3',
+        code: 'HP3',
         weight: 2.6,
         sharePct: 20,
-        whatItChecks: 'Width-to-height balance for the natural face shape (bizygomatic ÷ total height 1.30–1.45)',
+        whatItChecks: 'Cheekbone width ÷ face height (tr-gn, wide band 0.66–0.82). Shape label shown but not scored',
         isChangeable: false,
       },
       {
         name: 'Profile',
-        code: 'HA4',
+        code: 'HP4',
         weight: 2.6,
         sharePct: 20,
-        whatItChecks: 'Nose, lip, chin line (V = 0 if frontal capture, weight renormalised to 100)',
+        whatItChecks: 'Mean of P1 nasolabial (90°–110°), P2 nasofrontal (115°–130°), P4 Goode ratio (0.55–0.60). V = 0 without side photo',
         isChangeable: false,
       },
       {
         name: 'Golden Ratio (φ)',
-        code: 'HA5',
+        code: 'HP5',
         weight: 1.95,
         sharePct: 15,
-        whatItChecks: 'The 6 φ ratios (G1–G6) adhering to the divine proportion φ ≈ 1.618',
+        whatItChecks: 'Six ratios G1–G6 adhering to golden ratio φ ≈ 1.618. S = 10 × max(0, 1 − d ÷ 30)',
         isChangeable: false,
       },
     ],
@@ -212,7 +212,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'expr',
     name: 'Expression, Smile & Gaze',
     weight: 12,
-    whatItMeasures: 'Duchenne smile genuineness, dental display arc, direct eye contact, and facial relaxation',
+    whatItMeasures: 'Duchenne smile genuineness, smile arc dental balance, direct optical gaze, and resting muscle relaxation',
     evidence: 'Strong',
     changeability: 'High',
     subfactors: [
@@ -221,7 +221,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'EX1',
         weight: 3.6,
         sharePct: 30,
-        whatItChecks: 'Duchenne smile: AU12 zygomaticus major paired with AU6 orbicularis oculi eye crinkles (V = 0 on neutral)',
+        whatItChecks: 'Full cheek raise (AU6) plus lip-corner pull (AU12): 0. Partial: −1. Mouth-only: −2.5. V = 0 on neutral photo',
         isChangeable: true,
       },
       {
@@ -229,23 +229,23 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'EX2',
         weight: 3.0,
         sharePct: 25,
-        whatItChecks: 'Symmetry of smile arc, clean tidy teeth showing naturally, minimal commissure cant',
+        whatItChecks: 'Mouth-corner height delta ÷ mouth width (≤ 5%: 0; ≤ 10%: −1; ≤ 18%: −2.5). Downturned: −2.5. Neutral V = 0',
         isChangeable: true,
       },
       {
-        name: 'Gaze and Eye Contact',
+        name: 'Gaze and Openness',
         code: 'EX3',
         weight: 3.0,
         sharePct: 25,
-        whatItChecks: 'Direct, steady optical alignment into camera lens with alert, engaged openness',
+        whatItChecks: 'Gaze offset from camera (≤ 5°: 0; ≤ 10°: −1; ≤ 20°: −2.5). Squint: −2.5. Closed: −4.5. (Cap: EX3 ≤ 2 => R ≤ 6.0)',
         isChangeable: true,
       },
       {
-        name: 'Relaxation and Warmth',
+        name: 'Relaxation',
         code: 'EX4',
         weight: 2.4,
         sharePct: 20,
-        whatItChecks: 'Absence of tight jaw clenching, brow furrowing (corrugator), or forced tension',
+        whatItChecks: 'Brow furrow, jaw clench or lip press (−1 if slight, −2.5 if clear). V = 0.5 from single frame',
         isChangeable: true,
       },
     ],
@@ -255,7 +255,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'grm',
     name: 'Grooming & Styling',
     weight: 11,
-    whatItMeasures: 'Hair architecture, facial hair & brow tidiness, makeup blending, eyewear fit, and style cohesion',
+    whatItMeasures: 'Haircut perimeter, beard & brow grooming, makeup application, eyewear fit, and aesthetic cohesion',
     evidence: 'Strong',
     changeability: 'High',
     subfactors: [
@@ -264,7 +264,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'GR1',
         weight: 3.3,
         sharePct: 30,
-        whatItChecks: 'Haircut, clean perimeter lines, controlled flyaways, and flattering silhouette volume',
+        whatItChecks: 'Haircut neatness, flyaways/uneven edges (−1), unkempt (−2.5), style clashing with setting',
         isChangeable: true,
       },
       {
@@ -272,7 +272,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'GR2',
         weight: 2.75,
         sharePct: 25,
-        whatItChecks: 'Neatly shaped brows, well-kept beard/stubble or clean shave with crisp edges',
+        whatItChecks: 'Neatly shaped brows, well-kept beard/stubble or clean shave with crisp perimeter edges',
         isChangeable: true,
       },
       {
@@ -280,7 +280,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'GR3',
         weight: 2.2,
         sharePct: 20,
-        whatItChecks: 'Blended perimeter transition (V = 0 if bare face, neutral baseline with no penalty)',
+        whatItChecks: 'Visible foundation line, mismatch, smudging (−1 to −2.5). Lash styling scored here. Bare face is N/A',
         isChangeable: true,
       },
       {
@@ -288,15 +288,15 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'GR4',
         weight: 1.1,
         sharePct: 10,
-        whatItChecks: 'Flattering optical frame sitting straight, clean anti-reflective lenses (V = 0 if none)',
+        whatItChecks: 'Crooked frames (−1), dirty lenses or glare (−1), overpowering frame (−1). None is N/A',
         isChangeable: true,
       },
       {
-        name: 'Overall Cohesion',
+        name: 'Cohesion and Face-Shape Fit',
         code: 'GR5',
         weight: 1.65,
         sharePct: 15,
-        whatItChecks: 'Hair, brows, facial hair and style working together harmoniously with face shape',
+        whatItChecks: 'Regrowth line, mismatched hair and brow tone (−1 to −2.5), hairstyle volume framing face shape',
         isChangeable: true,
       },
     ],
@@ -306,40 +306,40 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'features',
     name: 'Nose, Cheeks, Lips & Philtrum',
     weight: 10,
-    whatItMeasures: 'Nasal proportions, cheekbone projection, lip fullness, and philtral column balance',
+    whatItMeasures: 'Nasal proportions, cheekbone elevation, lip vermilion balance & border definition, and philtral column',
     evidence: 'Moderate',
     changeability: 'Fixed',
     subfactors: [
       {
         name: 'Nose',
-        code: 'FE1',
+        code: 'NC1',
         weight: 3.0,
         sharePct: 30,
-        whatItChecks: 'Straight dorsal bridge line, balanced nasal width/intercanthal ratio (0.22–0.30), tip balance',
+        whatItChecks: 'Mean of nose length ÷ (nasion to chin) (band 0.38–0.50) and nose width ÷ face width (band 0.20–0.30)',
         isChangeable: false,
       },
       {
         name: 'Cheeks and Cheekbones',
-        code: 'FE2',
+        code: 'NC2',
         weight: 2.5,
         sharePct: 25,
-        whatItChecks: 'Defined cheekbones, malar projection, balanced elevation and volume',
+        whatItChecks: 'Cheekbone vertical position (band 0.45–0.95) and contour smoothness (break: −1 to −2.5). V = 0.5 always',
         isChangeable: false,
       },
       {
         name: 'Lips',
-        code: 'FE3',
+        code: 'NC3',
         weight: 3.0,
         sharePct: 30,
-        whatItChecks: 'Balanced upper and lower vermilion, clear outline, natural volume (fullness 0.28–0.45)',
+        whatItChecks: 'Lip height ÷ mouth width (0.28–0.45), lower ÷ upper (1.0–2.0), border definition lip-to-skin ΔE2000 (V = 0.5; V = 0 if lipstick)',
         isChangeable: false,
       },
       {
         name: 'Philtrum',
-        code: 'FE4',
+        code: 'NC4',
         weight: 1.5,
         sharePct: 15,
-        whatItChecks: 'Clear vertical groove, balanced length relative to lower third (sn-sto / sn-gn ~0.20–0.33)',
+        whatItChecks: 'Philtrum length ÷ lower-face height (sn-gn), band 0.15–0.26',
         isChangeable: false,
       },
     ],
@@ -358,7 +358,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'SY1',
         weight: 2.7,
         sharePct: 30,
-        whatItChecks: 'Pupil, outer canthus, and brow peak horizontal and vertical level parity',
+        whatItChecks: 'Pupils, outer corners, brow peaks horizontal and vertical level parity',
         isChangeable: false,
       },
       {
@@ -366,7 +366,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'SY2',
         weight: 1.8,
         sharePct: 20,
-        whatItChecks: 'Nasal tip and philtrum offset percentage relative to bizygomatic face width',
+        whatItChecks: 'Nose tip and philtrum offset percentage relative to bizygomatic face width',
         isChangeable: false,
       },
       {
@@ -374,7 +374,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'SY3',
         weight: 2.25,
         sharePct: 25,
-        whatItChecks: 'Oral commissure height level, menton chin point sagittal alignment',
+        whatItChecks: 'Oral commissure height level parity, menton chin point sagittal alignment',
         isChangeable: false,
       },
       {
@@ -382,7 +382,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'SY4',
         weight: 2.25,
         sharePct: 25,
-        whatItChecks: 'Bilateral zygion (zy) and gonial jaw angle (go) horizontal symmetry balance',
+        whatItChecks: 'Cheekbone (zy) and jaw-angle (go) bilateral horizontal balance',
         isChangeable: false,
       },
     ],
@@ -392,12 +392,12 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'avg',
     name: 'Averageness',
     weight: 7,
-    whatItMeasures: 'Procrustes morphological distance to the population composite and feature-size typicality',
+    whatItMeasures: 'Procrustes shape distance D to population composite and 6 feature-size typicality distributions',
     evidence: 'Moderate',
     changeability: 'Fixed',
     subfactors: [
       {
-        name: 'Overall Shape Typicality',
+        name: 'Shape Typicality',
         code: 'AV1',
         weight: 3.85,
         sharePct: 55,
@@ -409,7 +409,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
         code: 'AV2',
         weight: 3.15,
         sharePct: 45,
-        whatItChecks: 'Z-scores across 6 feature size ratios (protected by Rule A4 against double penalty)',
+        whatItChecks: 'Six feature size ratios z-scores. m = mean |z|. Outliers (|z| > 1.5) halve penalties in geometric parameters (Rule A4)',
         isChangeable: false,
       },
     ],
@@ -419,32 +419,32 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'jaw',
     name: 'Jaw, Chin & Gender-Typical Cues',
     weight: 7,
-    whatItMeasures: 'Mandibular border clarity, chin vertical projection, and sexual dimorphism balance',
+    whatItMeasures: 'Mandibular border clarity, chin vertical projection, and optional sexual dimorphism cues',
     evidence: 'Moderate',
     changeability: 'Fixed',
     subfactors: [
       {
         name: 'Jawline',
-        code: 'JW1',
+        code: 'JC1',
         weight: 2.8,
         sharePct: 40,
-        whatItChecks: 'Mandibular border clarity, jaw width vs cheekbones (bigonial / bizygomatic 0.68–0.85)',
+        whatItChecks: 'Jaw width ÷ cheekbone width (band 0.68–0.85) and contour smoothness. Beard V = 0.5',
         isChangeable: false,
       },
       {
         name: 'Chin',
-        code: 'JW2',
+        code: 'JC2',
         weight: 2.45,
         sharePct: 35,
-        whatItChecks: 'Vertical projection, lower third centring, not recessed or over-projecting',
+        whatItChecks: 'Chin width ÷ mouth width (band 0.85–1.35), averaged with profile projection (±3% face height). Frontal only V = 0.5',
         isChangeable: false,
       },
       {
         name: 'Gender-Typical Balance',
-        code: 'JW3',
+        code: 'JC3',
         weight: 1.75,
         sharePct: 25,
-        whatItChecks: 'Masculine or feminine cues vs reference norm; Skip makes it N/A (V = 0) and renormalises',
+        whatItChecks: '5 dimorphism measures vs user reference (F-typical, M-typical, or Skip). Skip makes it N/A without lowering confidence',
         isChangeable: false,
       },
     ],
@@ -454,32 +454,32 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
     code: 'neck',
     name: 'Neck, Ears & Head Carriage',
     weight: 4,
-    whatItMeasures: 'Cervical contour under jaw, bilateral ear symmetry, and Frankfurt horizontal head posture',
+    whatItMeasures: 'Cervicomental angle, bilateral ear placement & symmetry, and Frankfurt horizontal posture alignment',
     evidence: 'Moderate',
     changeability: 'Mixed',
     subfactors: [
       {
         name: 'Neck Line',
-        code: 'NP1',
+        code: 'NE1',
         weight: 1.4,
         sharePct: 35,
-        whatItChecks: 'Clean supportive cervical line from jaw to neck, smooth transition under chin',
+        whatItChecks: 'Cervicomental angle (profile only, band 105°–125°) and jaw-to-neck continuity. V ≤ 0.5. V = 0 if neck covered or no profile',
         isChangeable: false,
       },
       {
         name: 'Ears',
-        code: 'NP2',
+        code: 'NE2',
         weight: 1.0,
         sharePct: 25,
-        whatItChecks: 'Proportional otobasion level and symmetry (V = 0 if occluded by hair, renormalised)',
+        whatItChecks: 'Ear length ÷ nose length (0.90–1.25) and ear alignment offset. V = 0 if covered by hair or head covering',
         isChangeable: false,
       },
       {
-        name: 'Posture and Head Position',
-        code: 'NP3',
+        name: 'Head Carriage',
+        code: 'NE3',
         weight: 1.6,
         sharePct: 40,
-        whatItChecks: 'Head held level and high, Frankfurt horizontal alignment, minimal pitch and roll tilt',
+        whatItChecks: 'Mean of head roll (≤ 5°: 0; ≤ 10°: −1; ≤ 15°: −2.5), shoulder tilt, and forward head offset. V = 0.5 from one frame',
         isChangeable: true,
       },
     ],
@@ -492,7 +492,7 @@ export const BEAUTY_PARAMETERS: BeautyParameterDef[] = [
 export const FRAMEWORK_LIMITS = [
   {
     title: 'Profile Angle & Frontal Renormalisation',
-    body: 'If only a frontal photo is provided, profile & angles cannot be evaluated. Set V = 0 and renormalise the remaining points to 100.',
+    body: 'If only a frontal photo is provided, profile angles (HP4, NE1) cannot be evaluated. Set V = 0 and renormalise the remaining points to 100 via (Points ÷ visible max) × 100.',
   },
   {
     title: 'Cross-Cultural Agreement & Nuance',
@@ -507,13 +507,13 @@ export const FRAMEWORK_LIMITS = [
     body: 'The framework explicitly distinguishes presentational/changeable factors (~43 pts: skin, expression, grooming, eye under-eye/brows, posture) from structural/fixed factors (~57 pts). Actionable levers strictly target what a person can improve.',
   },
   {
-    title: 'Subjectivity & Research Boundary (65–75%)',
-    body: 'The 10-parameter framework explains 65–75% of facial attractiveness variation. The remaining 25–35% is personal taste, cultural nuance, context, animated micro-expressions, and intangible charm.',
+    title: 'Fairness & Non-Discrimination',
+    body: 'Never infer ethnicity, gender, age, health, mood, or personality. Skin colour, freckles, moles, scars, birthmarks, natural hair texture, religious head coverings, eye colour, tooth shade, or alignment are never scored.',
   },
 ];
 
 // ============================================================================
-// PART A: UNIVERSAL MULTI-FACTOR EVALUATION ENGINE
+// PART A: SHARED ENGINE & UNIVERSAL EVALUATION CORE
 // ============================================================================
 
 export const PENALTY_MAP: Record<number, number> = {
@@ -528,7 +528,7 @@ export const PHI = 1.6180339887;
 
 /**
  * Band function BP(x, lo, hi)
- * d = (distance outside band / band midpoint) * 100
+ * Relative band: d = (distance outside band / band midpoint) * 100
  * d <= 3% -> 0 penalty; 3-7% -> -1.0; 7-12% -> -2.5; > 12% -> -4.5
  */
 export function bandPen(x: number, lo: number, hi: number): number {
@@ -591,6 +591,8 @@ export function avgSizeRating(zs: number[]): number {
 
 /**
  * Dimorphism penalty and rating
+ * Moderate cues are ideal: z from -0.5 to +1.0 scores 0.
+ * -1 up to -1.0 or +1.8, -2.5 up to -1.5 or +2.5, and -4.5 beyond.
  */
 export function dimPen(z: number): number {
   if (z >= -0.5 && z <= 1.0) return 0.0;
@@ -607,7 +609,7 @@ export function dimRating(zs: number[]): number {
 }
 
 /**
- * Horizontal and vertical asymmetry penalties
+ * Horizontal and vertical asymmetry penalties (Part B7)
  */
 export function symPenH(a: number): number {
   if (a <= 3) return 0.0;
@@ -623,8 +625,27 @@ export function symPenV(a: number): number {
   return 4.5;
 }
 
+export function symPenMid(a: number): number {
+  if (a <= 1.5) return 0.0;
+  if (a <= 3.0) return 1.0;
+  if (a <= 5.0) return 2.5;
+  return 4.5;
+}
+
 /**
- * Estimated point gain from an actionable fix
+ * Symmetry aggregation formula (Part B7):
+ * Raw = 10 - (mean pair penalty + 0.5 * worst pair penalty)
+ */
+export function aggregateSymmetryScore(pairPenalties: number[]): number {
+  if (!pairPenalties || pairPenalties.length === 0) return 10.0;
+  const meanPen = pairPenalties.reduce((a, b) => a + b, 0) / pairPenalties.length;
+  const worstPen = Math.max(...pairPenalties);
+  return Math.max(0, Math.min(10, 10 - (meanPen + 0.5 * worstPen)));
+}
+
+/**
+ * Estimated point gain from an actionable fix:
+ * ΔPoints ≈ (1 − β) × Δrating × (W ÷ ΣW) × (max ÷ 10)
  */
 export function gainFromFix(
   beta: number,
@@ -663,7 +684,7 @@ export const ENGINE_CONFIGS: Record<string, ParameterEngineConfig> = {
     name: 'Eye Region',
     max: 13,
     beta: 0.10,
-    W: { EY1: 25, EY2: 20, EY3: 20, EY4: 20, EY5: 15 },
+    W: { ER1: 25, ER2: 20, ER3: 20, ER4: 20, ER5: 15 },
     crit: [],
   },
   harmony: {
@@ -672,8 +693,8 @@ export const ENGINE_CONFIGS: Record<string, ParameterEngineConfig> = {
     name: 'Facial Harmony & Proportions',
     max: 13,
     beta: 0.10,
-    W: { HA1: 25, HA2: 20, HA3: 20, HA4: 20, HA5: 15 },
-    crit: [{ keys: ['HA1'], thr: 2.0, cap: 5.5 }],
+    W: { HP1: 25, HP2: 20, HP3: 20, HP4: 20, HP5: 15 },
+    crit: [{ keys: ['HP1'], thr: 2.0, cap: 5.5 }],
   },
   expr: {
     id: 4,
@@ -699,7 +720,7 @@ export const ENGINE_CONFIGS: Record<string, ParameterEngineConfig> = {
     name: 'Nose, Cheeks, Lips & Philtrum',
     max: 10,
     beta: 0.10,
-    W: { FE1: 30, FE2: 25, FE3: 30, FE4: 15 },
+    W: { NC1: 30, NC2: 25, NC3: 30, NC4: 15 },
     crit: [],
   },
   sym: {
@@ -726,7 +747,7 @@ export const ENGINE_CONFIGS: Record<string, ParameterEngineConfig> = {
     name: 'Jaw, Chin & Gender-Typical Cues',
     max: 7,
     beta: 0.10,
-    W: { JW1: 40, JW2: 35, JW3: 25 },
+    W: { JC1: 40, JC2: 35, JC3: 25 },
     crit: [],
   },
   neck: {
@@ -735,7 +756,7 @@ export const ENGINE_CONFIGS: Record<string, ParameterEngineConfig> = {
     name: 'Neck, Ears & Head Carriage',
     max: 4,
     beta: 0.10,
-    W: { NP1: 35, NP2: 25, NP3: 40 },
+    W: { NE1: 35, NE2: 25, NE3: 40 },
     crit: [],
   },
 };
@@ -747,6 +768,7 @@ export interface FactorInput {
   note?: string;          // Clinical / Biometric observation
   fixAction?: string;     // Actionable advice
   isChangeable?: boolean; // Whether this can be improved via lifestyle/grooming
+  isApplicable?: boolean; // false if N/A (e.g. no makeup, no glasses, reference skip)
 }
 
 export interface EngineRunResult {
@@ -756,30 +778,37 @@ export interface EngineRunResult {
   maxPts: number;
   weightedAverage: number;
   lowestAdjusted: number;
-  subfactorRatings: Record<string, { raw: number; adjusted: number; weight: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean }>;
+  subfactorRatings: Record<string, { raw: number; adjusted: number; weight: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean; isApplicable?: boolean }>;
   capTriggered?: string;
 }
 
 /**
- * Executes the universal mathematical engine for a single parameter
+ * Executes the universal mathematical engine for a single parameter (Rule A2)
+ * Sub-factors that don't apply (no makeup, no glasses, reference = Skip)
+ * are excluded from BOTH score and confidence denominator.
  */
 export function runEngine(
   cfg: ParameterEngineConfig,
   factors: Record<string, FactorInput>
 ): EngineRunResult | null {
-  const rated: Record<string, { adjusted: number; weight: number; raw: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean }> = {};
+  const rated: Record<string, { adjusted: number; weight: number; raw: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean; isApplicable?: boolean }> = {};
   let confSum = 0;
-  let totalConfigW = 0;
+  let applicableConfigW = 0;
 
   for (const [key, w] of Object.entries(cfg.W)) {
-    totalConfigW += w;
     const factor = factors[key];
     if (!factor) continue;
 
+    // Rule A2.3: Not applicable excludes from both score and confidence
+    if (factor.isApplicable === false) {
+      continue;
+    }
+
+    applicableConfigW += w;
     const V = factor.V;
     confSum += w * V;
 
-    // V = 0 excludes the sub-factor and renormalises the rest
+    // V = 0 excludes the sub-factor from scoring and renormalises the rest
     if (V === 0) continue;
 
     const raw = factor.raw !== undefined
@@ -796,11 +825,12 @@ export function runEngine(
       note: factor.note,
       fixAction: factor.fixAction,
       isChangeable: factor.isChangeable,
+      isApplicable: true,
     };
   }
 
-  // Parameter is N/A if all subfactors are excluded (V = 0)
-  if (Object.keys(rated).length === 0) {
+  // Parameter is N/A if all applicable subfactors are excluded
+  if (Object.keys(rated).length === 0 || applicableConfigW === 0) {
     return null;
   }
 
@@ -825,7 +855,7 @@ export function runEngine(
 
   R = Math.max(0, Math.min(10, Number(R.toFixed(2))));
   const points = Number(((R * cfg.max) / 10).toFixed(2));
-  const confidence = Number((confSum / totalConfigW).toFixed(2));
+  const confidence = Number((confSum / applicableConfigW).toFixed(2));
 
   return {
     R,
@@ -866,7 +896,7 @@ export interface ScoreCalculationResult {
   capsTriggered?: string[];
   topLevers?: Array<{ lever: string; gainPts: number; currentRating?: number; targetRating?: number }>;
   parameterConfidences?: Record<number, number>;
-  subfactorRatings?: Record<string, { raw: number; adjusted: number; weight: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean }>;
+  subfactorRatings?: Record<string, { raw: number; adjusted: number; weight: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean; isApplicable?: boolean }>;
 }
 
 /**
@@ -894,8 +924,7 @@ export function calculateBeautyScore(input: ScoreCalculationInput): ScoreCalcula
 
     if (param.id === 3) {
       // Facial Harmony & Proportions (13 pts)
-      // Profile (HA4) is 20% of 13 pts = 2.6 pts. Excluded if frontal only!
-      const profileWeight = hasSideProfilePhoto ? 2.6 : 0;
+      // Profile (HP4) is 20% of 13 pts = 2.6 pts. Excluded if frontal only!
       const effectiveParamWeight = (hasSideProfilePhoto ? 13 : 10.4);
       const paramExcludedWeight = hasSideProfilePhoto ? 0 : 2.6;
       excludedWeight += paramExcludedWeight;
@@ -905,8 +934,8 @@ export function calculateBeautyScore(input: ScoreCalculationInput): ScoreCalcula
       parameterScores[3] = pts;
       rawTotalPoints += pts;
 
-      subfactorScores['Facial Thirds and Forehead'] = Number((clampedRating * 0.325).toFixed(2));
-      subfactorScores['Feature Spacing (Fifths)'] = Number((clampedRating * 0.26).toFixed(2));
+      subfactorScores['Thirds and Forehead'] = Number((clampedRating * 0.325).toFixed(2));
+      subfactorScores['Feature Spacing'] = Number((clampedRating * 0.26).toFixed(2));
       subfactorScores['Face Shape Balance'] = Number((clampedRating * 0.26).toFixed(2));
       subfactorScores['Profile'] = hasSideProfilePhoto ? Number((clampedRating * 0.26).toFixed(2)) : 0;
       subfactorScores['Golden Ratio (φ)'] = Number((clampedRating * 0.195).toFixed(2));
@@ -993,7 +1022,7 @@ export function assembleFinalBeautyScore(
   const parameterRatings: Record<number, number> = {};
   const parameterConfidences: Record<number, number> = {};
   const subfactorScores: Record<string, number> = {};
-  const subfactorRatingsMap: Record<string, { raw: number; adjusted: number; weight: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean }> = {};
+  const subfactorRatingsMap: Record<string, { raw: number; adjusted: number; weight: number; V: number; note?: string; fixAction?: string; isChangeable?: boolean; isApplicable?: boolean }> = {};
   const capsTriggered: string[] = [];
 
   let rawTotalPoints = 0;
@@ -1001,12 +1030,12 @@ export function assembleFinalBeautyScore(
   let excludedWeight = 0;
   let confWeightedSum = 0;
 
-  // Changeable subfactors:
+  // Changeable subfactors (Part C1):
   // - All of skin: SK1, SK2, SK3, SK4 (14 pts)
-  // - Eyes: EY4 (under-eye 20% of 13 = 2.6 pts), EY5 (brows 15% of 13 = 1.95 pts) = 4.55 pts
+  // - Eyes: ER4 (under-eye 20% of 13 = 2.6 pts), ER5 (brows 15% of 13 = 1.95 pts) = 4.55 pts
   // - All of expr: EX1, EX2, EX3, EX4 (12 pts)
   // - All of grm: GR1, GR2, GR3, GR4, GR5 (11 pts)
-  // - Neck: NP3 (posture 40% of 4 = 1.6 pts)
+  // - Neck: NE3 (posture 40% of 4 = 1.6 pts)
   // Total Changeable Max: 14 + 4.55 + 12 + 11 + 1.6 = 43.15 pts (~43 pts)
   // Fixed Total Max: 13 (harmony) + 10 (features) + 9 (sym) + 7 (avg) + 7 (jaw) + 8.45 (eyes fixed) + 2.4 (neck fixed) = 56.85 pts (~57 pts)
 
@@ -1037,21 +1066,23 @@ export function assembleFinalBeautyScore(
       capsTriggered.push(res.capTriggered);
     }
 
-    for (const [sfKey, sfData] of Object.entries(res.subfactorRatings)) {
-      const sfPts = Number((sfData.adjusted * (sfData.weight / 100) * (cfg.max / 10)).toFixed(2));
-      subfactorScores[sfKey] = sfPts;
-      subfactorRatingsMap[sfKey] = sfData;
+    const paramSubfactorWeightSum = Object.values(res.subfactorRatings).reduce((acc, sf) => acc + sf.weight, 0) || 100;
+    const paramRWsum = Object.values(res.subfactorRatings).reduce((acc, sf) => acc + sf.weight * sf.adjusted, 0) || 1;
 
-      const sfMaxPts = (sfData.weight / 100) * cfg.max;
-      const sfEarnedPts = (sfData.adjusted / 10) * sfMaxPts;
+    for (const [sfKey, sfData] of Object.entries(res.subfactorRatings)) {
+      const sfMaxPts = (sfData.weight / paramSubfactorWeightSum) * cfg.max;
+      // Rule C1: points are allocated to sub-factors in proportion to rating * weight
+      const sfEarnedPts = res.points * ((sfData.weight * sfData.adjusted) / paramRWsum);
+      subfactorScores[sfKey] = Number(sfEarnedPts.toFixed(2));
+      subfactorRatingsMap[sfKey] = sfData;
 
       const isSubChangeable = sfData.isChangeable ?? (
         code === 'skin' ||
         code === 'expr' ||
         code === 'grm' ||
-        sfKey === 'EY4' ||
-        sfKey === 'EY5' ||
-        sfKey === 'NP3'
+        sfKey === 'ER4' ||
+        sfKey === 'ER5' ||
+        sfKey === 'NE3'
       );
 
       if (isSubChangeable) {
@@ -1149,7 +1180,7 @@ export function samplePatchLab(
   cxPx: number,
   cyPx: number,
   radiusPx: number
-): { meanLab: LabColor; meanRgb: [number, number, number]; blemishRatio: number; specularRatio: number; validCount: number } {
+): { meanLab: LabColor; meanRgb: [number, number, number]; blemishRatio: number; specularRatio: number; validCount: number; chroma: number } {
   const w = ctx.canvas.width;
   const h = ctx.canvas.height;
   const minX = Math.max(0, Math.floor(cxPx - radiusPx));
@@ -1160,7 +1191,7 @@ export function samplePatchLab(
   const pw = maxX - minX + 1;
   const ph = maxY - minY + 1;
   if (pw <= 0 || ph <= 0) {
-    return { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 0 };
+    return { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 0, chroma: 25.0 };
   }
 
   const imgData = ctx.getImageData(minX, minY, pw, ph);
@@ -1198,7 +1229,7 @@ export function samplePatchLab(
   }
 
   if (validCount === 0) {
-    return { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 0 };
+    return { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 0, chroma: 25.0 };
   }
 
   const avgR = Math.round(sumR / validCount);
@@ -1213,8 +1244,9 @@ export function samplePatchLab(
     if (Math.abs(lum - avgLum) > 24) blemishPixels++;
   }
   const blemishRatio = localLums.length > 0 ? blemishPixels / localLums.length : 0.01;
+  const chroma = Math.sqrt(meanLab.a * meanLab.a + meanLab.b * meanLab.b);
 
-  return { meanLab, meanRgb: [avgR, avgG, avgB], blemishRatio, specularRatio, validCount };
+  return { meanLab, meanRgb: [avgR, avgG, avgB], blemishRatio, specularRatio, validCount, chroma };
 }
 
 // ============================================================================
@@ -1276,23 +1308,19 @@ export interface DimorphismNorms {
 }
 
 export const DIMORPHISM_NORMS_M: Record<string, DimorphismNorms> = {
-  D1: { mean: 0.78, sd: 0.045, d: 1 },  // go-go / zy-zy
-  D2: { mean: 0.36, sd: 0.022, d: 1 },  // sn-gn / tr-gn
-  D3: { mean: 0.042, sd: 0.008, d: -1 },// brow-eye / face height
-  D4: { mean: 0.068, sd: 0.008, d: -1 },// eye height / face width
-  D5: { mean: 0.088, sd: 0.012, d: -1 },// lip height / face height
-  D6: { mean: 0.27, sd: 0.022, d: 1 },  // nose width / face width
-  D7: { mean: 0.78, sd: 0.042, d: 1 },  // zy-zy / tr-gn
+  D1: { mean: 0.36, sd: 0.022, d: 1 },  // lower-face share (sn-gn / tr-gn)
+  D2: { mean: 0.042, sd: 0.008, d: -1 },// brow-to-eye / face height
+  D3: { mean: 0.068, sd: 0.008, d: -1 },// eye height / face width
+  D4: { mean: 0.088, sd: 0.012, d: -1 },// lip height / face height
+  D5: { mean: 0.78, sd: 0.042, d: 1 },  // face width ratio (zy-zy / tr-gn)
 };
 
 export const DIMORPHISM_NORMS_F: Record<string, DimorphismNorms> = {
-  D1: { mean: 0.74, sd: 0.040, d: -1 },
-  D2: { mean: 0.33, sd: 0.020, d: -1 },
-  D3: { mean: 0.052, sd: 0.008, d: 1 },
-  D4: { mean: 0.076, sd: 0.008, d: 1 },
-  D5: { mean: 0.098, sd: 0.012, d: 1 },
-  D6: { mean: 0.25, sd: 0.020, d: -1 },
-  D7: { mean: 0.75, sd: 0.038, d: -1 },
+  D1: { mean: 0.33, sd: 0.020, d: -1 },
+  D2: { mean: 0.052, sd: 0.008, d: 1 },
+  D3: { mean: 0.076, sd: 0.008, d: 1 },
+  D4: { mean: 0.098, sd: 0.012, d: 1 },
+  D5: { mean: 0.75, sd: 0.038, d: -1 },
 };
 
 // ============================================================================
@@ -1303,6 +1331,8 @@ export interface FacialEvaluationOptions {
   dimorphismRef?: 'F-typical' | 'M-typical' | 'skip';
   hasSideProfilePhoto?: boolean;
   smilePhotoProvided?: boolean;
+  isBareFace?: boolean;
+  hasGlasses?: boolean;
 }
 
 export interface Phase3Metrics {
@@ -1310,13 +1340,14 @@ export interface Phase3Metrics {
     deltaE2000: number;
     blemishPct: number;
     specularPct: number;
-    naturalColourWarmth: number;
+    chromaRatio: number;
     vitalityTier: string;
   };
   eyes: {
     fissureRatio: number;
     canthalTiltDeg: number;
     eyeSpacingRatio: number;
+    irisCoverageRatio: number;
     underEyeDeltaL: number;
     browPositionRatio: number;
   };
@@ -1421,7 +1452,14 @@ export function evaluateFacialBiometrics(
   canvas: HTMLCanvasElement,
   options: FacialEvaluationOptions = {}
 ): CompleteFacialAnalysisResult {
-  const { dimorphismRef = 'skip', hasSideProfilePhoto = false, smilePhotoProvided = false } = options;
+  const {
+    dimorphismRef = 'skip',
+    hasSideProfilePhoto = false,
+    smilePhotoProvided = false,
+    isBareFace = true,
+    hasGlasses = false,
+  } = options;
+
   const canonical = detection.canonical;
   const blendshapes = detection.blendshapes || {};
   const soft = detection.softChecks;
@@ -1439,20 +1477,21 @@ export function evaluateFacialBiometrics(
   let canthalTilt = 3.2;
   let procrustesDist = 0.076;
 
-  // Detailed diagnostic metrics
+  // Diagnostic metrics cache
   let skinDiagU = 1.8;
   let skinDiagBlemish = 0.012;
   let skinDiagSpecular = 0.035;
-  let skinDiagWarmth = 14.5;
+  let skinDiagChromaRatio = 1.15;
 
   let eyeDiagFissure = 0.35;
   let eyeDiagSpacing = 1.0;
+  let eyeDiagIrisCover = 0.14;
   let eyeDiagUnderEyeDeltaL = 4.5;
   let eyeDiagBrowDist = 0.055;
 
   let propDiagThirds: [number, number, number] = [33.3, 33.3, 33.4];
   let propDiagThirdsDev = 0.015;
-  let propDiagFaceShape = 1.38;
+  let propDiagFaceShape = 0.74;
   let propDiagGoldenRatios: Array<{ id: string; name: string; value: number; target: number; adherence: number }> = [];
   let propDiagHarmonyRatios: Array<{ id: string; name: string; value: number; band: string; rating: number }> = [];
 
@@ -1473,7 +1512,7 @@ export function evaluateFacialBiometrics(
   let featDiagNasalWidth = 0.26;
   let featDiagMouthWidth = 0.38;
   let featDiagLipFullness = 0.35;
-  let featDiagPhiltrum = 0.24;
+  let featDiagPhiltrum = 0.22;
   let featDiagSubfactors: Array<{ id: string; name: string; rating: number; note: string; isProtectedByRuleA4: boolean }> = [];
 
   let symDiagMeanAsym = 2.1;
@@ -1495,14 +1534,14 @@ export function evaluateFacialBiometrics(
 
   const engineResults: Record<string, EngineRunResult | null> = {};
 
-  // Sample patches if canvas context and landmarks exist
-  let fhPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1 };
-  let cLPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1 };
-  let cRPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1 };
-  let nosePatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1 };
-  let chinPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1 };
-  let infraLPatch = { meanLab: { L: 68, a: 13, b: 21 }, meanRgb: [205, 160, 130], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1 };
-  let infraRPatch = { meanLab: { L: 68, a: 13, b: 21 }, meanRgb: [205, 160, 130], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1 };
+  // Sample skin patches if canvas and landmarks exist
+  let fhPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1, chroma: 25.0 };
+  let cLPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1, chroma: 25.0 };
+  let cRPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1, chroma: 25.0 };
+  let nosePatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1, chroma: 25.0 };
+  let chinPatch = { meanLab: { L: 72, a: 12, b: 22 }, meanRgb: [215, 170, 140], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1, chroma: 25.0 };
+  let infraLPatch = { meanLab: { L: 68, a: 13, b: 21 }, meanRgb: [205, 160, 130], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1, chroma: 25.0 };
+  let infraRPatch = { meanLab: { L: 68, a: 13, b: 21 }, meanRgb: [205, 160, 130], blemishRatio: 0.01, specularRatio: 0.02, validCount: 1, chroma: 25.0 };
 
   if (ctx && canonical) {
     const patchRadius = Math.max(8, Math.round(w * 0.04));
@@ -1527,7 +1566,7 @@ export function evaluateFacialBiometrics(
   }
 
   // --------------------------------------------------------------------------
-  // PARAMETER 1: Skin Quality & Glow (14 pts, beta = 0.10)
+  // PARAMETER 1: Skin Quality & Glow (14 pts, beta = 0.10, no cap)
   // --------------------------------------------------------------------------
   const skinFactors: Record<string, FactorInput> = {};
   if (ctx && canonical) {
@@ -1537,7 +1576,7 @@ export function evaluateFacialBiometrics(
     const medB = patches.map((p) => p.b).sort((a, b) => a - b)[2];
     const faceMedianLab: LabColor = { L: medL, a: medA, b: medB };
 
-    // SK1: Tone evenness (median ΔE2000 across 5 zones)
+    // SK1: Tone evenness (U = median ΔE2000 across 5 patches)
     const deltas = patches.map((p) => deltaE2000(p, faceMedianLab)).sort((a, b) => a - b);
     const U = deltas[2];
     let sk1Defect = 0;
@@ -1551,9 +1590,10 @@ export function evaluateFacialBiometrics(
       note: `Tone variation ΔE₀₀: ${U.toFixed(1)} across facial zones`,
       fixAction: 'Even out tone balance with daily broad-spectrum SPF and vitamin C serum',
       isChangeable: true,
+      isApplicable: true,
     };
 
-    // SK2: Clarity & blemish control
+    // SK2: Clarity (b = % skin area with transient breakouts/irritation)
     const avgBlemish = (fhPatch.blemishRatio + cLPatch.blemishRatio + cRPatch.blemishRatio + chinPatch.blemishRatio) / 4;
     let sk2Defect = 0;
     if (avgBlemish > 0.07) sk2Defect = 3;
@@ -1564,11 +1604,12 @@ export function evaluateFacialBiometrics(
       V: soft.vRes,
       defects: [sk2Defect],
       note: `Surface clarity: ${(avgBlemish * 100).toFixed(1)}% transient texture variance`,
-      fixAction: 'Calm micro-inflammation and breakouts with gentle salicylic or azelaic acid',
+      fixAction: 'Calm active micro-irritation with gentle salicylic or azelaic acid',
       isChangeable: true,
+      isApplicable: true,
     };
 
-    // SK3: Radiance and shine control (V = 0.5 prior)
+    // SK3: Radiance and shine control (V <= 0.5 always)
     const tZoneSpecular = (fhPatch.specularRatio + nosePatch.specularRatio) / 2;
     let sk3Defect = 0;
     if (tZoneSpecular > 0.15) sk3Defect = 3;
@@ -1579,38 +1620,48 @@ export function evaluateFacialBiometrics(
       V: 0.5,
       defects: [sk3Defect],
       note: `T-zone specular reflection: ${(tZoneSpecular * 100).toFixed(1)}%`,
-      fixAction: 'Control excess T-zone shine with lightweight niacinamide or matte blotting sheets',
+      fixAction: 'Control T-zone shine with lightweight niacinamide or matte blotting sheets',
       isChangeable: true,
+      isApplicable: true,
     };
 
-    // SK4: Healthy natural colour (cheek a* warmth and oxygenation)
-    const cheekMeanA = (cLPatch.meanLab.a + cRPatch.meanLab.a) / 2;
+    // SK4: Healthy colour (q = chroma of cheek / chroma of forehead; ideal 1.00-1.30; V <= 0.5 always)
+    const cheekChroma = (cLPatch.chroma + cRPatch.chroma) / 2;
+    const foreheadChroma = Math.max(1.0, fhPatch.chroma);
+    const q = cheekChroma / foreheadChroma;
+
+    let sk4Outside = 0;
+    if (q < 1.00) sk4Outside = 1.00 - q;
+    else if (q > 1.30) sk4Outside = q - 1.30;
+
     let sk4Defect = 0;
-    if (cheekMeanA < 4.0 || cheekMeanA > 26.0) sk4Defect = 2;
-    else if (cheekMeanA < 8.0 || cheekMeanA > 22.0) sk4Defect = 1;
+    if (sk4Outside > 0.20) sk4Defect = 3;
+    else if (sk4Outside > 0.12) sk4Defect = 2;
+    else if (sk4Outside > 0.05) sk4Defect = 1;
 
     skinFactors['SK4'] = {
-      V: soft.vLight === 0.5 ? 0.5 : 1.0,
+      V: 0.5,
       defects: [sk4Defect],
-      note: `Cheek chroma a* warmth: ${cheekMeanA.toFixed(1)} (healthy vital flush)`,
-      fixAction: 'Enhance healthy epidermal microcirculation with consistent aerobic exercise and hydration',
+      note: `Cheek-to-forehead chroma ratio: ${q.toFixed(2)} (ideal 1.00–1.30)`,
+      fixAction: 'Enhance healthy epidermal oxygenation with aerobic exercise and hydration',
       isChangeable: true,
+      isApplicable: true,
     };
 
     skinDiagU = Number(U.toFixed(2));
     skinDiagBlemish = avgBlemish;
     skinDiagSpecular = tZoneSpecular;
-    skinDiagWarmth = Number(cheekMeanA.toFixed(1));
+    skinDiagChromaRatio = Number(q.toFixed(2));
   } else {
-    skinFactors['SK1'] = { V: 0.5, raw: 8.5, isChangeable: true };
-    skinFactors['SK2'] = { V: 0.5, raw: 8.4, isChangeable: true };
-    skinFactors['SK3'] = { V: 0.5, raw: 8.0, isChangeable: true };
-    skinFactors['SK4'] = { V: 0.5, raw: 8.2, isChangeable: true };
+    skinFactors['SK1'] = { V: 0.5, raw: 8.5, isChangeable: true, isApplicable: true };
+    skinFactors['SK2'] = { V: 0.5, raw: 8.4, isChangeable: true, isApplicable: true };
+    skinFactors['SK3'] = { V: 0.5, raw: 8.0, isChangeable: true, isApplicable: true };
+    skinFactors['SK4'] = { V: 0.5, raw: 8.2, isChangeable: true, isApplicable: true };
   }
   engineResults['skin'] = runEngine(ENGINE_CONFIGS['skin'], skinFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 2: Eye Region (13 pts, beta = 0.10)
+  // PARAMETER 2: Eye Region (13 pts, beta = 0.10, no cap)
   // --------------------------------------------------------------------------
   const eyeFactors: Record<string, FactorInput> = {};
   if (canonical) {
@@ -1626,46 +1677,57 @@ export function evaluateFacialBiometrics(
     const tiltLeft = (Math.atan2(deltaYLeft, deltaXLeft) * 180) / Math.PI;
     canthalTilt = Math.max(-5, Math.min(15, Number(tiltLeft.toFixed(1))));
 
-    // EY1: Eye size and shape (fissure ratio 0.28-0.42, eyeW/faceW 0.18-0.25)
+    // ER1: Size and shape (E1 fissure 0.28-0.42, E2 eyeW/faceW 0.18-0.25)
     const fissureRatio = eyeH / eyeW;
     const eyeRelFace = eyeW / faceW;
-    const penEY1 = (bandPen(fissureRatio, 0.28, 0.42) + bandPen(eyeRelFace, 0.18, 0.25)) / 2;
-    const rawEY1 = Math.max(0, 10 - penEY1);
-    eyeFactors['EY1'] = {
+    const penE1 = bandPen(fissureRatio, 0.28, 0.42);
+    const penE2 = bandPen(eyeRelFace, 0.18, 0.25);
+    const rawER1 = Math.max(0, 10 - (penE1 + penE2) / 2);
+    eyeFactors['ER1'] = {
       V: 1.0,
-      raw: rawEY1,
+      raw: rawER1,
       note: `Fissure ratio: ${fissureRatio.toFixed(2)}, eye breadth: ${(eyeRelFace * 100).toFixed(1)}% of face width`,
       isChangeable: false,
+      isApplicable: true,
     };
 
-    // EY2: Spacing and canthal tilt (~1 eye width apart, +2° to +8° tilt)
+    // ER2: Spacing and tilt (spacing 0.85-1.15; tilt wide band -2° to +10°)
     const spacingRatio = intercanthal / eyeW;
-    const penSpacing = bandPen(spacingRatio, 0.88, 1.15);
-    const penTilt = bandPen(canthalTilt, 2.0, 8.0);
-    const rawEY2 = Math.max(0, 10 - (penSpacing + penTilt) / 2);
-    eyeFactors['EY2'] = {
+    const penSpacing = bandPen(spacingRatio, 0.85, 1.15);
+    let penTilt = 0;
+    if (canthalTilt < -2.0) {
+      const out = -2.0 - canthalTilt;
+      penTilt = out > 8.0 ? 4.5 : out > 5.0 ? 2.5 : out > 2.0 ? 1.0 : 0;
+    } else if (canthalTilt > 10.0) {
+      const out = canthalTilt - 10.0;
+      penTilt = out > 8.0 ? 4.5 : out > 5.0 ? 2.5 : out > 2.0 ? 1.0 : 0;
+    }
+    const rawER2 = Math.max(0, 10 - (penSpacing + penTilt) / 2);
+    eyeFactors['ER2'] = {
       V: 1.0,
-      raw: rawEY2,
-      note: `Intercanthal spacing: ${spacingRatio.toFixed(2)}× eye width, canthal tilt: +${canthalTilt.toFixed(1)}°`,
+      raw: rawER2,
+      note: `Intercanthal spacing: ${spacingRatio.toFixed(2)}×, canthal tilt: +${canthalTilt.toFixed(1)}°`,
       isChangeable: false,
+      isApplicable: true,
     };
 
-    // EY3: Eyelids and lashes (alert aperture, even lids)
+    // ER3: Eyelids (iris coverage c <= 15%: 0; <= 25%: -1; <= 35%: -2.5; > 35%: -4.5)
     const eyeBlink = ((blendshapes['eyeBlinkLeft'] || 0) + (blendshapes['eyeBlinkRight'] || 0)) / 2;
-    const lidSymmetryDev = Math.abs((canonical.infraorbital_left.y - canonical.p_left.y) - (canonical.infraorbital_right.y - canonical.p_right.y));
-    let penEY3 = 0;
-    if (eyeBlink > 0.45) penEY3 += 4.5;
-    else if (eyeBlink > 0.25) penEY3 += 2.0;
-    if (lidSymmetryDev > 0.015) penEY3 += 1.5;
-    const rawEY3 = Math.max(0, 10 - penEY3);
-    eyeFactors['EY3'] = {
-      V: 1.0,
-      raw: rawEY3,
-      note: `Palpebral aperture alert status: ${eyeBlink > 0.35 ? 'Squinting/Drowsy' : 'Open & Well-Defined'}`,
+    const irisCover = Math.min(0.50, Math.max(0.05, 0.12 + eyeBlink * 0.40));
+    let penER3 = 0;
+    if (irisCover > 0.35) penER3 = 4.5;
+    else if (irisCover > 0.25) penER3 = 2.5;
+    else if (irisCover > 0.15) penER3 = 1.0;
+    const rawER3 = Math.max(0, 10 - penER3);
+    eyeFactors['ER3'] = {
+      V: eyeBlink > 0.5 ? 0.0 : 1.0, // Retake if blinked
+      raw: rawER3,
+      note: `Upper eyelid iris coverage: ${(irisCover * 100).toFixed(1)}%`,
       isChangeable: false,
+      isApplicable: true,
     };
 
-    // EY4: Under-eye and eye clarity (ΔL* darkness, puffiness, clear sclera)
+    // ER4: Under-eye and clarity (ΔL* <= 4: 0; <= 7: -1; <= 11: -2.5; > 11: -4.5)
     const cheekL = (cLPatch.meanLab.L + cRPatch.meanLab.L) / 2;
     const infraL = (infraLPatch.meanLab.L + infraRPatch.meanLab.L) / 2;
     const deltaL = Math.max(0, cheekL - infraL);
@@ -1675,99 +1737,120 @@ export function evaluateFacialBiometrics(
     else if (deltaL > 4) ey4Defect = 1;
 
     vitalityLevel = deltaL < 5.5 ? 'Vibrant & Luminous' : deltaL < 8.5 ? 'Balanced Natural' : 'Provisional Rest Advised';
-    eyeFactors['EY4'] = {
+    eyeFactors['ER4'] = {
       V: soft.vPitch === 0.5 ? 0.5 : soft.vRes,
       defects: [ey4Defect],
-      note: `Under-eye periorbital ΔL*: ${deltaL.toFixed(1)} darkness contrast`,
-      fixAction: 'Diminish under-eye dark circles with daily caffeine peptide serum and 7–8 hours restful sleep',
+      note: `Periorbital under-eye ΔL*: ${deltaL.toFixed(1)} contrast`,
+      fixAction: 'Hydrate periorbital zone with caffeine peptide serum and 7–8 hours restful sleep',
       isChangeable: true,
+      isApplicable: true,
     };
 
-    // EY5: Eyebrow shape and position (arch, thickness balance, brow-to-eye distance)
+    // ER5: Brows (brow-to-eye band 0.050–0.085 and brow-tail offset)
     const browEyeDist = (canonical.left_brow_peak.y - canonical.p_left.y + canonical.right_brow_peak.y - canonical.p_right.y) / 2;
     const browDistRel = Math.abs(browEyeDist) / faceH;
-    const penBrowDist = bandPen(browDistRel, 0.040, 0.070);
-    const rawEY5 = Math.max(0, 10 - penBrowDist);
-    eyeFactors['EY5'] = {
+    const penBrowDist = bandPen(browDistRel, 0.050, 0.085);
+    const rawER5 = Math.max(0, 10 - penBrowDist);
+    eyeFactors['ER5'] = {
       V: 1.0,
-      raw: rawEY5,
-      note: `Brow-to-eye vertical balance: ${(browDistRel * 100).toFixed(1)}% of face height`,
-      fixAction: 'Clean up stray hairs under the lower eyebrow arch to create crisp lift and eye definition',
+      raw: rawER5,
+      note: `Brow-to-eye height ratio: ${(browDistRel * 100).toFixed(1)}% of face`,
+      fixAction: 'Clean up stray hairs under lower eyebrow arch to create crisp lift and eye definition',
       isChangeable: true,
+      isApplicable: true,
     };
 
     eyeDiagFissure = Number(fissureRatio.toFixed(2));
     eyeDiagSpacing = Number(spacingRatio.toFixed(2));
+    eyeDiagIrisCover = Number(irisCover.toFixed(2));
     eyeDiagUnderEyeDeltaL = Number(deltaL.toFixed(1));
     eyeDiagBrowDist = Number(browDistRel.toFixed(3));
   } else {
-    eyeFactors['EY1'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    eyeFactors['EY2'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    eyeFactors['EY3'] = { V: 0.5, raw: 8.4, isChangeable: false };
-    eyeFactors['EY4'] = { V: 0.5, raw: 8.2, isChangeable: true };
-    eyeFactors['EY5'] = { V: 0.5, raw: 8.6, isChangeable: true };
+    eyeFactors['ER1'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    eyeFactors['ER2'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    eyeFactors['ER3'] = { V: 0.5, raw: 8.4, isChangeable: false, isApplicable: true };
+    eyeFactors['ER4'] = { V: 0.5, raw: 8.2, isChangeable: true, isApplicable: true };
+    eyeFactors['ER5'] = { V: 0.5, raw: 8.6, isChangeable: true, isApplicable: true };
   }
   engineResults['eyes'] = runEngine(ENGINE_CONFIGS['eyes'], eyeFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 3: Facial Harmony & Proportions (13 pts, beta = 0.10)
+  // PARAMETER 3: Facial Harmony & Proportions (13 pts, beta = 0.10, cap HP1 <= 2 => R <= 5.5)
   // --------------------------------------------------------------------------
   const harmFactors: Record<string, FactorInput> = {};
   if (canonical) {
     const faceH = Math.max(0.1, canonical.gn.y - canonical.tr.y);
     const faceW = Math.max(0.1, canonical.zy_right.x - canonical.zy_left.x);
-    const eyeW = Math.max(0.01, ((canonical.ex_left.x - canonical.en_left.x) + (canonical.en_right.x - canonical.ex_right.x)) / 2);
     const intercanthal = Math.max(0.01, canonical.en_right.x - canonical.en_left.x);
     const noseW = Math.max(0.01, canonical.al_right.x - canonical.al_left.x);
     const mouthW = Math.max(0.01, canonical.ch_right.x - canonical.ch_left.x);
     const ipd = Math.max(0.01, Math.hypot(canonical.p_right.x - canonical.p_left.x, canonical.p_right.y - canonical.p_left.y));
 
-    // HA1: Facial thirds and forehead
+    // HP1: Thirds and forehead (m <= 0.02: 0; <= 0.04: -1; <= 0.06: -2.5; > 0.06: -4.5; forehead outside 0.28-0.38 adds -1)
     const t1 = (canonical.g.y - canonical.tr.y) / faceH;
     const t2 = (canonical.sn.y - canonical.g.y) / faceH;
     const t3 = (canonical.gn.y - canonical.sn.y) / faceH;
-    const rHA1 = thirdsRating([t1, t2, t3]);
-    harmFactors['HA1'] = {
+    const thirdsDev = (Math.abs(t1 - 1 / 3) + Math.abs(t2 - 1 / 3) + Math.abs(t3 - 1 / 3)) / 3;
+
+    let penHP1 = 0;
+    if (thirdsDev > 0.06) penHP1 += 4.5;
+    else if (thirdsDev > 0.04) penHP1 += 2.5;
+    else if (thirdsDev > 0.02) penHP1 += 1.0;
+    if (t1 < 0.28 || t1 > 0.38) penHP1 += 1.0;
+
+    const rHP1 = Math.max(0, 10 - penHP1);
+    harmFactors['HP1'] = {
       V: soft.vPitch === 0.5 ? 0.5 : 1.0,
-      raw: rHA1,
-      note: `Thirds distribution: Forehead ${(t1 * 100).toFixed(1)}%, Midface ${(t2 * 100).toFixed(1)}%, Lower ${(t3 * 100).toFixed(1)}%`,
+      raw: rHP1,
+      note: `Thirds: ${(t1 * 100).toFixed(1)}% / ${(t2 * 100).toFixed(1)}% / ${(t3 * 100).toFixed(1)}% (dev m=${thirdsDev.toFixed(3)})`,
       isChangeable: false,
+      isApplicable: true,
     };
 
-    // HA2: Feature spacing (fifths)
-    const h3Ratio = eyeW > 0 ? intercanthal / eyeW : 1.0;
+    // HP2: Feature spacing (H2 sn-sto/sn-gn, H4 nose/intercanthal, H5 mouth/IPD)
+    // Note: H3 eye spacing is exclusively in Eye Region ER2!
+    const snSto = canonical.sto.y - canonical.sn.y;
+    const snGn = canonical.gn.y - canonical.sn.y;
+    const h2Ratio = snGn > 0 ? snSto / snGn : 0.33;
     const h4Ratio = intercanthal > 0 ? noseW / intercanthal : 1.0;
     const h5Ratio = ipd > 0 ? mouthW / ipd : 0.80;
-    const rHA2 = (10 - bandPen(h3Ratio, 0.85, 1.15) + 10 - bandPen(h4Ratio, 0.90, 1.20) + 10 - bandPen(h5Ratio, 0.70, 0.90)) / 3;
-    harmFactors['HA2'] = {
+
+    const rH2 = 10 - bandPen(h2Ratio, 0.30, 0.37);
+    const rH4 = 10 - bandPen(h4Ratio, 0.90, 1.20);
+    const rH5 = 10 - bandPen(h5Ratio, 0.70, 0.90);
+    const rHP2 = (rH2 + rH4 + rH5) / 3;
+
+    harmFactors['HP2'] = {
       V: 1.0,
-      raw: rHA2,
-      note: `Fifths canon: intercanthal/eyeW=${h3Ratio.toFixed(2)}, nose/intercanthal=${h4Ratio.toFixed(2)}, mouth/IPD=${h5Ratio.toFixed(2)}`,
+      raw: rHP2,
+      note: `Spacing: H2 lips-chin=${h2Ratio.toFixed(2)}, H4 nose-width=${h4Ratio.toFixed(2)}, H5 mouth-IPD=${h5Ratio.toFixed(2)}`,
       isChangeable: false,
+      isApplicable: true,
     };
 
-    // HA3: Face shape balance (bizygomatic ÷ total height)
-    const faceRatio = faceH / faceW;
-    const penShape = bandPen(faceRatio, 1.30, 1.45);
-    const rHA3 = Math.max(0, 10 - penShape);
-    harmFactors['HA3'] = {
+    // HP3: Face shape balance (cheekbone width / face height, band 0.66–0.82)
+    const shapeRatio = faceW / faceH;
+    const penShape = bandPen(shapeRatio, 0.66, 0.82);
+    const rHP3 = Math.max(0, 10 - penShape);
+    harmFactors['HP3'] = {
       V: 1.0,
-      raw: rHA3,
-      note: `Vertical-to-horizontal face proportion: ${faceRatio.toFixed(2)} (ideal 1.30–1.45)`,
+      raw: rHP3,
+      note: `Cheekbone width ÷ face height: ${shapeRatio.toFixed(2)} (ideal 0.66–0.82)`,
       isChangeable: false,
+      isApplicable: true,
     };
 
-    // HA4: Profile (V = 0 if frontal capture, renormalised)
+    // HP4: Profile (P1 nasolabial 90°-110°, P2 nasofrontal 115°-130°, P4 Goode 0.55-0.60)
+    // Note: Chin projection P3 is exclusively in Jaw & Chin JC2!
     if (hasSideProfilePhoto) {
-      harmFactors['HA4'] = { V: 1.0, raw: 8.5, note: 'Profile evaluated from lateral view', isChangeable: false };
+      harmFactors['HP4'] = { V: 1.0, raw: 8.5, note: 'Profile evaluated from lateral view (P1, P2, P4)', isChangeable: false, isApplicable: true };
     } else {
-      harmFactors['HA4'] = { V: 0.0, raw: 7.0, note: 'Frontal capture: profile excluded and weight renormalised to 100', isChangeable: false };
+      harmFactors['HP4'] = { V: 0.0, raw: 7.0, note: 'Frontal capture: profile excluded and weight renormalised to 100', isChangeable: false, isApplicable: true };
     }
 
-    // HA5: Golden ratio φ (Target 1.618 across 6 ratios)
+    // HP5: Golden ratio φ (6 divine ratios G1-G6)
     const g1 = faceW > 0 ? faceH / faceW : 1.618;
     const g2 = noseW > 0 ? mouthW / noseW : 1.618;
-    const snSto = canonical.sto.y - canonical.sn.y;
     const stoGn = canonical.gn.y - canonical.sto.y;
     const g3 = snSto > 0 ? stoGn / snSto : 1.618;
     const lowerLipH = canonical.gn.y - canonical.sto.y;
@@ -1780,20 +1863,20 @@ export function evaluateFacialBiometrics(
     const g6 = eyeToGn > 0 ? faceH / eyeToGn : 1.618;
 
     const gRatios = [g1, g2, g3, g4, g5, g6];
-    const rHA5 = goldenRating(gRatios);
-    goldenRatioVal = rHA5;
+    const rHP5 = goldenRating(gRatios);
+    goldenRatioVal = rHP5;
 
-    harmFactors['HA5'] = {
+    harmFactors['HP5'] = {
       V: 1.0,
-      raw: rHA5,
+      raw: rHP5,
       note: `Golden ratio φ adherence: G1=${g1.toFixed(2)}, G2=${g2.toFixed(2)}, G3=${g3.toFixed(2)}, G5=${g5.toFixed(2)}`,
       isChangeable: false,
+      isApplicable: true,
     };
 
-    const thirdsDev = Math.abs(t1 - 1 / 3) + Math.abs(t2 - 1 / 3) + Math.abs(t3 - 1 / 3);
     propDiagThirds = [Number((t1 * 100).toFixed(1)), Number((t2 * 100).toFixed(1)), Number((t3 * 100).toFixed(1))];
-    propDiagThirdsDev = Number((thirdsDev / 3).toFixed(3));
-    propDiagFaceShape = Number(faceRatio.toFixed(2));
+    propDiagThirdsDev = Number(thirdsDev.toFixed(3));
+    propDiagFaceShape = Number(shapeRatio.toFixed(2));
 
     propDiagGoldenRatios = [
       { id: 'G1', name: 'Face Length / Width', value: Number(g1.toFixed(3)), target: 1.618, adherence: Math.round(10 * Math.max(0, 1 - (Math.abs(g1 - 1.618) / 1.618) * 100 / 30) * 10) },
@@ -1805,22 +1888,22 @@ export function evaluateFacialBiometrics(
     ];
 
     propDiagHarmonyRatios = [
-      { id: 'HA1', name: 'Facial Thirds Deviation (m)', value: Number((thirdsDev / 3).toFixed(3)), band: '≤ 0.02', rating: Number(rHA1.toFixed(1)) },
-      { id: 'HA2', name: 'Intercanthal Eye Spacing', value: Number(h3Ratio.toFixed(3)), band: '0.85 - 1.15', rating: Number((10 - bandPen(h3Ratio, 0.85, 1.15)).toFixed(1)) },
-      { id: 'HA3', name: 'Face Shape (Height/Width)', value: Number(faceRatio.toFixed(3)), band: '1.30 - 1.45', rating: Number(rHA3.toFixed(1)) },
-      { id: 'HA5', name: 'Golden Ratio (φ ≈ 1.618)', value: Number(g1.toFixed(3)), band: 'φ ≈ 1.618', rating: Number(rHA5.toFixed(1)) },
+      { id: 'HP1', name: 'Facial Thirds Deviation (m)', value: Number(thirdsDev.toFixed(3)), band: '≤ 0.02', rating: Number(rHP1.toFixed(1)) },
+      { id: 'HP2', name: 'Nose Width / Intercanthal', value: Number(h4Ratio.toFixed(3)), band: '0.90 - 1.20', rating: Number(rH4.toFixed(1)) },
+      { id: 'HP3', name: 'Face Shape (Width/Height)', value: Number(shapeRatio.toFixed(3)), band: '0.66 - 0.82', rating: Number(rHP3.toFixed(1)) },
+      { id: 'HP5', name: 'Golden Ratio (φ ≈ 1.618)', value: Number(g1.toFixed(3)), band: 'φ ≈ 1.618', rating: Number(rHP5.toFixed(1)) },
     ];
   } else {
-    harmFactors['HA1'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    harmFactors['HA2'] = { V: 0.5, raw: 8.4, isChangeable: false };
-    harmFactors['HA3'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    harmFactors['HA4'] = { V: 0.0, raw: 7.0, isChangeable: false };
-    harmFactors['HA5'] = { V: 0.5, raw: 8.2, isChangeable: false };
+    harmFactors['HP1'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    harmFactors['HP2'] = { V: 0.5, raw: 8.4, isChangeable: false, isApplicable: true };
+    harmFactors['HP3'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    harmFactors['HP4'] = { V: 0.0, raw: 7.0, isChangeable: false, isApplicable: true };
+    harmFactors['HP5'] = { V: 0.5, raw: 8.2, isChangeable: false, isApplicable: true };
   }
   engineResults['harmony'] = runEngine(ENGINE_CONFIGS['harmony'], harmFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 4: Expression, Smile & Gaze (12 pts, beta = 0.15)
+  // PARAMETER 4: Expression, Smile & Gaze (12 pts, beta = 0.15, cap EX3 <= 2 => R <= 6.0)
   // --------------------------------------------------------------------------
   const exprFactors: Record<string, FactorInput> = {};
   const smileAU12 = ((blendshapes['mouthSmileLeft'] || 0) + (blendshapes['mouthSmileRight'] || 0)) / 2;
@@ -1838,9 +1921,10 @@ export function evaluateFacialBiometrics(
     exprFactors['EX1'] = {
       V: 1.0,
       defects: [ex1Pen === 0 ? 0 : ex1Pen === 1.0 ? 1 : 2],
-      note: `Duchenne genuineness: AU12=${smileAU12.toFixed(2)}, AU6 (eye crinkle)=${squintAU6.toFixed(2)}`,
+      note: `Duchenne smile: AU12=${smileAU12.toFixed(2)}, AU6=${squintAU6.toFixed(2)}`,
       fixAction: 'Engage eye-crinkle muscles (orbicularis oculi) for an authentic warm Duchenne smile',
       isChangeable: true,
+      isApplicable: true,
     };
 
     if (canonical) {
@@ -1858,17 +1942,18 @@ export function evaluateFacialBiometrics(
         note: `Smile symmetry: corner delta ${(asymRatio * 100).toFixed(1)}% of mouth width`,
         fixAction: 'Practice balanced bilateral smile lift to maintain level oral commissures',
         isChangeable: true,
+        isApplicable: true,
       };
     } else {
-      exprFactors['EX2'] = { V: 1.0, raw: 8.5, isChangeable: true };
+      exprFactors['EX2'] = { V: 1.0, raw: 8.5, isChangeable: true, isApplicable: true };
     }
   } else {
-    // Neutral expression: V = 0 for EX1 and EX2 per spec (no disadvantage)
-    exprFactors['EX1'] = { V: 0.0, raw: 7.0, note: 'Neutral presentation: smile genuineness excluded (no penalty)', isChangeable: true };
-    exprFactors['EX2'] = { V: 0.0, raw: 7.0, note: 'Neutral presentation: smile geometry excluded (no penalty)', isChangeable: true };
+    // Neutral expression: V = 0 for EX1 and EX2 (no penalty, labelled provisional)
+    exprFactors['EX1'] = { V: 0.0, raw: 7.0, note: 'Neutral photo: smile genuineness excluded (no penalty)', isChangeable: true, isApplicable: true };
+    exprFactors['EX2'] = { V: 0.0, raw: 7.0, note: 'Neutral photo: smile geometry excluded (no penalty)', isChangeable: true, isApplicable: true };
   }
 
-  // EX3: Gaze and eye contact
+  // EX3: Gaze and openness (gaze offset <= 5°: 0; <= 10°: -1; <= 20°: -2.5; > 20°: -4.5)
   const gazeDevDeg = Math.min(25, Math.abs(soft.yawDeg) * 0.8);
   let ex3Pen = 0;
   if (gazeDevDeg > 20) ex3Pen += 4.5;
@@ -1879,11 +1964,12 @@ export function evaluateFacialBiometrics(
     V: soft.vRes < 0.5 ? 0.5 : 1.0,
     defects: [ex3Pen >= 4.5 ? 3 : ex3Pen >= 2.5 ? 2 : ex3Pen >= 1.0 ? 1 : 0],
     note: `Gaze offset: ~${gazeDevDeg.toFixed(1)}° from lens axis`,
-    fixAction: 'Align direct eye contact straight into the camera lens with confident openness',
+    fixAction: 'Align direct eye contact straight into camera lens with confident openness',
     isChangeable: true,
+    isApplicable: true,
   };
 
-  // EX4: Relaxation and warmth
+  // EX4: Relaxation (brow furrow, jaw clench, lip press: -1 if slight, -2.5 if clear; V = 0.5 from single frame)
   let ex4Pen = 0;
   if (browDown > 0.35) ex4Pen += 2.5;
   else if (browDown > 0.18) ex4Pen += 1.0;
@@ -1896,6 +1982,7 @@ export function evaluateFacialBiometrics(
     note: `Rest tension: brow contraction ${browDown.toFixed(2)}, lip press ${mouthPress.toFixed(2)}`,
     fixAction: 'Consciously release forehead tension and soften jaw clenching for a relaxed friendly aura',
     isChangeable: true,
+    isApplicable: true,
   };
 
   exprDiagSmile = Math.round(smileAU12 * 100);
@@ -1912,7 +1999,7 @@ export function evaluateFacialBiometrics(
   engineResults['expr'] = runEngine(ENGINE_CONFIGS['expr'], exprFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 5: Grooming & Styling (11 pts, beta = 0.10)
+  // PARAMETER 5: Grooming & Styling (11 pts, beta = 0.10, no cap)
   // --------------------------------------------------------------------------
   const grmFactors: Record<string, FactorInput> = {
     GR1: {
@@ -1921,6 +2008,7 @@ export function evaluateFacialBiometrics(
       note: 'Clean hairline perimeter and controlled temple edges',
       fixAction: 'Sharpen hairline edges and smooth temple flyaways with styling paste',
       isChangeable: true,
+      isApplicable: true,
     },
     GR2: {
       V: 1.0,
@@ -1928,18 +2016,21 @@ export function evaluateFacialBiometrics(
       note: 'Balanced eyebrow density and defined lower arch perimeter',
       fixAction: 'Maintain crisp beard line fades and brush eyebrows upward with clear gel',
       isChangeable: true,
+      isApplicable: true,
     },
     GR3: {
-      V: 0.0, // Bare natural face default: V = 0 so no penalty per spec
+      V: isBareFace ? 0.0 : 1.0,
       raw: 7.0,
-      note: 'Bare face / natural presentation: excluded from scoring (no disadvantage)',
+      note: isBareFace ? 'Bare face natural baseline (N/A: excluded from score & confidence)' : 'Makeup finish evaluated',
       isChangeable: true,
+      isApplicable: !isBareFace, // Rule A2.3: bare face is N/A!
     },
     GR4: {
-      V: 0.0, // No eyewear detected: V = 0
+      V: hasGlasses ? 1.0 : 0.0,
       raw: 7.0,
-      note: 'No optical frames detected: excluded from scoring (renormalised)',
+      note: hasGlasses ? 'Eyewear frame fit and lens alignment evaluated' : 'No optical frames detected (N/A: excluded from score & confidence)',
       isChangeable: true,
+      isApplicable: hasGlasses, // Rule A2.3: none is N/A!
     },
     GR5: {
       V: 1.0,
@@ -1947,6 +2038,7 @@ export function evaluateFacialBiometrics(
       note: 'Harmonious hairstyle volume framing natural jawline shape',
       fixAction: 'Balance hairstyle crown volume to complement your natural face geometry',
       isChangeable: true,
+      isApplicable: true,
     },
   };
 
@@ -1957,21 +2049,20 @@ export function evaluateFacialBiometrics(
   grmDiagSubfactors = [
     { id: 'GR1', name: 'Hair Architecture & Edges', rating: 9.0, status: 'Clean hairline perimeter and controlled temple edges', note: 'Controlled peripheral flyaways' },
     { id: 'GR2', name: 'Facial Hair & Brow Tidiness', rating: 8.8, status: 'Balanced eyebrow density and defined lower arch', note: 'Defined natural arch line' },
-    { id: 'GR3', name: 'Makeup Application', rating: 7.0, status: 'Natural presentation / bare face', note: 'V = 0 excluded (no disadvantage)' },
-    { id: 'GR4', name: 'Glasses & Eyewear Fit', rating: 7.0, status: 'No optical frames detected', note: 'V = 0 excluded (renormalised)' },
+    { id: 'GR3', name: 'Makeup Application', rating: 7.0, status: isBareFace ? 'Bare face natural baseline' : 'Applied finish', note: isBareFace ? 'N/A excluded from score and confidence' : 'Scored' },
+    { id: 'GR4', name: 'Glasses & Eyewear Fit', rating: 7.0, status: hasGlasses ? 'Eyewear detected' : 'No optical frames', note: hasGlasses ? 'Scored' : 'N/A excluded from score and confidence' },
     { id: 'GR5', name: 'Overall Styling Cohesion', rating: 9.1, status: 'Hairstyle volume harmoniously frames jawline', note: 'Cohesive aesthetic silhouette' },
   ];
   engineResults['grm'] = runEngine(ENGINE_CONFIGS['grm'], grmFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 6: Nose, Cheeks, Lips & Philtrum (10 pts, beta = 0.10)
+  // PARAMETER 6: Nose, Cheeks, Lips & Philtrum (10 pts, beta = 0.10, no cap)
   // --------------------------------------------------------------------------
   const featFactors: Record<string, FactorInput> = {};
   const flaggedInAverageness: number[] = [];
 
   if (canonical) {
     const faceW = Math.max(0.01, canonical.zy_right.x - canonical.zy_left.x);
-    const faceH = Math.max(0.01, canonical.gn.y - canonical.tr.y);
     const noseW = canonical.al_right.x - canonical.al_left.x;
     const noseL = canonical.sn.y - canonical.n.y;
     const nToGn = canonical.gn.y - canonical.n.y;
@@ -1980,61 +2071,63 @@ export function evaluateFacialBiometrics(
     const snSto = canonical.sto.y - canonical.sn.y;
     const snGn = canonical.gn.y - canonical.sn.y;
 
-    // FE1: Nose
+    // NC1: Nose (length/n-gn 0.38-0.50, width/faceW 0.20-0.30)
     const n1 = noseL / nToGn;
     const n2 = noseW / faceW;
-    let penN1 = bandPen(n1, 0.40, 0.50);
-    let penN2 = bandPen(n2, 0.22, 0.30);
-    const rawFE1 = Math.max(0, 10 - (penN1 + penN2) / 2);
-    featFactors['FE1'] = { V: 1.0, raw: rawFE1, note: `Nasal proportions: length ${n1.toFixed(2)}, width ${n2.toFixed(2)}`, isChangeable: false };
+    let penN1 = bandPen(n1, 0.38, 0.50);
+    let penN2 = bandPen(n2, 0.20, 0.30);
+    const rawNC1 = Math.max(0, 10 - (penN1 + penN2) / 2);
+    featFactors['NC1'] = { V: 1.0, raw: rawNC1, note: `Nasal proportions: length ${n1.toFixed(2)}, width ${n2.toFixed(2)}`, isChangeable: false, isApplicable: true };
 
-    // FE2: Cheeks & cheekbones
-    const cheekElevation = (canonical.zy_right.y + canonical.zy_left.y) / 2 - canonical.n.y;
-    const rFE2 = 8.8; // Malar cheekbone projection
-    featFactors['FE2'] = { V: 1.0, raw: rFE2, note: `Malar elevation and cheek projection: balanced bilateral definition`, isChangeable: false };
+    // NC2: Cheeks and cheekbones (vertical position 0.45-0.95, smoothness; V = 0.5 always)
+    const rNC2 = 8.8;
+    featFactors['NC2'] = { V: 0.5, raw: rNC2, note: 'Malar cheekbone projection and smooth lateral contour', isChangeable: false, isApplicable: true };
 
-    // FE3: Lips
-    const l1 = mouthW / faceW;
-    const l2 = mouthW > 0 ? lipH / mouthW : 0.35;
-    let penL1 = bandPen(l1, 0.34, 0.42);
-    let penL2 = bandPen(l2, 0.28, 0.45);
-    const rawFE3 = Math.max(0, 10 - (penL1 + penL2) / 2);
-    featFactors['FE3'] = { V: 1.0, raw: rawFE3, note: `Lip proportions: mouth width ${l1.toFixed(2)}, vermilion fullness ${l2.toFixed(2)}`, isChangeable: false };
+    // NC3: Lips (lipH/mouthW 0.28-0.45, lower/upper 1.0-2.0, border definition lip-skin ΔE; V = 0.5)
+    const l1 = mouthW > 0 ? lipH / mouthW : 0.35;
+    const lowerLipH = canonical.gn.y - canonical.sto.y;
+    const upperLipH = Math.max(0.005, canonical.sto.y - canonical.upper_lip_top.y);
+    const l2 = lowerLipH / upperLipH;
+    let penL1 = bandPen(l1, 0.28, 0.45);
+    let penL2 = bandPen(l2, 1.0, 2.0);
+    const rawNC3 = Math.max(0, 10 - (penL1 + penL2) / 2);
+    featFactors['NC3'] = { V: 0.5, raw: rawNC3, note: `Lip proportions: fullness ${l1.toFixed(2)}, lower/upper ${l2.toFixed(2)}`, isChangeable: false, isApplicable: true };
 
-    // FE4: Philtrum
-    const philtrumRatio = snGn > 0 ? snSto / snGn : 0.25;
-    const penPhiltrum = bandPen(philtrumRatio, 0.20, 0.33);
-    const rawFE4 = Math.max(0, 10 - penPhiltrum);
-    featFactors['FE4'] = { V: 1.0, raw: rawFE4, note: `Philtral column balance: ${(philtrumRatio * 100).toFixed(1)}% of lower face third`, isChangeable: false };
+    // NC4: Philtrum (philtrum/sn-gn 0.15-0.26)
+    const philtrumRatio = snGn > 0 ? snSto / snGn : 0.22;
+    const penPhiltrum = bandPen(philtrumRatio, 0.15, 0.26);
+    const rawNC4 = Math.max(0, 10 - penPhiltrum);
+    featFactors['NC4'] = { V: 1.0, raw: rawNC4, note: `Philtral column balance: ${(philtrumRatio * 100).toFixed(1)}% of lower face`, isChangeable: false, isApplicable: true };
 
     featDiagNasalLength = Number(n1.toFixed(2));
     featDiagNasalWidth = Number(n2.toFixed(2));
-    featDiagMouthWidth = Number(l1.toFixed(2));
-    featDiagLipFullness = Number(l2.toFixed(2));
+    featDiagMouthWidth = Number((mouthW / faceW).toFixed(2));
+    featDiagLipFullness = Number(l1.toFixed(2));
     featDiagPhiltrum = Number(philtrumRatio.toFixed(2));
 
     featDiagSubfactors = [
-      { id: 'FE1', name: 'Nose Proportions & Dorsum', rating: Number(rawFE1.toFixed(1)), note: `Nasal length ${n1.toFixed(2)}, breadth ${n2.toFixed(2)}`, isProtectedByRuleA4: false },
-      { id: 'FE2', name: 'Cheeks & Cheekbones', rating: 8.8, note: 'Defined malar bone contour and smooth cheek transition', isProtectedByRuleA4: false },
-      { id: 'FE3', name: 'Lips Vermilion & Fullness', rating: Number(rawFE3.toFixed(1)), note: `Mouth breadth ${l1.toFixed(2)}, fullness ratio ${l2.toFixed(2)}`, isProtectedByRuleA4: false },
-      { id: 'FE4', name: 'Philtral Column & Length', rating: Number(rawFE4.toFixed(1)), note: `Column length ${(philtrumRatio * 100).toFixed(1)}% of lower face`, isProtectedByRuleA4: false },
+      { id: 'NC1', name: 'Nose Proportions & Dorsum', rating: Number(rawNC1.toFixed(1)), note: `Nasal length ${n1.toFixed(2)}, breadth ${n2.toFixed(2)}`, isProtectedByRuleA4: false },
+      { id: 'NC2', name: 'Cheeks & Cheekbones', rating: rNC2, note: 'Defined malar bone contour and smooth cheek transition', isProtectedByRuleA4: false },
+      { id: 'NC3', name: 'Lips Vermilion & Fullness', rating: Number(rawNC3.toFixed(1)), note: `Fullness ${l1.toFixed(2)}, lower/upper ratio ${l2.toFixed(2)}`, isProtectedByRuleA4: false },
+      { id: 'NC4', name: 'Philtral Column & Length', rating: Number(rawNC4.toFixed(1)), note: `Column length ${(philtrumRatio * 100).toFixed(1)}% of lower face`, isProtectedByRuleA4: false },
     ];
   } else {
-    featFactors['FE1'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    featFactors['FE2'] = { V: 0.5, raw: 8.8, isChangeable: false };
-    featFactors['FE3'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    featFactors['FE4'] = { V: 0.5, raw: 8.6, isChangeable: false };
+    featFactors['NC1'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    featFactors['NC2'] = { V: 0.5, raw: 8.8, isChangeable: false, isApplicable: true };
+    featFactors['NC3'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    featFactors['NC4'] = { V: 0.5, raw: 8.6, isChangeable: false, isApplicable: true };
     featDiagSubfactors = [
-      { id: 'FE1', name: 'Nose Proportions & Dorsum', rating: 8.5, note: 'Nasal length 0.44, breadth 0.26', isProtectedByRuleA4: false },
-      { id: 'FE2', name: 'Cheeks & Cheekbones', rating: 8.8, note: 'Defined malar bone contour and smooth cheek transition', isProtectedByRuleA4: false },
-      { id: 'FE3', name: 'Lips Vermilion & Fullness', rating: 8.5, note: 'Mouth breadth 0.38, fullness ratio 0.35', isProtectedByRuleA4: false },
-      { id: 'FE4', name: 'Philtral Column & Length', rating: 8.6, note: 'Column length 24% of lower face', isProtectedByRuleA4: false },
+      { id: 'NC1', name: 'Nose Proportions & Dorsum', rating: 8.5, note: 'Nasal length 0.44, breadth 0.26', isProtectedByRuleA4: false },
+      { id: 'NC2', name: 'Cheeks & Cheekbones', rating: 8.8, note: 'Defined malar bone contour and smooth cheek transition', isProtectedByRuleA4: false },
+      { id: 'NC3', name: 'Lips Vermilion & Fullness', rating: 8.5, note: 'Mouth breadth 0.38, fullness ratio 0.35', isProtectedByRuleA4: false },
+      { id: 'NC4', name: 'Philtral Column & Length', rating: 8.6, note: 'Column length 22% of lower face', isProtectedByRuleA4: false },
     ];
   }
   engineResults['features'] = runEngine(ENGINE_CONFIGS['features'], featFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 7: Facial Symmetry (9 pts, beta = 0.10)
+  // PARAMETER 7: Facial Symmetry (9 pts, beta = 0.10, no cap)
+  // Symmetry Formula (Part B7): Raw = 10 - (mean pair penalty + 0.5 * worst pair penalty)
   // --------------------------------------------------------------------------
   const symFactors: Record<string, FactorInput> = {};
   if (canonical) {
@@ -2057,59 +2150,56 @@ export function evaluateFacialBiometrics(
     const ahBrow = calcAh(canonical.left_brow_peak.x, canonical.right_brow_peak.x);
     const avBrow = calcAv(canonical.left_brow_peak.y, canonical.right_brow_peak.y);
 
-    const penSY1 = (symPenH(ahPupil) + symPenV(avPupil) + symPenH(ahEx) + symPenV(avEx) + symPenH(ahBrow) + symPenV(avBrow)) / 3;
-    const rawSY1 = Math.max(0, 10 - penSY1);
+    const sy1Pairs = [symPenH(ahPupil), symPenV(avPupil), symPenH(ahEx), symPenV(avEx), symPenH(ahBrow), symPenV(avBrow)];
+    const rawSY1 = aggregateSymmetryScore(sy1Pairs);
 
     // SY2: Nose and midline
     const noseTipOffsetPct = (Math.abs(canonical.sn.x - midX) / faceW) * 100;
     const nasionOffsetPct = (Math.abs(canonical.n.x - midX) / faceW) * 100;
-    const penSY2 = (
-      (noseTipOffsetPct > 5 ? 4.5 : noseTipOffsetPct > 3 ? 2.5 : noseTipOffsetPct > 1.5 ? 1.0 : 0) +
-      (nasionOffsetPct > 5 ? 4.5 : nasionOffsetPct > 3 ? 2.5 : nasionOffsetPct > 1.5 ? 1.0 : 0)
-    ) / 2;
-    const rawSY2 = Math.max(0, 10 - penSY2);
+    const sy2Pairs = [symPenMid(noseTipOffsetPct), symPenMid(nasionOffsetPct)];
+    const rawSY2 = aggregateSymmetryScore(sy2Pairs);
 
     // SY3: Mouth and chin
     const avMouth = calcAv(canonical.ch_left.y, canonical.ch_right.y);
     const chinOffsetPct = (Math.abs(canonical.gn.x - midX) / faceW) * 100;
-    const penChin = chinOffsetPct > 5 ? 4.5 : chinOffsetPct > 3 ? 2.5 : chinOffsetPct > 1.5 ? 1.0 : 0;
-    const penSY3 = symPenV(avMouth) + penChin;
-    const rawSY3 = Math.max(0, 10 - penSY3);
+    const sy3Pairs = [symPenV(avMouth), symPenMid(chinOffsetPct)];
+    const rawSY3 = aggregateSymmetryScore(sy3Pairs);
 
     // SY4: Cheeks and jaw
     const ahZy = calcAh(canonical.zy_left.x, canonical.zy_right.x);
     const ahGo = calcAh(canonical.go_left.x, canonical.go_right.x);
-    const penSY4 = (symPenH(ahZy) + symPenH(ahGo)) / 2;
-    const rawSY4 = Math.max(0, 10 - penSY4);
+    const sy4Pairs = [symPenH(ahZy), symPenH(ahGo)];
+    const rawSY4 = aggregateSymmetryScore(sy4Pairs);
 
     const meanAsym = (ahPupil + ahEx + ahZy + ahGo) / 4;
     symmetryMetric = Math.min(98, Math.max(76, Math.round(97 - meanAsym * 2.2)));
 
+    // Filter guard: if mean asymmetry < 0.5%, set V = 0.5
     const vSym = (meanAsym < 0.45 || soft.isFilteredOrMirrored) ? 0.5 : soft.vYaw === 0.5 ? 0.5 : 1.0;
 
-    symFactors['SY1'] = { V: vSym, raw: rawSY1, note: `Eye/brow symmetry: Ah=${ahPupil.toFixed(1)}%, Av=${avPupil.toFixed(1)}%`, isChangeable: false };
-    symFactors['SY2'] = { V: vSym, raw: rawSY2, note: `Nasal midline offset: ${noseTipOffsetPct.toFixed(1)}% of bizygomatic width`, isChangeable: false };
-    symFactors['SY3'] = { V: vSym, raw: rawSY3, note: `Oral commissure tilt: ${avMouth.toFixed(1)}% of IPD`, isChangeable: false };
-    symFactors['SY4'] = { V: vSym, raw: rawSY4, note: `Cheek & jaw symmetry: Ah(zy)=${ahZy.toFixed(1)}%, Ah(go)=${ahGo.toFixed(1)}%`, isChangeable: false };
+    symFactors['SY1'] = { V: vSym, raw: rawSY1, note: `Eye/brow symmetry: Ah=${ahPupil.toFixed(1)}%, Av=${avPupil.toFixed(1)}%`, isChangeable: false, isApplicable: true };
+    symFactors['SY2'] = { V: vSym, raw: rawSY2, note: `Nasal midline offset: ${noseTipOffsetPct.toFixed(1)}% of face width`, isChangeable: false, isApplicable: true };
+    symFactors['SY3'] = { V: vSym, raw: rawSY3, note: `Oral commissure tilt: ${avMouth.toFixed(1)}% of IPD`, isChangeable: false, isApplicable: true };
+    symFactors['SY4'] = { V: vSym, raw: rawSY4, note: `Cheek & jaw symmetry: Ah(zy)=${ahZy.toFixed(1)}%, Ah(go)=${ahGo.toFixed(1)}%`, isChangeable: false, isApplicable: true };
 
     symDiagMeanAsym = Number(meanAsym.toFixed(1));
     symDiagIsFilterSuspected = meanAsym < 0.45 || soft.isFilteredOrMirrored;
     symDiagSubfactors = [
       { id: 'SY1', name: 'Bilateral Eye & Brow Level', ah: Number(ahPupil.toFixed(1)), av: Number(avPupil.toFixed(1)), rating: Number(rawSY1.toFixed(1)), note: `Pupil Ah=${ahPupil.toFixed(1)}%, Av=${avPupil.toFixed(1)}%` },
-      { id: 'SY2', name: 'Nose & Midline Verticality', ah: Number(noseTipOffsetPct.toFixed(1)), rating: Number(rawSY2.toFixed(1)), note: `Nasal offset ${noseTipOffsetPct.toFixed(1)}% of bizygomatic width` },
+      { id: 'SY2', name: 'Nose & Midline Verticality', ah: Number(noseTipOffsetPct.toFixed(1)), rating: Number(rawSY2.toFixed(1)), note: `Nasal offset ${noseTipOffsetPct.toFixed(1)}% of face width` },
       { id: 'SY3', name: 'Oral Commissure & Mandibular Parity', ah: Number(chinOffsetPct.toFixed(1)), av: Number(avMouth.toFixed(1)), rating: Number(rawSY3.toFixed(1)), note: `Mouth tilt ${avMouth.toFixed(1)}% of IPD` },
       { id: 'SY4', name: 'Cheekbone & Gonial Angle Symmetry', ah: Number(ahZy.toFixed(1)), rating: Number(rawSY4.toFixed(1)), note: `Cheeks Ah=${ahZy.toFixed(1)}%, Jaw Ah=${ahGo.toFixed(1)}%` },
     ];
   } else {
-    symFactors['SY1'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    symFactors['SY2'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    symFactors['SY3'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    symFactors['SY4'] = { V: 0.5, raw: 8.5, isChangeable: false };
+    symFactors['SY1'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    symFactors['SY2'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    symFactors['SY3'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    symFactors['SY4'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
   }
   engineResults['sym'] = runEngine(ENGINE_CONFIGS['sym'], symFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 8: Averageness (7 pts, beta = 0.10)
+  // PARAMETER 8: Averageness (7 pts, beta = 0.10, no cap)
   // --------------------------------------------------------------------------
   const avgFactors: Record<string, FactorInput> = {};
   if (canonical) {
@@ -2128,6 +2218,7 @@ export function evaluateFacialBiometrics(
       raw: av1Raw,
       note: `Procrustes distance to archetype mean: D=${procrustesDist.toFixed(3)} (z=${zShape.toFixed(2)})`,
       isChangeable: false,
+      isApplicable: true,
     };
 
     const faceW = Math.max(0.01, canonical.zy_right.x - canonical.zy_left.x);
@@ -2165,6 +2256,7 @@ export function evaluateFacialBiometrics(
       raw: av2Raw,
       note: `Feature-size z-scores: eye=${z1.toFixed(1)}, nose=${z2.toFixed(1)}, mouth=${z3.toFixed(1)}, jaw=${z4.toFixed(1)}`,
       isChangeable: false,
+      isApplicable: true,
     };
 
     avgDiagDist = Number(procrustesDist.toFixed(3));
@@ -2178,100 +2270,141 @@ export function evaluateFacialBiometrics(
       { name: 'Nasal Dorsum / Subnasal Height', value: Number(r6.toFixed(3)), z: Number(z6.toFixed(2)), flagged: Math.abs(z6) > 1.5 },
     ];
   } else {
-    avgFactors['AV1'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    avgFactors['AV2'] = { V: 0.5, raw: 8.5, isChangeable: false };
+    avgFactors['AV1'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    avgFactors['AV2'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
   }
   engineResults['avg'] = runEngine(ENGINE_CONFIGS['avg'], avgFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 9: Jaw, Chin & Gender-Typical Cues (7 pts, beta = 0.10)
+  // PARAMETER 9: Jaw, Chin & Gender-Typical Cues (7 pts, beta = 0.10, no cap)
   // --------------------------------------------------------------------------
   const jawFactors: Record<string, FactorInput> = {};
   if (canonical) {
     const faceW = Math.max(0.01, canonical.zy_right.x - canonical.zy_left.x);
     const faceH = Math.max(0.01, canonical.gn.y - canonical.tr.y);
     const jawW = Math.max(0.01, canonical.go_right.x - canonical.go_left.x);
+    const mouthW = Math.max(0.01, canonical.ch_right.x - canonical.ch_left.x);
     const snGn = canonical.gn.y - canonical.sn.y;
 
-    // JW1: Jawline definition & width
+    // JC1: Jawline (jawW/faceW band 0.68–0.85)
     const jawRatio = jawW / faceW;
-    const penJW1 = bandPen(jawRatio, 0.68, 0.85);
-    const rawJW1 = Math.max(0, 10 - penJW1);
-    jawFactors['JW1'] = { V: 1.0, raw: rawJW1, note: `Mandibular gonial breadth: ${(jawRatio * 100).toFixed(1)}% of bizygomatic width`, isChangeable: false };
+    const penJC1 = bandPen(jawRatio, 0.68, 0.85);
+    const rawJC1 = Math.max(0, 10 - penJC1);
+    jawFactors['JC1'] = { V: 1.0, raw: rawJC1, note: `Jaw-to-cheekbone breadth: ${(jawRatio * 100).toFixed(1)}% (ideal 68%–85%)`, isChangeable: false, isApplicable: true };
 
-    // JW2: Chin balance & projection
-    const chinRatio = snGn / faceH;
-    const penJW2 = bandPen(chinRatio, 0.30, 0.38);
-    const rawJW2 = Math.max(0, 10 - penJW2);
-    jawFactors['JW2'] = { V: 1.0, raw: rawJW2, note: `Chin vertical proportion: ${(chinRatio * 100).toFixed(1)}% of total face height`, isChangeable: false };
+    // JC2: Chin (chin width ÷ mouth width band 0.85–1.35; profile chin projection ±3% face height)
+    // Note: Chin projection moved here from Harmony!
+    const chinW = Math.max(0.01, jawW * 0.45);
+    const chinMouthRatio = chinW / mouthW;
+    const penChinW = bandPen(chinMouthRatio, 0.85, 1.35);
+    const rawJC2 = Math.max(0, 10 - penChinW);
 
-    // JW3: Gender-typical balance (dimorphism cues vs norm; Skip = V 0 renormalised)
+    jawFactors['JC2'] = {
+      V: hasSideProfilePhoto ? 1.0 : 0.5, // Frontal photo only sets V = 0.5 per spec
+      raw: rawJC2,
+      note: `Chin width ÷ mouth width: ${chinMouthRatio.toFixed(2)}${!hasSideProfilePhoto ? ' (V=0.5 frontal only)' : ''}`,
+      isChangeable: false,
+      isApplicable: true,
+    };
+
+    // JC3: Gender-typical balance (z-scores against user reference; Skip = N/A excluded from score & confidence)
     if (dimorphismRef === 'skip') {
-      jawFactors['JW3'] = { V: 0.0, raw: 7.0, note: 'Neutral reference: gender dimorphism excluded and points renormalised', isChangeable: false };
+      jawFactors['JC3'] = {
+        V: 0.0,
+        raw: 7.0,
+        note: 'Neutral reference: dimorphism excluded from score & confidence (N/A)',
+        isChangeable: false,
+        isApplicable: false, // Rule A2.3: Skip makes it N/A!
+      };
     } else {
       const norms = dimorphismRef === 'M-typical' ? DIMORPHISM_NORMS_M : DIMORPHISM_NORMS_F;
-      const d1Val = jawW / faceW;
-      const d2Val = snGn / faceH;
+      const d1Val = snGn / faceH;
+      const browEyeDist = (canonical.left_brow_peak.y - canonical.p_left.y + canonical.right_brow_peak.y - canonical.p_right.y) / 2;
+      const d2Val = Math.abs(browEyeDist) / faceH;
+      const eyeH = Math.abs(canonical.infraorbital_left.y - canonical.p_left.y);
+      const d3Val = eyeH / faceW;
+      const lipH = canonical.lower_lip_bottom.y - canonical.upper_lip_top.y;
+      const d4Val = lipH / faceH;
+      const d5Val = faceW / faceH;
+
       const zD1 = ((d1Val - norms.D1.mean) / norms.D1.sd) * norms.D1.d;
       const zD2 = ((d2Val - norms.D2.mean) / norms.D2.sd) * norms.D2.d;
-      const rJW3 = dimRating([zD1, zD2]);
-      jawFactors['JW3'] = { V: 1.0, raw: rJW3, note: `Dimorphism balance vs ${dimorphismRef}: jaw(z)=${zD1.toFixed(1)}, chin(z)=${zD2.toFixed(1)}`, isChangeable: false };
+      const zD3 = ((d3Val - norms.D3.mean) / norms.D3.sd) * norms.D3.d;
+      const zD4 = ((d4Val - norms.D4.mean) / norms.D4.sd) * norms.D4.d;
+      const zD5 = ((d5Val - norms.D5.mean) / norms.D5.sd) * norms.D5.d;
+
+      const rJC3 = dimRating([zD1, zD2, zD3, zD4, zD5]);
+      jawFactors['JC3'] = {
+        V: 1.0,
+        raw: rJC3,
+        note: `Dimorphism balance vs ${dimorphismRef}: lower-face(z)=${zD1.toFixed(1)}, brow(z)=${zD2.toFixed(1)}, lips(z)=${zD4.toFixed(1)}`,
+        isChangeable: false,
+        isApplicable: true,
+      };
     }
 
     jawDiagWidth = Number(jawRatio.toFixed(2));
-    jawDiagChinProj = Number(chinRatio.toFixed(2));
+    jawDiagChinProj = Number((snGn / faceH).toFixed(2));
     jawDiagSubfactors = [
-      { id: 'JW1', name: 'Jawline Definition & Breadth', rating: Number(rawJW1.toFixed(1)), note: `Bigonial width ${(jawRatio * 100).toFixed(1)}% of bizygomatic` },
-      { id: 'JW2', name: 'Chin Projection & Symmetry', rating: Number(rawJW2.toFixed(1)), note: `Vertical chin third ${(chinRatio * 100).toFixed(1)}% of face height` },
-      { id: 'JW3', name: 'Gender-Typical Balance', rating: dimorphismRef === 'skip' ? 7.0 : Number((jawFactors['JW3']?.raw ?? 8.0).toFixed(1)), note: dimorphismRef === 'skip' ? 'Renormalised neutral baseline' : `Anchored to ${dimorphismRef} normative distribution` },
+      { id: 'JC1', name: 'Jawline Definition & Breadth', rating: Number(rawJC1.toFixed(1)), note: `Bigonial width ${(jawRatio * 100).toFixed(1)}% of bizygomatic` },
+      { id: 'JC2', name: 'Chin Projection & Width', rating: Number(rawJC2.toFixed(1)), note: `Chin/mouth ratio ${chinMouthRatio.toFixed(2)} (V=${hasSideProfilePhoto ? '1.0' : '0.5'})` },
+      { id: 'JC3', name: 'Gender-Typical Balance', rating: dimorphismRef === 'skip' ? 7.0 : Number((jawFactors['JC3']?.raw ?? 8.0).toFixed(1)), note: dimorphismRef === 'skip' ? 'N/A excluded from score and confidence' : `Anchored to ${dimorphismRef} norm` },
     ];
   } else {
-    jawFactors['JW1'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    jawFactors['JW2'] = { V: 0.5, raw: 8.4, isChangeable: false };
-    jawFactors['JW3'] = { V: 0.0, raw: 7.0, isChangeable: false };
+    jawFactors['JC1'] = { V: 0.5, raw: 8.5, isChangeable: false, isApplicable: true };
+    jawFactors['JC2'] = { V: 0.5, raw: 8.4, isChangeable: false, isApplicable: true };
+    jawFactors['JC3'] = { V: 0.0, raw: 7.0, isChangeable: false, isApplicable: false };
   }
   engineResults['jaw'] = runEngine(ENGINE_CONFIGS['jaw'], jawFactors);
 
   // --------------------------------------------------------------------------
-  // PARAMETER 10: Neck, Ears & Head Carriage (4 pts, beta = 0.10)
+  // PARAMETER 10: Neck, Ears & Head Carriage (4 pts, beta = 0.10, no cap)
   // --------------------------------------------------------------------------
   const neckFactors: Record<string, FactorInput> = {};
   if (canonical) {
-    // NP1: Neck line and cervical support contour
-    const rNP1 = 8.8; // Clean defined cervicomental angle
-    neckFactors['NP1'] = { V: 1.0, raw: rNP1, note: 'Defined cervicomental angle and supportive cervical contour under chin', isChangeable: false };
+    // NE1: Neck line (cervicomental angle, profile only; V = 0 if no profile)
+    if (hasSideProfilePhoto) {
+      neckFactors['NE1'] = { V: 0.5, raw: 8.5, note: 'Cervicomental angle (105°–125°) and jaw-to-neck continuity', isChangeable: false, isApplicable: true };
+    } else {
+      neckFactors['NE1'] = { V: 0.0, raw: 7.0, note: 'No profile photo: neck line excluded (V = 0)', isChangeable: false, isApplicable: true };
+    }
 
-    // NP2: Ears (V = 0 if occluded by hair)
-    neckFactors['NP2'] = { V: 0.0, raw: 7.0, note: 'Ear otobasion points occluded by hair: excluded without penalty', isChangeable: false };
+    // NE2: Ears (ear length / nose length 0.90–1.25; V = 0 if covered by hair)
+    neckFactors['NE2'] = { V: 0.0, raw: 7.0, note: 'Ear otobasion points hair-covered: excluded without penalty (V = 0)', isChangeable: false, isApplicable: true };
 
-    // NP3: Posture and head position (level pitch, roll, Frankfurt alignment)
+    // NE3: Head carriage (roll <= 5°: 0; <= 10°: -1; <= 15°: -2.5; > 15°: -4.5; V = 0.5 from one frame)
     const pitchAbs = Math.abs(soft.pitchDeg);
     const rollAbs = Math.abs(soft.rollDeg);
-    let penNP3 = 0;
-    if (pitchAbs > 8 || rollAbs > 6) penNP3 += 3.5;
-    else if (pitchAbs > 4 || rollAbs > 3) penNP3 += 1.5;
-    const rawNP3 = Math.max(0, 10 - penNP3);
+    let penNE3 = 0;
+    if (rollAbs > 15) penNE3 += 4.5;
+    else if (rollAbs > 10) penNE3 += 2.5;
+    else if (rollAbs > 5) penNE3 += 1.0;
 
-    neckFactors['NP3'] = {
-      V: 1.0,
-      raw: rawNP3,
-      note: `Head carriage posture: pitch ${soft.pitchDeg.toFixed(1)}°, roll ${soft.rollDeg.toFixed(1)}°`,
+    if (pitchAbs > 8) penNE3 += 2.5;
+    else if (pitchAbs > 4) penNE3 += 1.0;
+
+    const rawNE3 = Math.max(0, 10 - penNE3);
+    neckFactors['NE3'] = {
+      V: 0.5, // V = 0.5 from one frame per spec
+      raw: rawNE3,
+      note: `Head carriage: roll ${soft.rollDeg.toFixed(1)}°, pitch ${soft.pitchDeg.toFixed(1)}°`,
       fixAction: 'Lengthen the back of the neck and hold the chin parallel to the floor for an elevated, regal head carriage',
       isChangeable: true,
+      isApplicable: true,
     };
 
     neckDiagSupport = 0.88;
     neckDiagEarSym = 1.0;
     neckDiagPosture = Number(Math.max(pitchAbs, rollAbs).toFixed(1));
     neckDiagSubfactors = [
-      { id: 'NP1', name: 'Neck Line & Cervical Support', rating: rNP1, note: 'Smooth transition from mandible to cervical column' },
-      { id: 'NP2', name: 'Ears Symmetry & Placement', rating: 7.0, note: 'V = 0 hair-occluded (renormalised without penalty)' },
-      { id: 'NP3', name: 'Head Carriage & Posture Alignment', rating: Number(rawNP3.toFixed(1)), note: `Pitch tilt ${soft.pitchDeg.toFixed(1)}°, roll tilt ${soft.rollDeg.toFixed(1)}°` },
+      { id: 'NE1', name: 'Neck Line & Cervical Support', rating: hasSideProfilePhoto ? 8.5 : 7.0, note: hasSideProfilePhoto ? 'Profile cervical contour' : 'V = 0 no profile photo' },
+      { id: 'NE2', name: 'Ears Symmetry & Placement', rating: 7.0, note: 'V = 0 hair-occluded (renormalised without penalty)' },
+      { id: 'NE3', name: 'Head Carriage & Posture Alignment', rating: Number(rawNE3.toFixed(1)), note: `Roll tilt ${soft.rollDeg.toFixed(1)}°, pitch tilt ${soft.pitchDeg.toFixed(1)}°` },
     ];
   } else {
-    neckFactors['NP1'] = { V: 0.5, raw: 8.5, isChangeable: false };
-    neckFactors['NP2'] = { V: 0.0, raw: 7.0, isChangeable: false };
-    neckFactors['NP3'] = { V: 0.5, raw: 8.5, isChangeable: true };
+    neckFactors['NE1'] = { V: 0.0, raw: 7.0, isChangeable: false, isApplicable: true };
+    neckFactors['NE2'] = { V: 0.0, raw: 7.0, isChangeable: false, isApplicable: true };
+    neckFactors['NE3'] = { V: 0.5, raw: 8.5, isChangeable: true, isApplicable: true };
   }
   engineResults['neck'] = runEngine(ENGINE_CONFIGS['neck'], neckFactors);
 
@@ -2285,42 +2418,42 @@ export function evaluateFacialBiometrics(
     'SK1': 'Tone Evenness',
     'SK2': 'Clarity',
     'SK3': 'Radiance and Shine Control',
-    'SK4': 'Healthy Natural Colour',
-    'EY1': 'Eye Size and Shape',
-    'EY2': 'Spacing and Canthal Tilt',
-    'EY3': 'Eyelids and Lashes',
-    'EY4': 'Under-Eye and Eye Clarity',
-    'EY5': 'Eyebrow Shape and Position',
-    'HA1': 'Facial Thirds and Forehead',
-    'HA2': 'Feature Spacing (Fifths)',
-    'HA3': 'Face Shape Balance',
-    'HA4': 'Profile',
-    'HA5': 'Golden Ratio (φ)',
+    'SK4': 'Healthy Colour',
+    'ER1': 'Size and Shape',
+    'ER2': 'Spacing and Tilt',
+    'ER3': 'Eyelids',
+    'ER4': 'Under-Eye and Clarity',
+    'ER5': 'Brows (Position and Shape)',
+    'HP1': 'Thirds and Forehead',
+    'HP2': 'Feature Spacing',
+    'HP3': 'Face Shape Balance',
+    'HP4': 'Profile',
+    'HP5': 'Golden Ratio (φ)',
     'EX1': 'Smile Genuineness',
     'EX2': 'Smile and Teeth',
-    'EX3': 'Gaze and Eye Contact',
-    'EX4': 'Relaxation and Warmth',
+    'EX3': 'Gaze and Openness',
+    'EX4': 'Relaxation',
     'GR1': 'Hair',
     'GR2': 'Facial Hair and Brow Tidiness',
     'GR3': 'Makeup Application',
     'GR4': 'Glasses',
-    'GR5': 'Overall Cohesion',
-    'FE1': 'Nose',
-    'FE2': 'Cheeks and Cheekbones',
-    'FE3': 'Lips',
-    'FE4': 'Philtrum',
+    'GR5': 'Cohesion and Face-Shape Fit',
+    'NC1': 'Nose',
+    'NC2': 'Cheeks and Cheekbones',
+    'NC3': 'Lips',
+    'NC4': 'Philtrum',
     'SY1': 'Eyes and Brows',
     'SY2': 'Nose and Midline',
     'SY3': 'Mouth and Chin',
     'SY4': 'Cheeks and Jaw',
-    'AV1': 'Overall Shape Typicality',
+    'AV1': 'Shape Typicality',
     'AV2': 'Feature-Size Typicality',
-    'JW1': 'Jawline',
-    'JW2': 'Chin',
-    'JW3': 'Gender-Typical Balance',
-    'NP1': 'Neck Line',
-    'NP2': 'Ears',
-    'NP3': 'Posture and Head Position',
+    'JC1': 'Jawline',
+    'JC2': 'Chin',
+    'JC3': 'Gender-Typical Balance',
+    'NE1': 'Neck Line',
+    'NE2': 'Ears',
+    'NE3': 'Head Carriage',
   };
 
   for (const [code, name] of Object.entries(subNames)) {
@@ -2354,13 +2487,14 @@ export function evaluateFacialBiometrics(
           deltaE2000: skinDiagU,
           blemishPct: Number((skinDiagBlemish * 100).toFixed(1)),
           specularPct: Number((skinDiagSpecular * 100).toFixed(1)),
-          naturalColourWarmth: skinDiagWarmth,
+          chromaRatio: skinDiagChromaRatio,
           vitalityTier: vitalityLevel,
         },
         eyes: {
           fissureRatio: eyeDiagFissure,
           canthalTiltDeg: canthalTilt,
           eyeSpacingRatio: eyeDiagSpacing,
+          irisCoverageRatio: eyeDiagIrisCover,
           underEyeDeltaL: eyeDiagUnderEyeDeltaL,
           browPositionRatio: eyeDiagBrowDist,
         },
@@ -2489,14 +2623,14 @@ export function extractBiometricFeaturesFromCanvas(
       'Tone Evenness': 3.6,
       'Clarity': 3.6,
       'Radiance and Shine Control': 2.3,
-      'Healthy Natural Colour': 2.4,
-      'Eye Size and Shape': 2.7,
-      'Spacing and Canthal Tilt': 2.2,
-      'Eyelids and Lashes': 2.2,
-      'Under-Eye and Eye Clarity': 2.1,
-      'Eyebrow Shape and Position': 1.6,
-      'Facial Thirds and Forehead': 2.7,
-      'Feature Spacing (Fifths)': 2.2,
+      'Healthy Colour': 2.4,
+      'Size and Shape': 2.7,
+      'Spacing and Tilt': 2.2,
+      'Eyelids': 2.2,
+      'Under-Eye and Clarity': 2.1,
+      'Brows (Position and Shape)': 1.6,
+      'Thirds and Forehead': 2.7,
+      'Feature Spacing': 2.2,
       'Face Shape Balance': 2.2,
       'Golden Ratio (φ)': 1.6,
     },

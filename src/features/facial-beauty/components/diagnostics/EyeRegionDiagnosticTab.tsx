@@ -34,7 +34,7 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Eye Size &amp; Shape</span>
-            <span className="diag-stat-code">EY1 · W=25 · Fixed</span>
+            <span className="diag-stat-code">ER1 · W=25 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             {eyeMetrics?.fissureRatio.toFixed(2) ?? '0.35'}
@@ -49,59 +49,68 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Spacing &amp; Canthal Tilt</span>
-            <span className="diag-stat-code">EY2 · W=20 · Fixed</span>
+            <span className="diag-stat-code">ER2 · W=20 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             +{eyeMetrics?.canthalTiltDeg.toFixed(1) ?? '3.2'}°
           </div>
-          <div className={`diag-stat-status ${(eyeMetrics?.canthalTiltDeg ?? 3.2) >= 2.0 && (eyeMetrics?.canthalTiltDeg ?? 3.2) <= 8.0 ? 'status-ideal' : 'status-caution'}`}>
-            {(eyeMetrics?.canthalTiltDeg ?? 3.2) >= 2.0 && (eyeMetrics?.canthalTiltDeg ?? 3.2) <= 8.0
-              ? '✓ Positive youthful upward canthal tilt (+2° to +8°)'
-              : 'Neutral to flat canthal axis'}
+          <div className={`diag-stat-status ${(eyeMetrics?.canthalTiltDeg ?? 3.2) >= -2.0 && (eyeMetrics?.canthalTiltDeg ?? 3.2) <= 10.0 ? 'status-ideal' : 'status-caution'}`}>
+            {(eyeMetrics?.canthalTiltDeg ?? 3.2) >= -2.0 && (eyeMetrics?.canthalTiltDeg ?? 3.2) <= 10.0
+              ? '✓ Upward / neutral canthal tilt (−2° to +10°)'
+              : 'Canthal tilt outside standard band'}
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Eyelids &amp; Aperture</span>
-            <span className="diag-stat-code">EY3 · W=20 · Fixed</span>
+            <span className="diag-stat-label">Eyelids &amp; Iris Coverage</span>
+            <span className="diag-stat-code">ER3 · W=20 · Fixed</span>
           </div>
           <div className="diag-stat-val">
-            Alert &amp; Open
+            {(((eyeMetrics?.irisCoverageRatio ?? 0.12)) * 100).toFixed(0)}% Cover
           </div>
-          <div className="diag-stat-status status-ideal">
-            ✓ Clear palpebral aperture, even bilateral eyelid curve
+          <div className={`diag-stat-status ${(eyeMetrics?.irisCoverageRatio ?? 0.12) <= 0.25 ? 'status-ideal' : 'status-caution'}`}>
+            {(eyeMetrics?.irisCoverageRatio ?? 0.12) <= 0.15
+              ? '✓ Clear palpebral aperture (c ≤ 15%)'
+              : (eyeMetrics?.irisCoverageRatio ?? 0.12) <= 0.25
+              ? 'Mild upper lid iris drape (c ≤ 25%)'
+              : 'Pronounced upper lid iris coverage'}
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Under-Eye &amp; Eye Clarity</span>
-            <span className="diag-stat-code">EY4 · W=20 · Changeable</span>
+            <span className="diag-stat-code">ER4 · W=20 · Changeable</span>
           </div>
           <div className="diag-stat-val">
             ΔL* {eyeMetrics?.underEyeDeltaL.toFixed(1) ?? '4.5'}
           </div>
-          <div className={`diag-stat-status ${(eyeMetrics?.underEyeDeltaL ?? 4.5) <= 5.5 ? 'status-ideal' : 'status-caution'}`}>
-            {(eyeMetrics?.underEyeDeltaL ?? 4.5) <= 5.5
-              ? '✓ Bright periorbital zone, minimal dark circles'
-              : 'Mild under-eye fatigue shadow detected'}
+          <div className={`diag-stat-status ${(eyeMetrics?.underEyeDeltaL ?? 4.5) <= 7.0 ? 'status-ideal' : 'status-caution'}`}>
+            {(eyeMetrics?.underEyeDeltaL ?? 4.5) <= 4.0
+              ? '✓ Bright periorbital zone (ΔL* ≤ 4)'
+              : (eyeMetrics?.underEyeDeltaL ?? 4.5) <= 7.0
+              ? 'Mild under-eye contrast (ΔL* ≤ 7)'
+              : 'Moderate under-eye fatigue shadow'}
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Eyebrow Shape &amp; Position</span>
-            <span className="diag-stat-code">EY5 · W=15 · Changeable</span>
+            <span className="diag-stat-code">ER5 · W=15 · Changeable</span>
           </div>
           <div className="diag-stat-val">
-            {((eyeMetrics?.browPositionRatio ?? 0.055) * 100).toFixed(1)}%
+            {((eyeMetrics?.browPositionRatio ?? 0.065) * 100).toFixed(1)}%
           </div>
-          <div className="diag-stat-status status-ideal">
-            ✓ Harmonious brow-to-eye height ratio (~5.5% of face)
+          <div className={`diag-stat-status ${(eyeMetrics?.browPositionRatio ?? 0.065) >= 0.050 && (eyeMetrics?.browPositionRatio ?? 0.065) <= 0.085 ? 'status-ideal' : 'status-caution'}`}>
+            {(eyeMetrics?.browPositionRatio ?? 0.065) >= 0.050 && (eyeMetrics?.browPositionRatio ?? 0.065) <= 0.085
+              ? '✓ Harmonious brow-to-eye height ratio (5.0%–8.5% of face)'
+              : 'Brow position slightly outside canonical ratio'}
           </div>
         </div>
       </div>
     </div>
   );
 }
+

@@ -70,7 +70,7 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Facial Thirds</span>
-            <span className="diag-stat-code">HA1 · W=25</span>
+            <span className="diag-stat-code">HP1 · W=25</span>
           </div>
           <div className="diag-stat-val">
             m = {harmMetrics?.thirdsDev.toFixed(3) ?? '0.015'}
@@ -78,40 +78,40 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
           <div className={`diag-stat-status ${(harmMetrics?.thirdsDev ?? 0.015) <= 0.02 ? 'status-ideal' : 'status-caution'}`}>
             {(harmMetrics?.thirdsDev ?? 0.015) <= 0.02
               ? '✓ Balanced thirds harmony (m ≤ 0.02)'
-              : 'Mild asymmetry across thirds'}
+              : 'Mild deviation across thirds'}
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Feature Spacing (Fifths)</span>
-            <span className="diag-stat-code">HA2 · W=20</span>
+            <span className="diag-stat-label">Feature Spacing</span>
+            <span className="diag-stat-code">HP2 · W=20</span>
           </div>
           <div className="diag-stat-val">
-            5 Transverse Fifths
+            {scoreData.subfactorRatings?.['HP2']?.raw?.toFixed(1) ?? '8.8'}/10
           </div>
           <div className="diag-stat-status status-ideal">
-            ✓ Balanced interocular and alar base spacing
+            ✓ Balanced alar, commissure &amp; lip-chin spacing
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Face Shape Balance</span>
-            <span className="diag-stat-code">HA3 · W=20</span>
+            <span className="diag-stat-code">HP3 · W=20</span>
           </div>
           <div className="diag-stat-val">
-            {harmMetrics?.faceShapeRatio.toFixed(2) ?? '1.38'}
+            {harmMetrics?.faceShapeRatio.toFixed(2) ?? '0.74'}
           </div>
           <div className="diag-stat-status status-ideal">
-            ✓ Height-to-width ratio within ideal 1.30–1.45 band
+            ✓ Cheekbone width ÷ face height in ideal 0.66–0.82 band
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Profile Alignment</span>
-            <span className="diag-stat-code">HA4 · W=20</span>
+            <span className="diag-stat-code">HP4 · W=20</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.hasSideProfilePhoto ? 'Evaluated' : 'Frontal Renorm'}
@@ -124,7 +124,7 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Golden Ratio (φ)</span>
-            <span className="diag-stat-code">HA5 · W=15</span>
+            <span className="diag-stat-code">HP5 · W=15</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.metrics.goldenRatioAdherence}%
@@ -173,3 +173,4 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
     </div>
   );
 }
+

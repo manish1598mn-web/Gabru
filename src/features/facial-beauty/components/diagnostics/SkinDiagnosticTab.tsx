@@ -79,15 +79,15 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Healthy Natural Colour</span>
-            <span className="diag-stat-code">SK4 · W=20</span>
+            <span className="diag-stat-code">SK4 · W=20 · V≤0.5</span>
           </div>
           <div className="diag-stat-val">
-            a* {skinMetrics?.naturalColourWarmth.toFixed(1) ?? '14.5'}
+            q = {skinMetrics?.chromaRatio.toFixed(2) ?? '1.15'}
           </div>
-          <div className={`diag-stat-status ${(skinMetrics?.naturalColourWarmth ?? 14.5) >= 10.0 ? 'status-ideal' : 'status-caution'}`}>
-            {(skinMetrics?.naturalColourWarmth ?? 14.5) >= 10.0
-              ? '✓ Healthy vital cheek flush & oxygenation'
-              : 'Slightly muted epidermal warmth'}
+          <div className={`diag-stat-status ${(skinMetrics?.chromaRatio ?? 1.15) >= 1.0 && (skinMetrics?.chromaRatio ?? 1.15) <= 1.30 ? 'status-ideal' : 'status-caution'}`}>
+            {(skinMetrics?.chromaRatio ?? 1.15) >= 1.0 && (skinMetrics?.chromaRatio ?? 1.15) <= 1.30
+              ? '✓ Harmonious cheek/forehead chroma ratio (1.00–1.30)'
+              : 'Slightly muted cheek chroma ratio'}
           </div>
         </div>
       </div>

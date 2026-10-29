@@ -68,7 +68,7 @@ export function JawChinDiagnosticTab({
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Jawline Definition</span>
-            <span className="diag-stat-code">JW1 · W=40</span>
+            <span className="diag-stat-code">JC1 · W=40</span>
           </div>
           <div className="diag-stat-val">
             {((jawMetrics?.jawWidthRatio ?? 0.76) * 100).toFixed(1)}%
@@ -81,7 +81,7 @@ export function JawChinDiagnosticTab({
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Chin Projection</span>
-            <span className="diag-stat-code">JW2 · W=35</span>
+            <span className="diag-stat-code">JC2 · W=35</span>
           </div>
           <div className="diag-stat-val">
             {((jawMetrics?.chinProjectionRatio ?? 0.33) * 100).toFixed(1)}%
@@ -94,7 +94,7 @@ export function JawChinDiagnosticTab({
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Gender-Typical Balance</span>
-            <span className="diag-stat-code">JW3 · W=25</span>
+            <span className="diag-stat-code">JC3 · W=25</span>
           </div>
           <div className="diag-stat-val">
             {dimorphismRef === 'skip' ? 'Renormalised' : `${dimorphismRef}`}
@@ -112,9 +112,9 @@ export function JawChinDiagnosticTab({
         </span>
         <div className="diag-sub-grid">
           {(jawMetrics?.subfactors || [
-            { id: 'JW1', name: 'Jawline Definition & Breadth', rating: 8.5, note: 'Bigonial width 76% of bizygomatic' },
-            { id: 'JW2', name: 'Chin Projection & Symmetry', rating: 8.4, note: 'Vertical chin third 33% of face height' },
-            { id: 'JW3', name: 'Gender-Typical Balance', rating: dimorphismRef === 'skip' ? 7.0 : 8.0, note: dimorphismRef === 'skip' ? 'Renormalised neutral baseline' : `Anchored to ${dimorphismRef} norm` },
+            { id: 'JC1', name: 'Jawline Definition & Breadth', rating: 8.5, note: 'Bigonial width 76% of bizygomatic' },
+            { id: 'JC2', name: 'Chin Projection & Symmetry', rating: 8.4, note: 'Vertical chin third 33% of face height' },
+            { id: 'JC3', name: 'Gender-Typical Balance', rating: dimorphismRef === 'skip' ? 7.0 : 8.0, note: dimorphismRef === 'skip' ? 'Renormalised neutral baseline' : `Anchored to ${dimorphismRef} norm` },
           ]).map((item) => (
             <div key={item.id} className="diag-stat-card">
               <div className="diag-stat-header">
@@ -134,3 +134,4 @@ export function JawChinDiagnosticTab({
     </div>
   );
 }
+
