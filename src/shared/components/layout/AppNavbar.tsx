@@ -12,7 +12,7 @@ export interface AppNavbarProps {
 
 export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
   const isScrolled = useScrollState(20);
-  const { getNavHref, createNavClickHandler } = useWebviewSafeNavigation({
+  const { getNavHref, createNavClickHandler, createNavMouseDownHandler } = useWebviewSafeNavigation({
     activeFeature,
     onCurrentPageClick: onBrandClick,
   });
@@ -27,6 +27,7 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
           className="navbar-brand focus-ring"
           id="nav-brand-logo"
           onClick={createNavClickHandler('/', onBrandClick)}
+          onMouseDown={createNavMouseDownHandler('/')}
           aria-label="Gabru Studio Home"
         >
           <div className="brand-icon-box" id="brand-camera-icon">
@@ -60,6 +61,7 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
                 className={`nav-link focus-ring ${activeFeature === 'fit-check' ? 'active' : ''}`}
                 id="nav-link-home"
                 onClick={createNavClickHandler('/')}
+                onMouseDown={createNavMouseDownHandler('/')}
               >
                 <svg
                   width="15"
@@ -84,6 +86,7 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
                 className={`nav-link focus-ring ${activeFeature === 'beauty-rating' ? 'active' : ''}`}
                 id="nav-btn-beauty-rating"
                 onClick={createNavClickHandler('/beauty-rating')}
+                onMouseDown={createNavMouseDownHandler('/beauty-rating')}
               >
                 <svg
                   width="15"
@@ -111,6 +114,7 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
                 className={`nav-link nav-link-content focus-ring ${activeFeature === 'content-rating' ? 'active' : ''}`}
                 id="nav-btn-content-rating"
                 onClick={createNavClickHandler('/content-rating')}
+                onMouseDown={createNavMouseDownHandler('/content-rating')}
                 title="Social Media Content Rating & Advisory"
               >
                 <svg

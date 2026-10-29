@@ -15,3 +15,5 @@ export type { ModalProps } from './Modal';
 
 export { BaseModal } from './BaseModal';
 export type { BaseModalProps } from './BaseModal';
+
+export { CssInspectorCompanion } from './CssInspectorCompanion';

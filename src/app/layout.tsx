@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { CssInspectorCompanion } from '@/shared';
 
 export const metadata: Metadata = {
   title: 'Gabru — Upload Your Photo, See It Instantly',
@@ -37,6 +38,7 @@ export default function RootLayout({
       </head>
       <body id="gabru-root">
         {children}
+        <CssInspectorCompanion />
       </body>
     </html>
   );

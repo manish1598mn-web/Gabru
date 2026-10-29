@@ -17,7 +17,7 @@ export function AppFooter({
   onOpenMethodologyModal,
   onAboutClick,
 }: AppFooterProps) {
-  const { getNavHref, createNavClickHandler } = useWebviewSafeNavigation();
+  const { getNavHref, createNavClickHandler, createNavMouseDownHandler } = useWebviewSafeNavigation();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -101,6 +101,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/')}
+                  onMouseDown={createNavMouseDownHandler('/')}
                 >
                   Outfit Score Matrix (100 Pts)
                 </Link>
@@ -111,6 +112,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/beauty-rating')}
+                  onMouseDown={createNavMouseDownHandler('/beauty-rating')}
                 >
                   Beauty Rating Matrix (8 Params)
                 </Link>
@@ -121,6 +123,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/content-rating')}
+                  onMouseDown={createNavMouseDownHandler('/content-rating')}
                 >
                   Content Rating Suite (100 Pts)
                 </Link>
@@ -131,6 +134,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/')}
+                  onMouseDown={createNavMouseDownHandler('/')}
                 >
                   Color Harmony Engine
                 </Link>
@@ -141,6 +145,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/beauty-rating')}
+                  onMouseDown={createNavMouseDownHandler('/beauty-rating')}
                 >
                   Facial Thirds &amp; Fifths (φ)
                 </Link>
@@ -158,6 +163,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/')}
+                  onMouseDown={createNavMouseDownHandler('/')}
                 >
                   Tier 1: Foundations (71 Pts)
                 </Link>
@@ -168,6 +174,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/')}
+                  onMouseDown={createNavMouseDownHandler('/')}
                 >
                   Tier 2: Details &amp; Craft (20 Pts)
                 </Link>
@@ -178,6 +185,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/')}
+                  onMouseDown={createNavMouseDownHandler('/')}
                 >
                   Tier 3: Expert Polish (9 Pts)
                 </Link>
@@ -188,6 +196,7 @@ export function AppFooter({
                   prefetch={false}
                   className="footer-link-btn"
                   onClick={createNavClickHandler('/beauty-rating')}
+                  onMouseDown={createNavMouseDownHandler('/beauty-rating')}
                 >
                   10-Parameter Biometric Rubric
                 </Link>

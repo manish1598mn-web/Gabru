@@ -8,17 +8,69 @@ export interface UseWebviewSafeNavigationOptions {
 }
 
 /**
+ * Resolves destination URL across:
+ * 1. CSS Inspector Mini proxy (e.g. http://localhost:53110/proxy?url=...)
+ * 2. Antigravity IDE preview browser (preserving ?id=...&vscodeBrowserReqId=...)
+ * 3. Standard localhost / external browser
+ */
+export function resolveNavDestination(targetPath: string, searchParams = ''): string {
+  if (typeof window === 'undefined') return targetPath;
+
+  const currentHref = window.location.href;
+  const currentSearch = window.location.search || searchParams;
+
+  // Detect whether running under CSS Inspector Mini proxy
+  const isInspectorProxy =
+    (window.location.pathname === '/proxy' && currentSearch.includes('url=')) ||
+    document.querySelector('meta[name="cim-token"]') !== null ||
+    (parseInt(window.location.port, 10) >= 53110 && parseInt(window.location.port, 10) <= 53199);
+
+  if (isInspectorProxy) {
+    let upstreamBase = `${window.location.protocol}//${window.location.hostname}:3000`;
+    let upstreamQuery = '';
+
+    const urlParam = new URLSearchParams(currentSearch).get('url');
+    if (urlParam) {
+      try {
+        const parsedUpstream = new URL(urlParam);
+        upstreamBase = `${parsedUpstream.protocol}//${parsedUpstream.host}`;
+        upstreamQuery = parsedUpstream.search;
+      } catch {
+        // fallback to default upstreamBase
+      }
+    }
+
+    // Build the upstream destination URL with original query parameters
+    const targetUpstream = `${upstreamBase}${targetPath}${upstreamQuery}`;
+
+    // Construct the proxied destination so CSS Inspector continues injecting overlay.js on the new page
+    const proxyUrl = new URL(`${window.location.origin}/proxy`);
+    proxyUrl.searchParams.set('url', targetUpstream);
+
+    // Retain multi-select flag if active
+    const searchObj = new URLSearchParams(currentSearch);
+    if (searchObj.get('multi') === '1') {
+      proxyUrl.searchParams.set('multi', '1');
+    }
+
+    return proxyUrl.toString();
+  }
+
+  // Standard or Antigravity browser mode:
+  if (!targetPath.includes('?') && currentSearch) {
+    return `${targetPath}${currentSearch}`;
+  }
+
+  return targetPath;
+}
+
+/**
  * useWebviewSafeNavigation
  * 
- * Provides resilient navigation for embedded webviews, iframes, and IDE preview browsers
- * (such as Google Antigravity IDE and VS Code Simple Browser).
- * 
- * Key Responsibilities:
- * 1. Preserves query parameters (e.g. ?id=...&vscodeBrowserReqId=...) required by IDE proxy tunnels.
- * 2. Bypasses client-side pushState locks in embedded webviews via reliable location.assign.
- * 3. Prevents React hydration mismatch warnings by deferring dynamic search params injection until mounted.
- * 4. Gracefully supports Cmd/Ctrl/Shift/middle-click for opening links in new tabs.
- * 5. Handles smooth scroll-to-top when clicking the currently active page.
+ * Provides resilient navigation for:
+ * - CSS Inspector Mini (keeps overlay.js and "Pick element" active across all pages)
+ * - Antigravity IDE and VS Code Simple Browser (preserves session query params)
+ * - Standard web browsers
  */
 export function useWebviewSafeNavigation(options?: UseWebviewSafeNavigationOptions) {
   const { activeFeature, onCurrentPageClick } = options || {};
@@ -39,10 +91,38 @@ export function useWebviewSafeNavigation(options?: UseWebviewSafeNavigationOptio
   const getNavHref = useCallback(
     (targetPath: string): string => {
       if (targetPath.includes('?')) return targetPath;
-      if (!isMounted || !searchParams) return targetPath;
-      return `${targetPath}${searchParams}`;
+      if (!isMounted) return targetPath;
+      return resolveNavDestination(targetPath, searchParams);
     },
     [isMounted, searchParams]
+  );
+
+  /**
+   * Core navigation executor
+   */
+  const executeNavigation = useCallback(
+    (targetPath: string, customOnCurrent?: () => void) => {
+      // Determine if target is currently active page
+      const isCurrent =
+        (targetPath === '/' && activeFeature === 'fit-check') ||
+        (targetPath === '/beauty-rating' && activeFeature === 'beauty-rating') ||
+        (targetPath === '/content-rating' && activeFeature === 'content-rating');
+
+      if (isCurrent) {
+        if (customOnCurrent) {
+          customOnCurrent();
+        } else if (onCurrentPageClick) {
+          onCurrentPageClick();
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        return;
+      }
+
+      const destination = resolveNavDestination(targetPath, searchParams);
+      window.location.assign(destination);
+    },
+    [activeFeature, onCurrentPageClick, searchParams]
   );
 
   /**
@@ -56,35 +136,44 @@ export function useWebviewSafeNavigation(options?: UseWebviewSafeNavigationOptio
           return;
         }
 
-        // Determine if target is currently active page
+        e.preventDefault();
+        executeNavigation(targetPath, customOnCurrent);
+      };
+    },
+    [executeNavigation]
+  );
+
+  /**
+   * Creates an onMouseDown handler that fires before overlay.js click interception
+   * so that switching pages works even when the CSS Inspector is actively armed!
+   */
+  const createNavMouseDownHandler = useCallback(
+    (targetPath: string) => {
+      return (e: React.MouseEvent<HTMLAnchorElement>) => {
+        // If holding Alt, allow inspector to inspect the link instead of navigating
+        if (e.altKey || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
+          return;
+        }
+
         const isCurrent =
           (targetPath === '/' && activeFeature === 'fit-check') ||
           (targetPath === '/beauty-rating' && activeFeature === 'beauty-rating') ||
           (targetPath === '/content-rating' && activeFeature === 'content-rating');
 
-        if (isCurrent) {
-          e.preventDefault();
-          if (customOnCurrent) {
-            customOnCurrent();
-          } else if (onCurrentPageClick) {
-            onCurrentPageClick();
-          } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Only preemptively navigate for changing pages when under an inspector proxy
+        if (!isCurrent && typeof window !== 'undefined') {
+          const isInspectorProxy =
+            document.querySelector('meta[name="cim-token"]') !== null ||
+            (window.location.pathname === '/proxy' && window.location.search.includes('url='));
+
+          if (isInspectorProxy) {
+            e.stopPropagation();
+            executeNavigation(targetPath);
           }
-          return;
         }
-
-        // Always perform full reliable navigation to target route with preserved query parameters
-        e.preventDefault();
-        const currentSearch = typeof window !== 'undefined' ? window.location.search : searchParams;
-        const fullTarget = currentSearch && !targetPath.includes('?')
-          ? `${targetPath}${currentSearch}`
-          : targetPath;
-
-        window.location.assign(fullTarget);
       };
     },
-    [activeFeature, onCurrentPageClick, searchParams]
+    [activeFeature, executeNavigation]
   );
 
   return {
@@ -92,5 +181,6 @@ export function useWebviewSafeNavigation(options?: UseWebviewSafeNavigationOptio
     searchParams,
     getNavHref,
     createNavClickHandler,
+    createNavMouseDownHandler,
   };
 }
