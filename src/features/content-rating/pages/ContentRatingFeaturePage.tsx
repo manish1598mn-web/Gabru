@@ -20,6 +20,7 @@ import {
   ContentScoreData,
   InputMode,
   UnifiedContentItem,
+  DeepDiveContentTabKey,
 } from '../types/ContentRatingTypes';
 import {
   SAMPLE_DEMO_CONTENTS,
@@ -28,8 +29,10 @@ import {
 import { evaluateUnifiedContent } from '../services/ContentScoringEngine';
 import {
   ContentRatingHeroStudio,
+  ContentRatingScorecard,
+  ContentDeepDiveSection,
   detectPlatformFromUrl,
-} from '../components/ContentRatingHeroStudio';
+} from '../components';
 
 export default function ContentRatingFeaturePage() {
   const [contentUrl, setContentUrl] = useState<string>('');
@@ -40,6 +43,7 @@ export default function ContentRatingFeaturePage() {
 
   const [currentItem, setCurrentItem] = useState<UnifiedContentItem | null>(null);
   const [scoreData, setScoreData] = useState<ContentScoreData | null>(null);
+  const [activeTab, setActiveTab] = useState<DeepDiveContentTabKey>('hook');
 
   // Initialize scroll reveal hooks
   useIntersectionReveal();
@@ -213,6 +217,29 @@ export default function ContentRatingFeaturePage() {
             onShareClick={handleShareClick}
           />
         </section>
+
+        {scoreData && (
+          <>
+            {/* 10-Parameter Craft & Reach Scorecard */}
+            <section className="content-scorecard-container" id="scorecard-wrapper-section">
+              <ContentRatingScorecard
+                scoreData={scoreData}
+                isAnalyzing={isAnalyzing}
+                onSelectTab={setActiveTab}
+                onShareScore={handleShareClick}
+              />
+            </section>
+
+            {/* 10 Biometric & Craft Diagnostic Deep Dives */}
+            <section className="content-diagnostics-container" id="diagnostics-wrapper-section">
+              <ContentDeepDiveSection
+                scoreData={scoreData}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
+            </section>
+          </>
+        )}
       </main>
 
       <AppFooter />
