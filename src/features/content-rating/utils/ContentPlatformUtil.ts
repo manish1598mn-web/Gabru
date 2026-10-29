@@ -20,3 +20,4 @@ export function detectPlatformFromUrl(url: string): ContentPlatform | null {
   if (clean.includes('facebook.com')) return 'facebook';
   return null;
 }
+
