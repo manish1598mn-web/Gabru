@@ -38,13 +38,6 @@ export function FitCheckHeroStudio({
     <div className="hero-container">
       {/* Left Column — Redesigned Minimal & Clean Upload Studio */}
       <div className="hero-left-column">
-        <div className="hero-studio-badge scroll-reveal">
-          <span className="badge-pulse-dot" />
-          <span>10-Parameter Fashion Intelligence</span>
-          <span className="badge-dot-sep">•</span>
-          <span>100-Point Scale</span>
-        </div>
-
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
           Upload Photo,
           <br />

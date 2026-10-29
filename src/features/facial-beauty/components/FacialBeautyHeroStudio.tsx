@@ -40,15 +40,6 @@ export function FacialBeautyHeroStudio({
     <div className="hero-container">
       {/* Left Column — Clean Upload Studio & Score Hub */}
       <div className="hero-left-column">
-        <div className="hero-studio-badge scroll-reveal">
-          <span className="badge-pulse-dot" />
-          <span>10-Parameter Facial Intelligence</span>
-          <span className="badge-dot-sep">•</span>
-          <span>29 Beauty Points</span>
-          <span className="badge-dot-sep">•</span>
-          <span>100-Point Scale</span>
-        </div>
-
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
           Upload Face Photo,
           <br />

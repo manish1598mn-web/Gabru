@@ -5,151 +5,182 @@ import React from 'react';
 /**
  * FacialBeautyAboutSection
  *
- * Manifesto and 3 core scientific pillars:
- * - Pillar 1: Skin & Vitality (21 Pts)
- * - Pillar 2: Geometry & Symmetry (42 Pts)
- * - Pillar 3: Dynamic & Styling (37 Pts)
- *
- * Grounded in empirical biometrics, local in-browser vision, and zero-retention privacy.
+ * User-facing guide and feature showcase:
+ * - Clear purpose and importance of objective facial harmony evaluation
+ * - 4 core features and how they work (10-parameter audit, changeable vs fixed split, actionable levers, 100% private in-browser analysis)
+ * - Step-by-step "How to Use" guide with realistic examples and photo best practices
+ * - Zero exposure of private project architecture or internal engineering telemetry
  */
 export const FacialBeautyAboutSection: React.FC = () => {
   return (
     <section
       className="feature-strip-wrapper about-strip-wrapper"
       id="about-section"
-      aria-label="About Gabru & Facial Attractiveness Framework"
+      aria-label="How Facial Attractiveness Evaluation Works"
     >
       <div className="feature-strip-container">
         {/* Section Header */}
         <div className="about-section-header scroll-reveal">
           <div className="about-section-eyebrow">
-            <span className="badge-pulse-dot" />
-            <span>ABOUT GABRU &amp; FACIAL ATTRACTIVENESS ARCHITECTURE</span>
+            <span>USER GUIDE &amp; METHODOLOGY</span>
           </div>
           <h2 className="about-section-title">
-            Evidence-Based Facial Aesthetics, Built for Objective Harmony
+            Understanding Your Facial Harmony Audit
           </h2>
           <p className="about-section-subtitle">
-            How Gabru evaluates skin vitality, proportion harmony, bilateral symmetry, and grooming cues with the rigor
-            of peer-reviewed facial research.
+            An objective, research-grounded aesthetic analysis designed to help you discover your natural facial proportions, skin vitality, and grooming potential—free from beauty filter distortion.
           </p>
         </div>
 
-        {/* About Platform Manifesto Card */}
-        <div className="about-manifesto-card scroll-reveal">
-          <div className="about-manifesto-left">
-            <h3 className="manifesto-card-title">Empirical Biometrics Meets Local In-Browser Vision</h3>
-            <p className="manifesto-card-text">
-              <strong style={{ color: '#ffffff' }}>Gabru Beauty Rating</strong> translates published human perception
-              science and craniofacial proportion research into a calibrated 100-point framework.
-            </p>
-            <p className="manifesto-card-text">
-              From periorbital brightness and golden ratio adherence (φ ≈ 1.618) to bilateral horizontal symmetry and
-              grooming precision, every measurement runs client-side in memory. Your facial portraits never touch a server.
-            </p>
-            <div className="manifesto-tags-row">
-              <span className="manifesto-tag">✓ 100% Client-Side Private</span>
-              <span className="manifesto-tag">✓ Zero Server Data Storage</span>
-              <span className="manifesto-tag">✓ 10-Parameter Framework</span>
-              <span className="manifesto-tag">✓ 29 Beauty Points</span>
-            </div>
-          </div>
-
-          <div className="about-manifesto-specs">
-            <div className="spec-metric-item">
-              <span className="spec-label">Evaluation Engine</span>
-              <span className="spec-value">Local Vision Canvas</span>
-            </div>
-            <div className="spec-metric-item">
-              <span className="spec-label">Analysis Latency</span>
-              <span className="spec-value">&lt; 1.0 Seconds</span>
-            </div>
-            <div className="spec-metric-item">
-              <span className="spec-label">Rating Framework</span>
-              <span className="spec-value">10 Research Parameters</span>
-            </div>
-            <div className="spec-metric-item">
-              <span className="spec-label">Server Data Storage</span>
-              <span className="spec-value">0 Bytes Stored</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 3 Core Rating Pillars / Feature Cards */}
-        <div className="about-pillars-grid">
-          <div className="feature-block scroll-reveal" id="feature-1">
-            <div className="feature-icon-circle icon-circle-blue">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
-            </div>
-            <h3 className="feature-title">Pillar 1: Skin &amp; Vitality (21 Pts)</h3>
-            <p className="feature-description">
-              Skin Quality &amp; Health Cues represents the largest single factor (21 pts). Evaluates tone evenness,
-              micro-texture clarity, healthy vascular flush, and sclera/eye brightness.
-            </p>
-            <span className="feature-tier-badge">Strong Evidence</span>
-          </div>
-
-          <div className="feature-block scroll-reveal" id="feature-2">
-            <div className="feature-icon-circle icon-circle-green">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+        {/* 4 Core Features & How They Work */}
+        <div className="features-showcase-grid">
+          <div className="guide-feature-card scroll-reveal">
+            <div className="guide-feature-icon icon-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
                 <path d="M2 12h20" />
               </svg>
             </div>
-            <h3 className="feature-title">Pillar 2: Geometry &amp; Symmetry (42 Pts)</h3>
-            <p className="feature-description">
-              Analyzes Proportions &amp; Harmony (19 pts with facial thirds, fifths, and golden ratio φ), Bilateral
-              Symmetry (11 pts), and Population Averageness (12 pts).
-            </p>
-            <span className="feature-tier-badge">Harmony Foundation</span>
+            <div className="guide-feature-content">
+              <h3 className="guide-feature-title">10 Balanced Dimensions</h3>
+              <p className="guide-feature-desc">
+                <strong>How it works:</strong> Evaluates 29 anatomical points across 10 balanced parameters—including skin tone uniformity, eye aperture geometry, facial thirds and fifths, smile dynamics, bilateral symmetry, and jaw contour.
+              </p>
+              <div className="guide-feature-why">
+                <span className="why-label">Why it matters:</span>
+                <span>Prevents over-fixating on any single trait by assessing complete craniofacial harmony in equilibrium.</span>
+              </div>
+            </div>
           </div>
 
-          <div className="feature-block scroll-reveal" id="feature-3">
-            <div className="feature-icon-circle icon-circle-violet">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          <div className="guide-feature-card scroll-reveal">
+            <div className="guide-feature-icon icon-emerald">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
               </svg>
             </div>
-            <h3 className="feature-title">Pillar 3: Dynamic &amp; Styling (37 Pts)</h3>
-            <p className="feature-description">
-              Evaluates Expression &amp; Warmth (13 pts), Grooming &amp; Styling (10 pts), Sexual Dimorphism (7 pts),
-              and Individual Feature Definition (7 pts).
-            </p>
-            <span className="feature-tier-badge">Expressive Finish</span>
+            <div className="guide-feature-content">
+              <h3 className="guide-feature-title">Changeable vs. Fixed Split</h3>
+              <p className="guide-feature-desc">
+                <strong>How it works:</strong> Automatically distinguishes controllable presentational cues (Skin, Expression, Grooming, Under-eye clarity, Posture — ~43 pts) from natural bone architecture (~57 pts).
+              </p>
+              <div className="guide-feature-why">
+                <span className="why-label">Why it matters:</span>
+                <span>Eliminates anxiety over unalterable genetics and directs your focus strictly toward realistic grooming habits.</span>
+              </div>
+            </div>
           </div>
+
+          <div className="guide-feature-card scroll-reveal">
+            <div className="guide-feature-icon icon-violet">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                <polyline points="16 7 22 7 22 13" />
+              </svg>
+            </div>
+            <div className="guide-feature-content">
+              <h3 className="guide-feature-title">Actionable Improvement Levers</h3>
+              <p className="guide-feature-desc">
+                <strong>How it works:</strong> Identifies your top 3 highest-impact opportunities with calculated score gains (e.g. +0.6 pts for Duchenne eye-crinkle warmth, +0.4 pts for eyebrow arch definition).
+              </p>
+              <div className="guide-feature-why">
+                <span className="why-label">Why it matters:</span>
+                <span>Turns an abstract rating into a personalized, practical styling and skincare roadmap you can implement immediately.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="guide-feature-card scroll-reveal">
+            <div className="guide-feature-icon icon-amber">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div className="guide-feature-content">
+              <h3 className="guide-feature-title">100% In-Browser Privacy</h3>
+              <p className="guide-feature-desc">
+                <strong>How it works:</strong> Facial landmark detection and colorimetric calculations execute completely inside your local browser memory. Your photo is never sent to or stored on any server.
+              </p>
+              <div className="guide-feature-why">
+                <span className="why-label">Why it matters:</span>
+                <span>Ensures absolute data privacy with zero cloud retention, while letting you export a clean 1080×1350 style card anytime.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Step-by-Step "How to Use" with Proper Example */}
+        <div className="how-to-use-section scroll-reveal">
+          <div className="how-to-use-header">
+            <h3 className="how-to-title">How to Use This Tool for Best Results</h3>
+            <p className="how-to-subtitle">
+              Follow these simple steps to ensure the highest measurement accuracy and get the most value from your evaluation.
+            </p>
+          </div>
+
+          <div className="how-to-steps-grid">
+            <div className="step-card">
+              <div className="step-number">01</div>
+              <h4 className="step-title">Take the Right Photo</h4>
+              <p className="step-desc">
+                Face the camera directly at eye level in even, natural daylight. Maintain a neutral expression with relaxed lips and forehead. Keep hair lightly pulled back so your hairline, jaw, and ears are visible.
+              </p>
+              <div className="step-example-pill">
+                <span className="example-tag">Example:</span>
+                <span>A well-lit passport-style portrait taken 1.5 m away without heavy filters or extreme angles.</span>
+              </div>
+            </div>
+
+            <div className="step-card">
+              <div className="step-number">02</div>
+              <h4 className="step-title">Upload &amp; Analyze</h4>
+              <p className="step-desc">
+                Drop your photo into the studio or click <em>Browse Face Photo</em>. In seconds, 29 biometric landmark points are mapped to compute your facial thirds, aperture ratios, and skin tone.
+              </p>
+              <div className="step-example-pill">
+                <span className="example-tag">Example:</span>
+                <span>You can also click <em>Sample Portrait</em> or <em>Try Beauty Sketch</em> to instantly explore the dashboard.</span>
+              </div>
+            </div>
+
+            <div className="step-card">
+              <div className="step-number">03</div>
+              <h4 className="step-title">Inspect Your Deep Dives</h4>
+              <p className="step-desc">
+                Check your overall Face Score (/100) and Changeable vs. Fixed breakdown. Click on any of the 10 parameter cards to view clinical ratios, such as vertical thirds deviation or canthal tilt.
+              </p>
+              <div className="step-example-pill">
+                <span className="example-tag">Example:</span>
+                <span>Inspect your sampled skin pigment swatches in CIELAB color space and copy their HEX codes directly.</span>
+              </div>
+            </div>
+
+            <div className="step-card">
+              <div className="step-number">04</div>
+              <h4 className="step-title">Apply Actionable Levers</h4>
+              <p className="step-desc">
+                Review your personalized top 3 controllable levers. Focus your daily routine on these high-ROI styling adjustments to elevate your presentation score and overall aesthetic harmony.
+              </p>
+              <div className="step-example-pill">
+                <span className="example-tag">Example:</span>
+                <span>Target under-eye hydration with a peptide serum and maintain clean eyebrow perimeter edges for an instant gain.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Walkthrough Example Scenario Banner */}
+        <div className="guide-example-banner scroll-reveal">
+          <div className="banner-badge">PRACTICAL SCENARIO</div>
+          <h4 className="banner-title">Real-World Application Example</h4>
+          <p className="banner-text">
+            Consider a user whose structural bone harmony scores <strong>93.5%</strong> (well-balanced thirds, symmetrical features), but whose changeable score is <strong>82%</strong> due to periorbital fatigue shadows and slightly unkempt brow edges. Rather than worrying about fixed features, the system highlights two simple levers: hydrating under-eye care and lower brow arch cleanup. Executing these two controllable styling tweaks yields a projected gain of <strong>+1.2 points</strong>, lifting the total Face Score into the top tier.
+          </p>
         </div>
       </div>
     </section>
   );
 };
-

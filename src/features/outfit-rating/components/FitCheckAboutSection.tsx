@@ -4,57 +4,19 @@ import React from 'react';
 
 export function FitCheckAboutSection() {
   return (
-    <section className="feature-strip-wrapper about-strip-wrapper" id="about-section" aria-label="About Gabru & Platform Intelligence">
+    <section className="feature-strip-wrapper about-strip-wrapper" id="about-section" aria-label="How Fit Check Works">
       <div className="feature-strip-container">
         {/* Section Header */}
         <div className="about-section-header scroll-reveal">
           <div className="about-section-eyebrow">
-            <span className="badge-pulse-dot" />
-            <span>ABOUT GABRU &amp; PLATFORM ARCHITECTURE</span>
+            <span>SARTORIAL GUIDE &amp; METHODOLOGY</span>
           </div>
           <h2 className="about-section-title">
-            Precision Aesthetic Scoring, Built for Sartorial Excellence
+            Understanding Your Fit &amp; Style Audit
           </h2>
           <p className="about-section-subtitle">
-            How Gabru evaluates tailoring, proportion, color harmony, and visual hierarchy with the discernment of an editorial fashion stylist.
+            How Gabru evaluates garment tailoring, body proportions, color harmony, and visual hierarchy with the discernment of an editorial fashion stylist.
           </p>
-        </div>
-
-        {/* About Platform Manifesto Card */}
-        <div className="about-manifesto-card scroll-reveal">
-          <div className="about-manifesto-left">
-            <h3 className="manifesto-card-title">Editorial Discernment Meets Local Vision Computing</h3>
-            <p className="manifesto-card-text">
-              <strong style={{ color: '#ffffff' }}>Gabru</strong> was designed to demystify personal style. Rather than relying on subjective guesswork or opaque cloud servers, Gabru translates classical sartorial proportions and color theory into a structured 100-point evaluation framework.
-            </p>
-            <p className="manifesto-card-text">
-              From shoulder seam alignment and trouser break to color temperature and hero piece placement, every garment dimension is calculated in-memory directly in your browser session. Your photos never leave your device.
-            </p>
-            <div className="manifesto-tags-row">
-              <span className="manifesto-tag">✓ 100% Client-Side Private</span>
-              <span className="manifesto-tag">✓ Zero Server Data Storage</span>
-              <span className="manifesto-tag">✓ Full-Fidelity RAW/Hi-Res Display</span>
-            </div>
-          </div>
-
-          <div className="about-manifesto-specs">
-            <div className="spec-metric-item">
-              <span className="spec-label">Evaluation Engine</span>
-              <span className="spec-value">Local Vision Canvas</span>
-            </div>
-            <div className="spec-metric-item">
-              <span className="spec-label">Analysis Latency</span>
-              <span className="spec-value">&lt; 1.2 Seconds</span>
-            </div>
-            <div className="spec-metric-item">
-              <span className="spec-label">Rating Framework</span>
-              <span className="spec-value">10 Discrete Parameters</span>
-            </div>
-            <div className="spec-metric-item">
-              <span className="spec-label">Server Data Storage</span>
-              <span className="spec-value">0 Bytes Stored</span>
-            </div>
-          </div>
         </div>
 
         {/* 3 Core Rating Pillars */}
@@ -68,9 +30,9 @@ export function FitCheckAboutSection() {
                 <path d="M6 16h12" />
               </svg>
             </div>
-            <h3 className="feature-title">Tier 1: Foundations (71 Pts)</h3>
+            <h3 className="feature-title">Foundations &amp; Silhouette (71 Pts)</h3>
             <p className="feature-description">
-              Evaluates the core architecture: Fit &amp; Tailoring (25), Proportion (16), Occasion Appropriateness (12), Color Harmony (10), and Style Cohesion (8).
+              Evaluates the core architecture of your outfit: shoulder seam fit, torso-to-leg proportions, color harmony, and occasion appropriateness.
             </p>
             <span className="feature-tier-badge">Bedrock Architecture</span>
           </div>
@@ -82,9 +44,9 @@ export function FitCheckAboutSection() {
                 <polyline points="12 6 12 12 16 14" />
               </svg>
             </div>
-            <h3 className="feature-title">Tier 2: Details &amp; Craft (20 Pts)</h3>
+            <h3 className="feature-title">Details &amp; Craft (20 Pts)</h3>
             <p className="feature-description">
-              Inspects material quality &amp; texture condition (8), footwear &amp; accessory coordination (7), and hair/grooming execution (5).
+              Inspects fabric texture interaction, footwear coordination, accessory placement, and overall grooming execution.
             </p>
             <span className="feature-tier-badge">The Refinements</span>
           </div>
@@ -95,15 +57,62 @@ export function FitCheckAboutSection() {
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
             </div>
-            <h3 className="feature-title">Tier 3: Expert Polish (9 Pts)</h3>
+            <h3 className="feature-title">Styling Polish (9 Pts)</h3>
             <p className="feature-description">
-              Identifies focal point attention control (5) and unique personal expression/originality (4) that distinguishes an outfit from the ordinary.
+              Assesses focal point attention control and unique personal signature that elevates an ensemble from standard to memorable.
             </p>
             <span className="feature-tier-badge">Sartorial Signature</span>
+          </div>
+        </div>
+
+        {/* How to Use Section */}
+        <div className="how-to-use-section scroll-reveal">
+          <div className="how-to-use-header">
+            <h3 className="how-to-title">How to Get an Accurate Fit Check</h3>
+            <p className="how-to-subtitle">
+              Follow these simple steps for precise silhouette and tailoring assessment.
+            </p>
+          </div>
+
+          <div className="how-to-steps-grid">
+            <div className="step-card">
+              <div className="step-number">01</div>
+              <h4 className="step-title">Full-Length Photo</h4>
+              <p className="step-desc">
+                Take a straight-on, full-body portrait showing head-to-toe clothing and footwear in good ambient light.
+              </p>
+              <div className="step-example-pill">
+                <span className="example-tag">Example:</span>
+                <span>Camera placed at waist height, 2.5–3 meters away, standing in a natural relaxed posture.</span>
+              </div>
+            </div>
+
+            <div className="step-card">
+              <div className="step-number">02</div>
+              <h4 className="step-title">Upload &amp; Analyze</h4>
+              <p className="step-desc">
+                Drop your image or browse your device. Landmark vision maps garment boundaries and proportion lines in seconds.
+              </p>
+              <div className="step-example-pill">
+                <span className="example-tag">Example:</span>
+                <span>You can also test with the built-in sample photo to preview the complete 10-parameter style report.</span>
+              </div>
+            </div>
+
+            <div className="step-card">
+              <div className="step-number">03</div>
+              <h4 className="step-title">Review Recommendations</h4>
+              <p className="step-desc">
+                Check your score breakdown and inspect specific suggestions—such as adjusting trouser break or balancing color contrast.
+              </p>
+              <div className="step-example-pill">
+                <span className="example-tag">Example:</span>
+                <span>Follow tailored tailoring levers to elevate your silhouette from typical to editorial.</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
