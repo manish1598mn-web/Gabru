@@ -1871,6 +1871,7 @@ body {
 }
 
 @media (max-width: 580px) {
+  .compact-cards-grid,
   .compact-cards-grid.cards-8-grid,
   .compact-cards-grid.cards-10-grid {
     grid-template-columns: 1fr;
@@ -2842,13 +2843,20 @@ body {
 
   .scorecard-tier-pills {
     width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
     justify-content: space-between;
   }
 
   .tier-pill-box {
     flex: 1;
-    min-width: 0;
+    min-width: 80px;
     padding: 6px 8px;
+  }
+
+  .scorecard-tier-pills #btn-strip-share-card {
+    width: 100%;
+    justify-content: center;
   }
 }
 

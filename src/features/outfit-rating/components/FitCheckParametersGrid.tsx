@@ -101,37 +101,48 @@ export function FitCheckParametersGrid({
         </div>
 
         {/* 10 Metric Cards Grid */}
-        <div className="compact-cards-grid" id="compact-cards-grid">
+        <div className="compact-cards-grid cards-10-grid" id="compact-cards-grid">
           {OUTFIT_PARAMETERS.map((param) => {
             const score = isAnalyzing
               ? shuffleScores[param.id]
               : photoScore
               ? photoScore.parameterScores[param.id]
               : null;
+            const ratingDetail = photoScore ? photoScore.parameterRatings[param.id] : null;
 
             return (
               <div
                 key={param.id}
-                className={`metric-compact-card tier-${param.tier} ${isAnalyzing ? 'shuffling' : ''}`}
-                id={`card-param-${param.id}`}
+                className={`compact-metric-card focus-ring tactile-press ${score === null && !isAnalyzing ? 'compact-metric-card-unscored' : 'compact-metric-card-scored'} ${isAnalyzing ? 'shuffling' : ''}`}
+                id={`card-${param.id}`}
+                title={`${param.name} (${param.maxPts} pts max): ${param.whatGetsChecked}`}
+                tabIndex={0}
+                role="region"
+                aria-label={`${param.name}: ${score !== null && score !== undefined ? score : 'Not scored'} out of ${param.maxPts} points. ${param.whatGetsChecked}`}
               >
-                <div className="card-top-row">
-                  <span className="card-param-id">P{param.id}</span>
-                  <div className="card-score-pill">
-                    <span className="card-score-value font-tabular-nums">
-                      {score !== null && score !== undefined ? score : '--'}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', width: '100%', position: 'relative', zIndex: 1 }}>
+                  <span className="card-param-name text-truncate">{param.name}</span>
+                  {ratingDetail && !isAnalyzing && (
+                    <span className="card-rating-badge font-tabular-nums">R: {ratingDetail.ratingR}/10</span>
+                  )}
+                </div>
+
+                <div className="card-score-value-row">
+                  {isAnalyzing ? (
+                    <span className="shuffling-number font-tabular-nums">
+                      {shuffleScores[param.id] ?? Math.floor(Math.random() * (param.maxPts + 1))}
+                      <span className="score-max-denom">/{param.maxPts}</span>
                     </span>
-                    <span className="card-score-denom">/{param.maxPts}</span>
-                  </div>
-                </div>
-
-                <div className="card-meta">
-                  <h4 className="card-param-name text-truncate">{param.name}</h4>
-                  <p className="card-param-desc">{param.whatGetsChecked}</p>
-                </div>
-
-                <div className="card-footer-tier">
-                  <span className="card-tier-label">Tier {param.tier}</span>
+                  ) : score !== null && score !== undefined ? (
+                    <span className="calculated-number font-tabular-nums">
+                      {score}
+                      <span className="score-max-denom">/{param.maxPts}</span>
+                    </span>
+                  ) : (
+                    <span className="unscored-number font-tabular-nums">
+                      --<span className="score-max-denom">/{param.maxPts}</span>
+                    </span>
+                  )}
                 </div>
               </div>
             );
