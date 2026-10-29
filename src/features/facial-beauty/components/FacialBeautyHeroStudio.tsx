@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BeautyScoreData } from '../types/FacialBeautyTypes';
+import { Button } from '@/shared/components/ui/Button';
 
 export interface FacialBeautyHeroStudioProps {
   scoreData: BeautyScoreData | null;
@@ -62,55 +63,57 @@ export function FacialBeautyHeroStudio({
             >
               <div className="score-summary-header">
                 <div className="score-metric-display">
-                  <span className="score-big-number">
+                  <span className="score-big-number font-tabular-nums">
                     {Number.isInteger(scoreData.faceScore) ? String(scoreData.faceScore) : scoreData.faceScore.toFixed(1)}
                   </span>
-                  <span className="score-scale-denom">/100</span>
+                  <span className="score-scale-denom font-tabular-nums">/100</span>
                   <span className="score-verdict-tag">{scoreData.verdict}</span>
                 </div>
 
-                <button
-                  type="button"
-                  className="btn-change-photo"
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={onTriggerUpload}
                   id="btn-upload-direct"
                   title="Upload another face photo"
+                  leftIcon={
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                  }
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
                   Change Photo
-                </button>
+                </Button>
               </div>
 
               {/* Presentational vs Structural Breakdown Pill */}
               <div className="beauty-summary-pills-row">
                 <div className="beauty-sub-pill">
                   <span className="sub-pill-label">Presentational</span>
-                  <span className="sub-pill-val">
+                  <span className="sub-pill-val font-tabular-nums">
                     {(scoreData.presentationalScore ?? 78.5).toFixed(1)}%
                   </span>
                 </div>
                 <div className="beauty-sub-pill">
                   <span className="sub-pill-label">Structural</span>
-                  <span className="sub-pill-val">
+                  <span className="sub-pill-val font-tabular-nums">
                     {(scoreData.structuralScore ?? 78.8).toFixed(1)}%
                   </span>
                 </div>
                 <div className="beauty-sub-pill">
                   <span className="sub-pill-label">Confidence</span>
-                  <span className="sub-pill-val">
+                  <span className="sub-pill-val font-tabular-nums">
                     {Math.round((scoreData.confidence || 0.88) * 100)}%
                   </span>
                 </div>
@@ -122,7 +125,7 @@ export function FacialBeautyHeroStudio({
                   <span className="insight-badge">⚡ Top Lever</span>
                   <span className="insight-text">
                     {scoreData.topLevers[0].lever}{' '}
-                    <span className="insight-gain">
+                    <span className="insight-gain font-tabular-nums">
                       (+{scoreData.topLevers[0].gainPts.toFixed(1)} pts)
                     </span>
                   </span>
@@ -130,65 +133,71 @@ export function FacialBeautyHeroStudio({
               )}
 
               <div className="score-summary-actions">
-                <button
-                  type="button"
-                  className="btn-score-action btn-share-score"
+                <Button
+                  variant="primary"
+                  size="md"
                   onClick={onShareClick}
                   id="btn-share-score"
                   title="Generate and share social media scorecard"
+                  leftIcon={
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  }
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="18" cy="5" r="3" />
-                    <circle cx="6" cy="12" r="3" />
-                    <circle cx="18" cy="19" r="3" />
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                  </svg>
                   Share Card
-                </button>
+                </Button>
 
-                <button
-                  type="button"
-                  className="btn-score-action btn-reanalyze"
+                <Button
+                  variant="secondary"
+                  size="md"
                   onClick={onReevaluate}
                   id="btn-reanalyze"
                   title="Re-evaluate facial beauty parameters"
+                  leftIcon={
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                      <polyline points="23 4 23 10 17 10" />
+                      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                    </svg>
+                  }
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                    <polyline points="23 4 23 10 17 10" />
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                  </svg>
                   Re-evaluate
-                </button>
+                </Button>
               </div>
             </div>
 
             <div className="hero-sub-actions">
-              <button
-                type="button"
-                className="btn-sample-link"
+              <Button
+                variant="ghost"
+                size="sm"
                 id="btn-try-demo-face"
                 onClick={onSampleSketch}
+                className="btn-sample-link"
               >
-                <span>🏛</span> Try Beauty Sketch
-              </button>
-              <button
-                type="button"
-                className="btn-sample-link btn-sample-secondary"
+                <span>🏛 Try Beauty Sketch</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 id="btn-try-portrait"
                 onClick={onSamplePortrait}
+                className="btn-sample-link btn-sample-secondary"
               >
-                <span>✨</span> Sample Portrait
-              </button>
+                <span>✨ Sample Portrait</span>
+              </Button>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
@@ -197,14 +206,14 @@ export function FacialBeautyHeroStudio({
           <>
             <div
               id="upload-dropzone"
-              className={`upload-card ${isDragging ? 'is-dragging' : ''} ${errorMessage ? 'has-error' : ''}`}
+              className={`upload-card focus-ring tactile-press ${isDragging ? 'is-dragging' : ''} ${errorMessage ? 'has-error' : ''}`}
               onClick={onTriggerUpload}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
               onDrop={onDrop}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && onTriggerUpload()}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onTriggerUpload()}
               aria-label="Upload face portrait"
             >
               <div className="upload-card-content">
@@ -231,37 +240,39 @@ export function FacialBeautyHeroStudio({
                   <p className="upload-subtitle">Frontal, direct eye contact • JPG, PNG, WEBP • 100% Private</p>
                 </div>
 
-                <button
-                  type="button"
-                  className="btn-browse-trigger"
+                <Button
+                  variant="primary"
+                  size="md"
+                  id="btn-browse-photo"
                   onClick={(e) => {
                     e.stopPropagation();
                     onTriggerUpload();
                   }}
-                  id="btn-browse-photo"
                 >
                   Browse Face Photo
-                </button>
+                </Button>
               </div>
             </div>
 
             <div className="hero-sub-actions">
-              <button
-                type="button"
-                className="btn-sample-link"
+              <Button
+                variant="ghost"
+                size="sm"
                 id="btn-try-demo-face"
                 onClick={onSampleSketch}
+                className="btn-sample-link"
               >
-                <span>🏛</span> Try Beauty Sketch
-              </button>
-              <button
-                type="button"
-                className="btn-sample-link btn-sample-secondary"
+                <span>🏛 Try Beauty Sketch</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 id="btn-try-portrait"
                 onClick={onSamplePortrait}
+                className="btn-sample-link btn-sample-secondary"
               >
-                <span>✨</span> Sample Portrait
-              </button>
+                <span>✨ Sample Portrait</span>
+              </Button>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
@@ -308,6 +319,9 @@ export function FacialBeautyHeroStudio({
                 alt={selectedPhotoName || 'Facial beauty aesthetic reference photo'}
                 className={`preview-image ${isAnalyzing ? 'scanning-blur' : ''}`}
                 id="preview-rendered-image"
+                onError={(e) => {
+                  e.currentTarget.src = '/face_beauty_sketch.jpg';
+                }}
               />
 
               {isAnalyzing && (
