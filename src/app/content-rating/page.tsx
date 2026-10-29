@@ -11,3 +11,4 @@ import ContentRatingFeaturePage from '@/features/content-rating/pages/ContentRat
 export default function ContentRatingPage() {
   return <ContentRatingFeaturePage />;
 }
+

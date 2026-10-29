@@ -5,3 +5,7 @@
  */
 
 export { default as ContentRatingFeaturePage } from './pages/ContentRatingFeaturePage';
+
+export * from './types/ContentRatingTypes';
+export * from './constants/ContentRatingConstants';
+
