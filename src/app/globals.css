@@ -1,115 +1,419 @@
 /* ==========================================================
-   1. ROLE-BASED COLOR SYSTEM & TOKENS (SOURCE OF TRUTH)
-   Theme: Dark Only (Charcoal & White-Opacity Hierarchy)
+   1. GABRU CANONICAL DESIGN TOKENS (SOURCE OF TRUTH)
+   Theme: Obsidian Dark Matte & Precision Editorial
    ========================================================== */
 
 :root {
   color-scheme: dark;
 
-  /* Surfaces */
-  --body: #1e1e1e;
-  /* Page background and most sections */
-  --surface: #1a1a1a;
-  /* Footer and alternating sections (slightly darker) */
-  --header: rgba(30, 30, 30, 0.90);
-  /* Sticky translucent header (#1e1e1e at 90%) */
-  --popover: rgba(18, 19, 22, 0.95);
-  /* Floating menus/panels (#121316 at 95%) */
-  --glass: rgba(255, 255, 255, 0.05);
-  /* Glass fill for cards, inputs, pills */
-  --glass-hover: rgba(255, 255, 255, 0.08);
-  /* Hover state for glass cards and pills */
+  /* --- Canonical Surfaces --- */
+  --bg-background: #09090b;
+  --bg-surface-elevated: #121217;
+  --bg-surface-muted: #181822;
+  --bg-surface-glass: rgba(255, 255, 255, 0.04);
+  --bg-surface-glass-hover: rgba(255, 255, 255, 0.07);
 
-  /* Borders */
-  --stroke: rgba(255, 255, 255, 0.08);
-  /* Default divider, card, and outline stroke */
-  --stroke-faint: rgba(255, 255, 255, 0.05);
-  /* Subtle/secondary stroke */
-  --stroke-strong: rgba(255, 255, 255, 0.30);
-  /* Hover/focus highlights */
+  /* --- Canonical Borders & Dividers --- */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-muted: rgba(255, 255, 255, 0.14);
+  --border-focus: #a855f7;
 
-  /* Text */
-  --text-strong: #ffffff;
-  /* High-contrast brand, hero, and active numbers */
-  --text-primary: rgba(255, 255, 255, 0.95);
-  /* Headings, titles, and key text */
-  --text-secondary: rgba(255, 255, 255, 0.70);
-  /* Body copy, descriptions, captions */
-  --text-muted: rgba(255, 255, 255, 0.60);
-  /* Labels, footnotes, helper text, and pills */
-  --text-on-light: #1a1a1a;
-  /* Text placed on solid light buttons */
+  /* --- Canonical Text Hierarchy --- */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --text-muted: rgba(255, 255, 255, 0.48);
+  --text-inverse: #09090b;
 
-  /* Accent */
-  --accent: #2589ff;
-  /* Links, active indicators, focus rings, primary highlights */
-  --accent-hover: #2589ff;
-  /* PENDING: Keep existing / fallback to accent */
+  /* --- Single Primary Brand Accent (Royal Violet) --- */
+  --accent-primary: #a855f7;
+  --accent-primary-hover: #9333ea;
+  --accent-subtle: rgba(168, 85, 247, 0.12);
 
-  /* Special */
-  --rating-star: #ffb900;
-  /* Star icons / rating metrics */
-  --scrim-light: rgba(0, 0, 0, 0.2);
-  /* Light overlays */
-  --scrim: rgba(0, 0, 0, 0.3);
-  /* Image/media scrims and modal backdrop */
-  --button-solid-bg: rgba(255, 255, 255, 0.95);
-  /* Primary button background */
-  --button-solid-text: #1a1a1a;
-  /* Primary button text */
+  /* --- Semantic Status Tokens --- */
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-success-border: rgba(16, 185, 129, 0.28);
 
-  /* Avatar Palette (Assigned by Hash/Index) */
-  --avatar-1: #8e51ff;
-  --avatar-2: #00bc7d;
-  --avatar-3: #fe9a00;
-  --avatar-4: #00b8db;
-  --avatar-5: #f6339a;
-  --avatar-6: #2b7fff;
-  --avatar-7: #ff6900;
-  --avatar-8: #00bba7;
-  --avatar-9: #ff2056;
-  --avatar-10: #00a376;
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.28);
 
-  /* Status Colors (Retained) */
-  --color-success: #10B981;
-  --color-success-glow: #34D399;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
+  --color-destructive: #ef4444;
+  --color-destructive-bg: rgba(239, 68, 68, 0.12);
+  --color-destructive-border: rgba(239, 68, 68, 0.28);
 
-  /* Aliases & Backward Compatibility Mappings */
-  --bg-primary: var(--body);
-  --bg-secondary: var(--surface);
-  --bg-page: var(--body);
-  --bg-surface: var(--surface);
-  --bg-card: var(--surface);
-  --border: var(--stroke);
-  --border-bright: var(--stroke-strong);
-  --border-hairline: var(--stroke);
-  --border-hairline-bright: var(--stroke-strong);
-  --surface-glass: var(--glass);
-  --surface-glass-hover: var(--glass-hover);
-  --surface-glass-card: var(--surface);
-  --surface-glass-subtle: var(--glass);
-  --bg-soft-blue: var(--glass);
-  --color-primary: var(--accent);
-  --accent-blue: var(--accent);
-  --accent-cyan: var(--accent);
-  --accent-purple: var(--accent);
-  --accent-violet: var(--accent);
+  --color-info: #06b6d4;
+  --color-info-bg: rgba(6, 182, 212, 0.12);
+  --color-info-border: rgba(6, 182, 212, 0.28);
 
-  /* Spatial Shadows & Ambient Glows (PENDING: Retained) */
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.6);
-  --shadow-card: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px -10px rgba(0, 0, 0, 0.85);
-  --shadow-card-hover: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 28px 60px -12px rgba(0, 0, 0, 0.95), 0 0 25px rgba(37, 137, 255, 0.25);
-  --shadow-glow-cyan: 0 0 30px rgba(37, 137, 255, 0.35);
+  /* --- Standardized Radii --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
 
-  /* Typography & Layout Metrics (8px base grid) */
-  --font-main: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --max-width: 1220px;
+  /* --- 4px / 8px Spacing Rhythm --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 
-  /* Cinematic Motion Easing (Cubic-Bezier) */
-  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1);
+  /* --- Backward-Compatibility Aliases --- */
+  --body: var(--bg-background);
+  --surface: var(--bg-surface-elevated);
+  --header: rgba(9, 9, 11, 0.85);
+  --popover: var(--bg-surface-elevated);
+  --glass: var(--bg-surface-glass);
+  --glass-hover: var(--bg-surface-glass-hover);
+  --stroke: var(--border-subtle);
+  --stroke-faint: rgba(255, 255, 255, 0.04);
+  --stroke-strong: var(--border-muted);
+  --text-strong: var(--text-primary);
+  --text-on-light: var(--text-inverse);
+  --accent: var(--accent-primary);
+  --accent-hover: var(--accent-primary-hover);
+  --button-solid-bg: var(--accent-primary);
+  --button-solid-text: #ffffff;
+  --bg-primary: var(--bg-background);
+  --bg-secondary: var(--bg-surface-elevated);
+  --bg-page: var(--bg-background);
+  --bg-surface: var(--bg-surface-elevated);
+  --bg-card: var(--bg-surface-elevated);
+  --border: var(--border-subtle);
+  --border-bright: var(--border-muted);
+  --border-hairline: var(--border-subtle);
+  --border-hairline-bright: var(--border-muted);
+  --surface-glass: var(--bg-surface-glass);
+  --surface-glass-hover: var(--bg-surface-glass-hover);
+  --color-primary: var(--accent-primary);
+
+  /* --- Shadows & Atmosphere --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.55);
+
+  /* --- Typography & Layout --- */
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --max-width: 1280px;
+
+  /* --- Motion --- */
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+}
+
+/* ==========================================================
+   2. SYSTEM UTILITY CLASSES (ACCESSIBILITY & ERGONOMICS)
+   ========================================================== */
+.font-tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tactile-press {
+  transition: transform 0.1s var(--ease-spring), opacity 0.15s ease;
+}
+
+.tactile-press:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* ==========================================================
+   2.1 STANDARDIZED UI PRIMITIVES (BUTTON, CARD, BADGE, SKELETON, MODAL)
+   ========================================================== */
+
+/* --- Buttons --- */
+.btn-primitive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  user-select: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-size-sm {
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  font-size: 12.5px;
+}
+
+.btn-size-md {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  font-size: 14px;
+}
+
+.btn-size-lg {
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  font-size: 15px;
+}
+
+.btn-full-width {
+  width: 100%;
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-primary-hover);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.45);
+}
+
+.btn-secondary {
+  background: var(--bg-surface-glass);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-surface-glass-hover);
+  border-color: var(--border-muted);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-muted);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--bg-surface-glass);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-surface-glass);
+  color: var(--text-primary);
+}
+
+.btn-destructive {
+  background: var(--color-destructive-bg);
+  color: #fca5a5;
+  border-color: var(--color-destructive-border);
+}
+
+.btn-destructive:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ffffff;
+}
+
+.btn-primitive:disabled,
+.btn-primitive.is-loading {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-spinner-icon {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* --- Cards --- */
+.card-primitive {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  position: relative;
+  transition: border-color var(--transition-normal), transform var(--transition-fast), box-shadow var(--transition-normal);
+}
+
+.card-elevated {
+  box-shadow: var(--shadow-card);
+}
+
+.card-interactive {
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  border-color: var(--border-muted);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.card-glass {
+  background: rgba(18, 18, 23, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* --- Badges --- */
+.badge-primitive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.badge-size-sm {
+  font-size: 11px;
+  padding: 2px 7px;
+  line-height: 1.3;
+}
+
+.badge-size-md {
+  font-size: 12px;
+  padding: 4px 10px;
+  line-height: 1.4;
+}
+
+.badge-default {
+  background: var(--bg-surface-glass);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.badge-success {
+  background: var(--color-success-bg);
+  color: #34d399;
+  border: 1px solid var(--color-success-border);
+}
+
+.badge-warning {
+  background: var(--color-warning-bg);
+  color: #fde68a;
+  border: 1px solid var(--color-warning-border);
+}
+
+.badge-destructive {
+  background: var(--color-destructive-bg);
+  color: #fca5a5;
+  border: 1px solid var(--color-destructive-border);
+}
+
+.badge-info {
+  background: var(--color-info-bg);
+  color: #38bdf8;
+  border: 1px solid var(--color-info-border);
+}
+
+.badge-accent {
+  background: var(--accent-subtle);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.badge-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* --- Skeleton Shimmer --- */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* --- Standardized Modal --- */
+.btn-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.btn-modal-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-glass-hover);
+}
+
+.modal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.modal-footer-container {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  background: var(--bg-surface-elevated);
 }
 
 /* ==========================================================

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Button, Badge } from '@/shared';
 import { OutfitScoreData } from '../types/OutfitRatingTypes';
 
 export interface FitCheckHeroStudioProps {
@@ -34,9 +35,11 @@ export function FitCheckHeroStudio({
   onShareClick,
   onRecalculate,
 }: FitCheckHeroStudioProps) {
+  const cleanPhotoName = selectedPhotoName || 'Default fit sample';
+
   return (
     <div className="hero-container">
-      {/* Left Column — Redesigned Minimal & Clean Upload Studio */}
+      {/* Left Column — Human-Grade Editorial Studio */}
       <div className="hero-left-column">
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
           Upload Photo,
@@ -61,124 +64,121 @@ export function FitCheckHeroStudio({
             >
               <div className="score-summary-header">
                 <div className="score-metric-display">
-                  <span className="score-big-number">{photoScore.overallScore}</span>
+                  <span className="score-big-number font-tabular-nums">{photoScore.overallScore}</span>
                   <span className="score-scale-denom">/100</span>
                   <span className="score-verdict-tag">{photoScore.verdict}</span>
                 </div>
 
-                <button
-                  type="button"
-                  className="btn-change-photo"
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={onTriggerUpload}
                   id="btn-upload-direct"
                   title="Upload another outfit photo"
+                  leftIcon={
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                  }
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
                   Change Photo
-                </button>
+                </Button>
               </div>
 
               {/* Clean Key Insight (Top Quick Fix or Cap Alert) */}
               {photoScore.topQuickFix && (
                 <div className="score-clean-insight">
-                  <span className="insight-badge">⚡ Quick Fix</span>
-                  <span className="insight-text">
+                  <Badge variant="warning" size="sm">⚡ Quick Fix</Badge>
+                  <span className="insight-text text-truncate">
                     {photoScore.topQuickFix.action}{' '}
-                    <span className="insight-gain">
+                    <strong className="insight-gain font-tabular-nums">
                       (+{photoScore.topQuickFix.gainPts.toFixed(1)} pts)
-                    </span>
+                    </strong>
                   </span>
                 </div>
               )}
 
               {photoScore.capsTriggered && photoScore.capsTriggered.length > 0 && !photoScore.topQuickFix && (
                 <div className="score-clean-cap">
-                  <span>⚠ {photoScore.capsTriggered[0]}</span>
+                  <Badge variant="destructive" size="sm">Cap Applied</Badge>
+                  <span className="text-truncate">{photoScore.capsTriggered[0]}</span>
                 </div>
               )}
 
+              {/* Action Buttons: 1 Primary (Share Card), 1 Secondary (Re-calculate) */}
               <div className="score-summary-actions">
-                <button
-                  type="button"
-                  className="btn-score-action btn-share-score"
+                <Button
+                  variant="primary"
+                  size="md"
                   onClick={onShareClick}
                   id="btn-share-score"
-                  title="Generate and share social media scorecard"
+                  title="Generate and share social media style card"
+                  leftIcon={
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  }
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="18" cy="5" r="3" />
-                    <circle cx="6" cy="12" r="3" />
-                    <circle cx="18" cy="19" r="3" />
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                  </svg>
                   Share Card
-                </button>
+                </Button>
 
-                <button
-                  type="button"
-                  className="btn-score-action btn-reanalyze"
+                <Button
+                  variant="secondary"
+                  size="md"
                   onClick={onRecalculate}
+                  disabled={isAnalyzing}
+                  isLoading={isAnalyzing}
                   id="btn-reanalyze"
                   title="Re-calculate parameter scores"
+                  leftIcon={
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                      <polyline points="23 4 23 10 17 10" />
+                      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                    </svg>
+                  }
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                    <polyline points="23 4 23 10 17 10" />
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                  </svg>
                   Re-calculate
-                </button>
+                </Button>
               </div>
             </div>
 
             <div className="hero-sub-actions">
-              <button
-                type="button"
-                className="btn-sample-link"
-                id="btn-try-demo"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={onSamplePhoto}
+                id="btn-try-demo"
               >
                 <span>✨</span> Try Sample Photo
-              </button>
+              </Button>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
         ) : (
-          /* Initial State: Redesigned Luxury Upload Dropzone */
+          /* Initial State: Accessible Semantic Upload Dropzone */
           <>
             <div
               id="upload-dropzone"
               className={`upload-card ${isDragging ? 'is-dragging' : ''} ${errorMessage ? 'has-error' : ''}`}
-              onClick={onTriggerUpload}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
               onDrop={onDrop}
+              onClick={onTriggerUpload}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && onTriggerUpload()}
-              aria-label="Upload outfit photo"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onTriggerUpload();
+                }
+              }}
+              aria-label="Upload outfit photo. Drag and drop file or press to browse."
             >
               <div className="upload-card-content">
                 <div className="upload-icon-badge">
@@ -197,16 +197,16 @@ export function FitCheckHeroStudio({
                   </svg>
                 </div>
 
-                <div className="upload-text-block">
-                  <p className="upload-title">
+                <div className="upload-text-block min-w-0">
+                  <p className="upload-title text-truncate">
                     {isDragging ? 'Drop outfit photo to analyze' : 'Drop your outfit photo here, or browse'}
                   </p>
                   <p className="upload-subtitle">Supports JPG, PNG, WEBP • Max 15MB • Client-side private</p>
                 </div>
 
-                <button
-                  type="button"
-                  className="btn-browse-trigger"
+                <Button
+                  variant="primary"
+                  size="md"
                   onClick={(e) => {
                     e.stopPropagation();
                     onTriggerUpload();
@@ -214,19 +214,19 @@ export function FitCheckHeroStudio({
                   id="btn-upload-direct"
                 >
                   Choose Photo
-                </button>
+                </Button>
               </div>
             </div>
 
             <div className="hero-sub-actions">
-              <button
-                type="button"
-                className="btn-sample-link"
-                id="btn-try-demo"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={onSamplePhoto}
+                id="btn-try-demo"
               >
                 <span>✨</span> Try Sample Photo
-              </button>
+              </Button>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
@@ -257,8 +257,6 @@ export function FitCheckHeroStudio({
       <div className="hero-right-column scroll-reveal">
         <div className="preview-card-composition">
           <div className="media-ambient-glow" aria-hidden="true" />
-          <div className="media-ambient-tile tile-tl" aria-hidden="true" />
-          <div className="media-ambient-tile tile-br" aria-hidden="true" />
 
           <div
             className={`preview-card has-photo ${isDragging ? 'is-dragging' : ''} ${isAnalyzing ? 'is-scanning' : ''}`}
@@ -268,11 +266,18 @@ export function FitCheckHeroStudio({
             onDrop={onDrop}
           >
             <div className="preview-photo-canvas" id="preview-display-area">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={selectedPhotoUrl || '/fit_check_split.jpg'}
-                alt={selectedPhotoName || 'Fit-check outfit inspiration — split man and woman pose'}
+                alt={cleanPhotoName}
                 className={`preview-image ${isAnalyzing ? 'scanning-blur' : ''}`}
                 id="preview-rendered-image"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (target.src !== `${window.location.origin}/fit_check_split.jpg`) {
+                    target.src = '/fit_check_split.jpg';
+                  }
+                }}
               />
 
               {isAnalyzing && (
@@ -289,7 +294,7 @@ export function FitCheckHeroStudio({
                   </div>
                   <div className="scanner-status-chip">
                     <span className="scanner-spin-icon" />
-                    <span>Scanning & Isolating Focused Human...</span>
+                    <span>Scanning &amp; Isolating Focused Human...</span>
                   </div>
                 </div>
               )}
@@ -312,4 +317,3 @@ export function FitCheckHeroStudio({
     </div>
   );
 }
-
