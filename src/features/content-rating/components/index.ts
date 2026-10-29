@@ -2,7 +2,7 @@
  * GABRU — CONTENT RATING COMPONENTS BARREL
  */
 
-export { ContentRatingHeroStudio, detectPlatformFromUrl } from './ContentRatingHeroStudio';
+export { ContentRatingHeroStudio } from './ContentRatingHeroStudio';
 export { ContentRatingScorecard } from './ContentRatingScorecard';
 export { ContentDeepDiveSection } from './ContentDeepDiveSection';
 export { ContentEvidenceSection } from './ContentEvidenceSection';

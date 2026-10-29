@@ -9,4 +9,5 @@ export { default as ContentRatingFeaturePage } from './pages/ContentRatingFeatur
 export * from './types/ContentRatingTypes';
 export * from './constants/ContentRatingConstants';
 export * from './services/ContentScoringEngine';
+export * from './utils/ContentPlatformUtil';
 

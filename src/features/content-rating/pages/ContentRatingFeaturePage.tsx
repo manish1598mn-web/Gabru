@@ -28,6 +28,7 @@ import {
   DEMO_VIRAL_SHORT,
 } from '../constants/ContentRatingConstants';
 import { evaluateUnifiedContent } from '../services/ContentScoringEngine';
+import { detectPlatformFromUrl } from '../utils/ContentPlatformUtil';
 import {
   ContentRatingHeroStudio,
   ContentRatingScorecard,
@@ -36,7 +37,6 @@ import {
   ContentRewritesSection,
   ContentShareModal,
   ContentAboutSection,
-  detectPlatformFromUrl,
 } from '../components';
 
 export default function ContentRatingFeaturePage() {

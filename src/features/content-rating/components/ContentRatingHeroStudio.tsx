@@ -14,11 +14,11 @@ import React, { useState, useId } from 'react';
 import {
   ContentScoreData,
   InputMode,
-  ContentPlatform,
   UnifiedContentItem,
 } from '../types/ContentRatingTypes';
 import { SAMPLE_DEMO_CONTENTS } from '../constants/ContentRatingConstants';
 import { Button } from '@/shared/components/ui/Button';
+import { detectPlatformFromUrl } from '../utils/ContentPlatformUtil';
 
 export interface ContentRatingHeroStudioProps {
   scoreData: ContentScoreData | null;
@@ -38,21 +38,6 @@ export interface ContentRatingHeroStudioProps {
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onReset: () => void;
   onShareClick: () => void;
-}
-
-/**
- * Detects social platform from URL string
- */
-export function detectPlatformFromUrl(url: string): ContentPlatform | null {
-  const clean = url.trim().toLowerCase();
-  if (clean.includes('youtube.com') || clean.includes('youtu.be')) return 'youtube';
-  if (clean.includes('instagram.com')) return 'instagram';
-  if (clean.includes('tiktok.com')) return 'tiktok';
-  if (clean.includes('twitter.com') || clean.includes('x.com')) return 'x';
-  if (clean.includes('linkedin.com')) return 'linkedin';
-  if (clean.includes('threads.net')) return 'threads';
-  if (clean.includes('facebook.com')) return 'facebook';
-  return null;
 }
 
 export function ContentRatingHeroStudio({
