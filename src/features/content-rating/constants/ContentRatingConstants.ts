@@ -494,17 +494,18 @@ export const DEMO_VIRAL_SHORT: UnifiedContentItem = {
     views: 12400,
     likes: 810,
     comments: 64,
-    shares: 48,
-    saves: 215,
+    shares: 19,
+    saves: null,
   },
   ownerAnalytics: null, // Path A link-only
   baselineStats: {
     postCount: 18,
-    medianViews: 9200,
+    medianViews: 11400,
+    stdDevViews: 2500,
     medianLikes: 580,
     medianComments: 36,
-    medianEngagementRate: 0.058, // 5.8%
-    stdDevEngagementRate: 0.012,
+    medianEngagementRate: 0.054, // 5.4%
+    stdDevEngagementRate: 0.015, // z = (7.2% - 5.4%) / 1.5% = +1.20 -> R = 8.0
   },
   dataCompleteness: {
     publicMetrics: true,
@@ -674,3 +675,4 @@ export const SAMPLE_DEMO_CONTENTS: Record<string, UnifiedContentItem> = {
   carousel: DEMO_CAROUSEL,
   long_video: DEMO_LONG_VIDEO,
 };
+

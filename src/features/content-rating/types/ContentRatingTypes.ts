@@ -80,6 +80,7 @@ export interface ContentOwnerAnalytics {
 export interface CreatorBaselineStats {
   postCount: number;
   medianViews: number;
+  stdDevViews?: number;
   medianLikes: number;
   medianComments: number;
   medianEngagementRate: number;
@@ -284,3 +285,4 @@ export interface ContentScoreData {
   qualityBreakdown: QualityScoreResult;
   performanceBreakdown?: PerformanceScoreResult;
 }
+
