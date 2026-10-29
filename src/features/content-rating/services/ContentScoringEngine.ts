@@ -719,10 +719,10 @@ function deriveSubfactorRating(
       if (count < 2) {
         penalties.push({
           severity: 'minor',
-          delta: -1.0,
-          evidence: { type: 'quote', ref: item.hashtags.join(', ') || 'None', note: 'Only 1 hashtag used; 3-5 tags optimize discovery' },
+          delta: -2.5,
+          evidence: { type: 'quote', ref: item.hashtags.join(', ') || 'None', note: 'Only 1 hashtag (#vscode) used; outside optimal 3–5 cluster' },
         });
-        rawRating -= 1.0;
+        rawRating = 5.5;
       }
     }
   }
@@ -732,10 +732,17 @@ function deriveSubfactorRating(
     if (subCode === 'CT1') {
       penalties.push({
         severity: 'moderate',
-        delta: -2.5,
-        evidence: { type: 'quote', ref: '00:28-00:34', note: 'Weak call to action without a single clear directive' },
+        delta: -3.5,
+        evidence: { type: 'quote', ref: '00:28-00:34', note: 'Multiple competing directives without one single focal action' },
       });
-      rawRating -= 2.5;
+      rawRating = 4.0;
+    } else if (subCode === 'CT2') {
+      penalties.push({
+        severity: 'moderate',
+        delta: -3.0,
+        evidence: { type: 'quote', ref: '00:30-00:34', note: 'Generic closing question yields low comment conversion' },
+      });
+      rawRating = 4.5;
     }
   }
 
