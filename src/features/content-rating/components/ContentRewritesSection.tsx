@@ -7,6 +7,7 @@ import {
   EffortTier,
 } from '../types/ContentRatingTypes';
 import { PARAM_TO_TAB } from '../constants/ContentRatingConstants';
+import { Button } from '@/shared/components/ui/Button';
 
 interface ContentRewritesSectionProps {
   scoreData: ContentScoreData | null;
@@ -97,12 +98,12 @@ export function ContentRewritesSection({
             <div key={sug.id} className="ranked-sug-card" id={`ranked-sug-${idx}`}>
               <div className="sug-card-top">
                 <div className="sug-rank-badge">
-                  <span className="sug-rank-num">#{idx + 1}</span>
+                  <span className="sug-rank-num font-tabular-nums">#{idx + 1}</span>
                   <span className="sug-rank-text">{idx === 0 ? 'Highest Leverage' : 'High Impact'}</span>
                 </div>
                 <div className="sug-meta-badges">
                   <span className={`sug-effort-badge ${effortInfo.className}`}>{effortInfo.label}</span>
-                  <span className="sug-gain-badge">+{sug.estimatedGain.toFixed(1)} pts &Delta;Gain</span>
+                  <span className="sug-gain-badge font-tabular-nums">+{sug.estimatedGain.toFixed(1)} pts &Delta;Gain</span>
                 </div>
               </div>
 
@@ -112,20 +113,22 @@ export function ContentRewritesSection({
               <div className="sug-card-bottom">
                 <span className="sug-subfactor-tag">Factor: {sug.subfactorCode}</span>
                 {tab && (
-                  <button
-                    type="button"
-                    className="btn-sug-action"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       onSelectTab(tab);
                       const el = document.getElementById('content-diagnostic-suite');
                       if (el) el.scrollIntoView({ behavior: 'smooth' });
                     }}
+                    rightIcon={
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    }
                   >
-                    <span>Inspect Diagnostic</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </button>
+                    Inspect Diagnostic
+                  </Button>
                 )}
               </div>
             </div>
@@ -149,21 +152,21 @@ export function ContentRewritesSection({
           <div className="sandbox-tab-switch">
             <button
               type="button"
-              className={`sandbox-tab-btn ${activeStudioTab === 'hooks' ? 'active' : ''}`}
+              className={`sandbox-tab-btn focus-ring tactile-press ${activeStudioTab === 'hooks' ? 'active' : ''}`}
               onClick={() => setActiveStudioTab('hooks')}
             >
               Viral Hooks (3 Angles)
             </button>
             <button
               type="button"
-              className={`sandbox-tab-btn ${activeStudioTab === 'caption' ? 'active' : ''}`}
+              className={`sandbox-tab-btn focus-ring tactile-press ${activeStudioTab === 'caption' ? 'active' : ''}`}
               onClick={() => setActiveStudioTab('caption')}
             >
               SEO Caption &amp; Tags
             </button>
             <button
               type="button"
-              className={`sandbox-tab-btn ${activeStudioTab === 'cta' ? 'active' : ''}`}
+              className={`sandbox-tab-btn focus-ring tactile-press ${activeStudioTab === 'cta' ? 'active' : ''}`}
               onClick={() => setActiveStudioTab('cta')}
             >
               Debate CTA
@@ -192,28 +195,25 @@ export function ContentRewritesSection({
                     <div key={vIdx} className="hook-variant-card">
                       <div className="hook-variant-top">
                         <span className="hook-category-tag">{category.trim()}</span>
-                        <button
-                          type="button"
-                          className={`btn-copy-variant ${isCopied ? 'copied' : ''}`}
+                        <Button
+                          variant="secondary"
+                          size="sm"
                           onClick={() => handleCopy(text.trim().replace(/^["']|["']$/g, ''), key)}
-                        >
-                          {isCopied ? (
-                            <>
+                          leftIcon={
+                            isCopied ? (
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <polyline points="20 6 9 17 4 12" />
                               </svg>
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
+                            ) : (
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                               </svg>
-                              <span>Copy Line</span>
-                            </>
-                          )}
-                        </button>
+                            )
+                          }
+                        >
+                          {isCopied ? 'Copied!' : 'Copy Line'}
+                        </Button>
                       </div>
                       <p className="hook-quote-text">{text.trim()}</p>
                     </div>
@@ -248,30 +248,27 @@ export function ContentRewritesSection({
                 </div>
 
                 <div className="caption-actions-bar">
-                  <button
-                    type="button"
-                    className={`btn-primary-studio-action ${copiedKey === 'caption_full' ? 'copied' : ''}`}
+                  <Button
+                    variant="primary"
+                    size="md"
                     onClick={() =>
                       handleCopy(`${captionText}\n\n${hashtagList.join(' ')}`, 'caption_full')
                     }
-                  >
-                    {copiedKey === 'caption_full' ? (
-                      <>
+                    leftIcon={
+                      copiedKey === 'caption_full' ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        <span>Copied Caption &amp; Hashtags!</span>
-                      </>
-                    ) : (
-                      <>
+                      ) : (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                         </svg>
-                        <span>Copy Complete Caption &amp; Tags</span>
-                      </>
-                    )}
-                  </button>
+                      )
+                    }
+                  >
+                    {copiedKey === 'caption_full' ? 'Copied Caption & Hashtags!' : 'Copy Complete Caption & Tags'}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -307,28 +304,25 @@ export function ContentRewritesSection({
               </div>
 
               <div className="cta-action-wrap">
-                <button
-                  type="button"
-                  className={`btn-primary-studio-action ${copiedKey === 'cta_line' ? 'copied' : ''}`}
+                <Button
+                  variant="primary"
+                  size="md"
                   onClick={() => handleCopy(ctaText.replace(/^Closing line:\s*/, ''), 'cta_line')}
-                >
-                  {copiedKey === 'cta_line' ? (
-                    <>
+                  leftIcon={
+                    copiedKey === 'cta_line' ? (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
-                      <span>Copied Closing CTA!</span>
-                    </>
-                  ) : (
-                    <>
+                    ) : (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                       </svg>
-                      <span>Copy Closing Line</span>
-                    </>
-                  )}
-                </button>
+                    )
+                  }
+                >
+                  {copiedKey === 'cta_line' ? 'Copied Closing CTA!' : 'Copy Closing Line'}
+                </Button>
               </div>
             </div>
           )}

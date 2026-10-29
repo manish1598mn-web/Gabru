@@ -6,6 +6,7 @@ import {
   DeepDiveContentTabKey,
 } from '../types/ContentRatingTypes';
 import { PARAM_TO_TAB } from '../constants/ContentRatingConstants';
+import { Button } from '@/shared/components/ui/Button';
 
 interface ContentEvidenceSectionProps {
   scoreData: ContentScoreData | null;
@@ -59,7 +60,7 @@ export function ContentEvidenceSection({
               <h4 className="evidence-column-title">Key Craft Strengths</h4>
               <span className="evidence-column-subtitle">Subfactors rated &ge; 8.0/10 with strong execution</span>
             </div>
-            <span className="evidence-count-badge pros-badge">{pros.length} Identified</span>
+            <span className="evidence-count-badge pros-badge font-tabular-nums">{pros.length} Identified</span>
           </div>
 
           <div className="evidence-cards-list">
@@ -68,7 +69,7 @@ export function ContentEvidenceSection({
                 <div key={idx} className="evidence-card pro-card" id={`evidence-pro-${idx}`}>
                   <div className="evidence-card-top">
                     <span className="evidence-param-tag">{pro.parameter}</span>
-                    <span className="evidence-score-pill pro-pill">{pro.rating.toFixed(1)} / 10</span>
+                    <span className="evidence-score-pill pro-pill font-tabular-nums">{pro.rating.toFixed(1)} / 10</span>
                   </div>
 
                   <h5 className="evidence-card-title">{pro.title}</h5>
@@ -86,16 +87,18 @@ export function ContentEvidenceSection({
                   </div>
 
                   <div className="evidence-card-footer">
-                    <button
-                      type="button"
-                      className="btn-evidence-jump"
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => navigateToParam(pro.parameter)}
+                      rightIcon={
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      }
                     >
-                      <span>Inspect Parameter</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </button>
+                      Inspect Parameter
+                    </Button>
                   </div>
                 </div>
               ))
@@ -121,7 +124,7 @@ export function ContentEvidenceSection({
               <h4 className="evidence-column-title">Priority Craft Flaws</h4>
               <span className="evidence-column-subtitle">Subfactors rated &le; 6.0/10 pulling down total score</span>
             </div>
-            <span className="evidence-count-badge cons-badge">{cons.length} Detected</span>
+            <span className="evidence-count-badge cons-badge font-tabular-nums">{cons.length} Detected</span>
           </div>
 
           <div className="evidence-cards-list">
@@ -130,7 +133,7 @@ export function ContentEvidenceSection({
                 <div key={idx} className="evidence-card con-card" id={`evidence-con-${idx}`}>
                   <div className="evidence-card-top">
                     <span className="evidence-param-tag con-tag">{con.parameter}</span>
-                    <span className="evidence-score-pill con-pill">{con.rating.toFixed(1)} / 10</span>
+                    <span className="evidence-score-pill con-pill font-tabular-nums">{con.rating.toFixed(1)} / 10</span>
                   </div>
 
                   <h5 className="evidence-card-title">{con.title}</h5>
@@ -149,16 +152,18 @@ export function ContentEvidenceSection({
                   </div>
 
                   <div className="evidence-card-footer">
-                    <button
-                      type="button"
-                      className="btn-evidence-jump con-jump"
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => navigateToParam(con.parameter)}
+                      rightIcon={
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      }
                     >
-                      <span>View Diagnostic Details</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </button>
+                      View Diagnostic Details
+                    </Button>
                   </div>
                 </div>
               ))

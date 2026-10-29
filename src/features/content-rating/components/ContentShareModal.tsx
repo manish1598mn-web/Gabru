@@ -7,6 +7,8 @@ import {
   downloadCanvasAsPng,
   copyCanvasToClipboard,
 } from '../utils/ContentShareCardUtil';
+import { Modal } from '@/shared/components/ui/Modal';
+import { Button } from '@/shared/components/ui/Button';
 
 interface ContentShareModalProps {
   isOpen: boolean;
@@ -51,18 +53,7 @@ export function ContentShareModal({
     };
   }, [isOpen, scoreData]);
 
-  // Handle ESC key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen || !scoreData) return null;
+  if (!scoreData) return null;
 
   const handleDownload = () => {
     if (!canvasRef.current) return;
@@ -83,59 +74,14 @@ export function ContentShareModal({
   };
 
   return (
-    <div className="share-modal-overlay" onClick={onClose} id="share-modal-overlay">
-      <div
-        className="share-modal-container"
-        onClick={(e) => e.stopPropagation()}
-        id="share-modal-container"
-      >
-        {/* Modal Header */}
-        <div className="share-modal-header">
-          <div className="share-modal-title-box">
-            <div className="about-section-eyebrow">
-              <span>EXPORT VERIFIED AUDIT</span>
-            </div>
-            <h3 className="share-modal-heading">High-Resolution Share Card (1080 &times; 1350)</h3>
-            <p className="share-modal-sub">
-              Instagram/Twitter 4:5 vertical portrait standard. Grounded in deterministic rubric standards.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className="share-modal-close-btn"
-            onClick={onClose}
-            aria-label="Close modal"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Modal Body Preview */}
-        <div className="share-modal-body">
-          {isGenerating && (
-            <div className="share-card-loading">
-              <div className="share-spinner" />
-              <p>Rendering 1080 &times; 1350 audit card...</p>
-            </div>
-          )}
-
-          {!isGenerating && dataUrl && (
-            <div className="share-preview-card-wrap">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={dataUrl}
-                alt="Gabru Content Intelligence Audit Report"
-                className="share-card-preview-image"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Modal Footer Controls */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="High-Resolution Share Card (1080 × 1350)"
+      subtitle="Instagram/Twitter 4:5 vertical portrait standard. Grounded in deterministic rubric standards."
+      maxWidth="620px"
+      id="share-modal"
+      footer={
         <div className="share-modal-footer">
           <div className="share-footer-info">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -146,47 +92,65 @@ export function ContentShareModal({
           </div>
 
           <div className="share-footer-buttons">
-            <button
-              type="button"
-              className={`btn-share-secondary ${copied ? 'copied' : ''}`}
+            <Button
+              variant="secondary"
+              size="md"
               onClick={handleCopy}
               disabled={isGenerating || !dataUrl}
-            >
-              {copied ? (
-                <>
+              leftIcon={
+                copied ? (
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  <span>Copied to Clipboard!</span>
-                </>
-              ) : (
-                <>
+                ) : (
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                   </svg>
-                  <span>Copy Image</span>
-                </>
-              )}
-            </button>
+                )
+              }
+            >
+              {copied ? 'Copied to Clipboard!' : 'Copy Image'}
+            </Button>
 
-            <button
-              type="button"
-              className="btn-share-primary"
+            <Button
+              variant="primary"
+              size="md"
               onClick={handleDownload}
               disabled={isGenerating || !dataUrl}
+              leftIcon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              }
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              <span>Download High-Res PNG</span>
-            </button>
+              Download High-Res PNG
+            </Button>
           </div>
         </div>
+      }
+    >
+      <div className="share-modal-body">
+        {isGenerating && (
+          <div className="share-card-loading">
+            <div className="share-spinner" />
+            <p>Rendering 1080 &times; 1350 audit card...</p>
+          </div>
+        )}
+
+        {!isGenerating && dataUrl && (
+          <div className="share-preview-card-wrap">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={dataUrl}
+              alt="Gabru Content Intelligence Audit Report"
+              className="share-card-preview-image"
+            />
+          </div>
+        )}
       </div>
-    </div>
+    </Modal>
   );
 }
-

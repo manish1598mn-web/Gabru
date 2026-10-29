@@ -57,11 +57,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'hook'}
-            className={`diag-tab-btn ${activeTab === 'hook' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'hook' ? 'is-active' : ''}`}
             onClick={() => onTabChange('hook')}
           >
             <span>Hook &amp; Opening</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[1] ?? 11.7).toFixed(1)}/18
             </span>
           </button>
@@ -70,11 +70,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'value'}
-            className={`diag-tab-btn ${activeTab === 'value' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'value' ? 'is-active' : ''}`}
             onClick={() => onTabChange('value')}
           >
             <span>Value &amp; Relevance</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[2] ?? 12.8).toFixed(1)}/16
             </span>
           </button>
@@ -83,11 +83,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'structure'}
-            className={`diag-tab-btn ${activeTab === 'structure' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'structure' ? 'is-active' : ''}`}
             onClick={() => onTabChange('structure')}
           >
             <span>Structure &amp; Flow</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[3] ?? 9.0).toFixed(1)}/12
             </span>
           </button>
@@ -96,11 +96,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'media'}
-            className={`diag-tab-btn ${activeTab === 'media' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'media' ? 'is-active' : ''}`}
             onClick={() => onTabChange('media')}
           >
             <span>Visual &amp; Audio</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[4] ?? 9.8).toFixed(1)}/14
             </span>
           </button>
@@ -109,11 +109,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'copy'}
-            className={`diag-tab-btn ${activeTab === 'copy' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'copy' ? 'is-active' : ''}`}
             onClick={() => onTabChange('copy')}
           >
             <span>Copy &amp; Hashtags</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[5] ?? 5.5).toFixed(1)}/10
             </span>
           </button>
@@ -122,11 +122,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'cta'}
-            className={`diag-tab-btn ${activeTab === 'cta' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'cta' ? 'is-active' : ''}`}
             onClick={() => onTabChange('cta')}
           >
             <span>CTA &amp; Prompt</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[6] ?? 2.8).toFixed(1)}/7
             </span>
           </button>
@@ -135,11 +135,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'format'}
-            className={`diag-tab-btn ${activeTab === 'format' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'format' ? 'is-active' : ''}`}
             onClick={() => onTabChange('format')}
           >
             <span>Platform Fit</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[7] ?? 7.2).toFixed(1)}/8
             </span>
           </button>
@@ -148,11 +148,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'originality'}
-            className={`diag-tab-btn ${activeTab === 'originality' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'originality' ? 'is-active' : ''}`}
             onClick={() => onTabChange('originality')}
           >
             <span>Originality</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[8] ?? 4.2).toFixed(1)}/6
             </span>
           </button>
@@ -161,11 +161,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'timing'}
-            className={`diag-tab-btn ${activeTab === 'timing' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'timing' ? 'is-active' : ''}`}
             onClick={() => onTabChange('timing')}
           >
             <span>Timing</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {pScores[9] && pScores[9] > 0 ? `${pScores[9].toFixed(1)}/4` : 'V=0'}
             </span>
           </button>
@@ -174,11 +174,11 @@ export function ContentDeepDiveSection({
             type="button"
             role="tab"
             aria-selected={activeTab === 'compliance'}
-            className={`diag-tab-btn ${activeTab === 'compliance' ? 'is-active' : ''}`}
+            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'compliance' ? 'is-active' : ''}`}
             onClick={() => onTabChange('compliance')}
           >
             <span>Compliance</span>
-            <span className="diag-tab-score-chip">
+            <span className="diag-tab-score-chip font-tabular-nums">
               {(pScores[10] ?? 5.0).toFixed(1)}/5
             </span>
           </button>

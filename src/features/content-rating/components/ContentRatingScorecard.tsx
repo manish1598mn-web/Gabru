@@ -16,6 +16,7 @@ import {
   CONTENT_CARD_BACKGROUNDS,
   PARAM_TO_TAB,
 } from '../constants/ContentRatingConstants';
+import { Button } from '@/shared/components/ui/Button';
 
 export interface ContentRatingScorecardProps {
   scoreData: ContentScoreData | null;
@@ -63,11 +64,11 @@ export function ContentRatingScorecard({
             <span className="tier-pill-score">
               {scoreData ? (
                 <>
-                  <strong className="tier-val">{scoreData.qualityScore.toFixed(1)}%</strong>
-                  <span className="tier-max">(70% Weight)</span>
+                  <strong className="tier-val font-tabular-nums">{scoreData.qualityScore.toFixed(1)}%</strong>
+                  <span className="tier-max font-tabular-nums">(70% Weight)</span>
                 </>
               ) : (
-                <span className="tier-unscored">70% Weight</span>
+                <span className="tier-unscored font-tabular-nums">70% Weight</span>
               )}
             </span>
           </div>
@@ -77,11 +78,11 @@ export function ContentRatingScorecard({
             <span className="tier-pill-score">
               {scoreData && scoreData.performanceScore !== null ? (
                 <>
-                  <strong className="tier-val">{scoreData.performanceScore.toFixed(1)}%</strong>
-                  <span className="tier-max">(30% Weight)</span>
+                  <strong className="tier-val font-tabular-nums">{scoreData.performanceScore.toFixed(1)}%</strong>
+                  <span className="tier-max font-tabular-nums">(30% Weight)</span>
                 </>
               ) : (
-                <span className="tier-unscored">
+                <span className="tier-unscored font-tabular-nums">
                   {scoreData ? 'Too Fresh' : '30% Weight'}
                 </span>
               )}
@@ -93,7 +94,7 @@ export function ContentRatingScorecard({
             <span className="tier-pill-score">
               {scoreData ? (
                 <>
-                  <strong className="tier-val">{Math.round(scoreData.confidenceScore * 100)}%</strong>
+                  <strong className="tier-val font-tabular-nums">{Math.round(scoreData.confidenceScore * 100)}%</strong>
                   <span className="tier-max">{scoreData.confidence}</span>
                 </>
               ) : (
@@ -103,22 +104,24 @@ export function ContentRatingScorecard({
           </div>
 
           {scoreData && (
-            <button
-              type="button"
-              className="btn-strip-share-card content-share-btn"
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={onShareScore}
               id="btn-strip-share-card"
               title="Generate High-Res 1080x1350 Style Card"
+              leftIcon={
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                </svg>
+              }
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="18" cy="5" r="3" />
-                <circle cx="6" cy="12" r="3" />
-                <circle cx="18" cy="19" r="3" />
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-              </svg>
-              <span>Export Card</span>
-            </button>
+              Export Card
+            </Button>
           )}
         </div>
       </div>
@@ -134,7 +137,7 @@ export function ContentRatingScorecard({
           return (
             <div
               key={param.id}
-              className={`compact-metric-card scroll-reveal ${
+              className={`compact-metric-card focus-ring tactile-press scroll-reveal ${
                 score === null && !isAnalyzing
                   ? 'compact-metric-card-unscored'
                   : 'compact-metric-card-scored'
@@ -151,7 +154,16 @@ export function ContentRatingScorecard({
                   ? `Click to inspect ${param.name} diagnostic evidence and recommendations`
                   : param.name
               }
+              role="button"
+              tabIndex={scoreData ? 0 : -1}
+              aria-label={`Inspect ${param.name} diagnostic details`}
               onClick={() => handleCardClick(param.id)}
+              onKeyDown={(e) => {
+                if (scoreData && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault();
+                  handleCardClick(param.id);
+                }
+              }}
             >
               <div
                 style={{
@@ -164,7 +176,7 @@ export function ContentRatingScorecard({
               >
                 <span className="card-param-name">{param.name}</span>
                 {rating !== null && rating !== undefined && !isAnalyzing && !isExcluded && (
-                  <span className="card-rating-badge content-rating-badge">R: {rating.toFixed(1)}/10</span>
+                  <span className="card-rating-badge content-rating-badge font-tabular-nums">R: {rating.toFixed(1)}/10</span>
                 )}
                 {isExcluded && (
                   <span className="card-rating-badge excluded-badge">V=0 EXCLUDED</span>
@@ -173,22 +185,22 @@ export function ContentRatingScorecard({
 
               <div className="card-score-value-row">
                 {isAnalyzing ? (
-                  <span className="shuffling-number">
+                  <span className="shuffling-number font-tabular-nums">
                     {Math.floor(Math.random() * (param.weight + 1))}
-                    <span className="score-max-denom">/{param.weight}</span>
+                    <span className="score-max-denom font-tabular-nums">/{param.weight}</span>
                   </span>
                 ) : isExcluded ? (
-                  <span className="unscored-number" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
-                    Excluded<span className="score-max-denom">/{param.weight}</span>
+                  <span className="unscored-number font-tabular-nums" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
+                    Excluded<span className="score-max-denom font-tabular-nums">/{param.weight}</span>
                   </span>
                 ) : score !== null && score !== undefined ? (
-                  <span className="calculated-number">
+                  <span className="calculated-number font-tabular-nums">
                     {score.toFixed(1)}
-                    <span className="score-max-denom">/{param.weight}</span>
+                    <span className="score-max-denom font-tabular-nums">/{param.weight}</span>
                   </span>
                 ) : (
-                  <span className="unscored-number">
-                    --<span className="score-max-denom">/{param.weight}</span>
+                  <span className="unscored-number font-tabular-nums">
+                    --<span className="score-max-denom font-tabular-nums">/{param.weight}</span>
                   </span>
                 )}
               </div>

@@ -18,6 +18,7 @@ import {
   UnifiedContentItem,
 } from '../types/ContentRatingTypes';
 import { SAMPLE_DEMO_CONTENTS } from '../constants/ContentRatingConstants';
+import { Button } from '@/shared/components/ui/Button';
 
 export interface ContentRatingHeroStudioProps {
   scoreData: ContentScoreData | null;
@@ -110,49 +111,53 @@ export function ContentRatingHeroStudio({
           <div className="upload-card is-evaluated content-evaluated-hub scroll-reveal">
             <div className="score-summary-header">
               <div className="score-metric-display">
-                <span className="score-big-number content-score-number">
+                <span className="score-big-number content-score-number font-tabular-nums">
                   {Number.isInteger(scoreData.contentScore)
                     ? String(scoreData.contentScore)
                     : scoreData.contentScore.toFixed(1)}
                 </span>
-                <span className="score-scale-denom">/100</span>
+                <span className="score-scale-denom font-tabular-nums">/100</span>
                 <span className="score-verdict-tag content-verdict-tag">
                   {scoreData.verdict}
                 </span>
               </div>
 
               <div className="evaluated-header-actions">
-                <button
-                  type="button"
-                  className="btn-share-trigger"
+                <Button
+                  variant="primary"
+                  size="md"
                   onClick={onShareClick}
                   id="btn-content-share"
                   title="Export 1080x1350 High-Res Share Card"
+                  leftIcon={
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  }
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="18" cy="5" r="3" />
-                    <circle cx="6" cy="12" r="3" />
-                    <circle cx="18" cy="19" r="3" />
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                  </svg>
-                  <span>Share Card</span>
-                </button>
+                  Share Card
+                </Button>
 
-                <button
-                  type="button"
-                  className="btn-change-photo"
+                <Button
+                  variant="secondary"
+                  size="md"
                   onClick={onReset}
                   id="btn-analyze-new"
                   title="Analyze another link or media"
+                  leftIcon={
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="23 4 23 10 17 10" />
+                      <polyline points="1 20 1 14 7 14" />
+                      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                    </svg>
+                  }
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="23 4 23 10 17 10" />
-                    <polyline points="1 20 1 14 7 14" />
-                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-                  </svg>
-                  <span>New Audit</span>
-                </button>
+                  New Audit
+                </Button>
               </div>
             </div>
 
@@ -160,12 +165,12 @@ export function ContentRatingHeroStudio({
             <div className="content-score-pillars-row">
               <div className="pillar-chip quality-pillar">
                 <span className="pillar-label">QUALITY (70%)</span>
-                <span className="pillar-value">{scoreData.qualityScore.toFixed(1)}/100</span>
+                <span className="pillar-value font-tabular-nums">{scoreData.qualityScore.toFixed(1)}/100</span>
               </div>
 
               <div className="pillar-chip performance-pillar">
                 <span className="pillar-label">PERFORMANCE (30%)</span>
-                <span className="pillar-value">
+                <span className="pillar-value font-tabular-nums">
                   {scoreData.performanceScore !== null ? `${scoreData.performanceScore.toFixed(1)}/100` : 'N/A (Too Fresh)'}
                 </span>
               </div>
@@ -180,9 +185,9 @@ export function ContentRatingHeroStudio({
             {scoreData.suggestions.length > 0 && (
               <div className="content-hero-top-fix">
                 <div className="top-fix-eyebrow">
-                  <span className="fix-icon">⚡</span>
+                  <span className="fix-icon" aria-hidden="true">⚡</span>
                   <span className="fix-tag">TOP PRIORITY FIX</span>
-                  <span className="fix-gain">+{scoreData.suggestions[0].estimatedGain} PTS</span>
+                  <span className="fix-gain font-tabular-nums">+{scoreData.suggestions[0].estimatedGain.toFixed(1)} PTS</span>
                 </div>
                 <div className="top-fix-title">{scoreData.suggestions[0].title}</div>
                 <div className="top-fix-desc">{scoreData.suggestions[0].description}</div>
@@ -198,7 +203,7 @@ export function ContentRatingHeroStudio({
                 type="button"
                 role="tab"
                 aria-selected={inputMode === 'link'}
-                className={`content-mode-btn ${inputMode === 'link' ? 'is-active' : ''}`}
+                className={`content-mode-btn focus-ring tactile-press ${inputMode === 'link' ? 'is-active' : ''}`}
                 onClick={() => onModeChange('link')}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -212,7 +217,7 @@ export function ContentRatingHeroStudio({
                 type="button"
                 role="tab"
                 aria-selected={inputMode === 'upload'}
-                className={`content-mode-btn ${inputMode === 'upload' ? 'is-active' : ''}`}
+                className={`content-mode-btn focus-ring tactile-press ${inputMode === 'upload' ? 'is-active' : ''}`}
                 onClick={() => onModeChange('upload')}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -227,7 +232,7 @@ export function ContentRatingHeroStudio({
                 type="button"
                 role="tab"
                 aria-selected={inputMode === 'demo'}
-                className={`content-mode-btn ${inputMode === 'demo' ? 'is-active' : ''}`}
+                className={`content-mode-btn focus-ring tactile-press ${inputMode === 'demo' ? 'is-active' : ''}`}
                 onClick={() => onModeChange('demo')}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -292,36 +297,33 @@ export function ContentRatingHeroStudio({
                   {contentUrl && (
                     <button
                       type="button"
-                      className="btn-clear-url"
+                      className="btn-clear-url focus-ring"
                       onClick={() => onUrlChange('')}
                       title="Clear URL"
+                      aria-label="Clear URL"
                     >
                       ✕
                     </button>
                   )}
 
-                  <button
-                    type="button"
-                    className="btn-analyze-content"
+                  <Button
+                    variant="primary"
+                    size="md"
                     id="btn-analyze-content"
                     onClick={onAnalyzeUrl}
-                    disabled={isAnalyzing || contentUrl.trim().length === 0}
-                  >
-                    {isAnalyzing ? (
-                      <>
-                        <span className="btn-spinner" />
-                        <span>Auditing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Analyze</span>
+                    disabled={contentUrl.trim().length === 0}
+                    isLoading={isAnalyzing}
+                    rightIcon={
+                      !isAnalyzing ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="5" y1="12" x2="19" y2="12" />
                           <polyline points="12 5 19 12 12 19" />
                         </svg>
-                      </>
-                    )}
-                  </button>
+                      ) : undefined
+                    }
+                  >
+                    {isAnalyzing ? 'Auditing...' : 'Analyze'}
+                  </Button>
                 </div>
 
                 {/* Supported Platform Badges */}
@@ -368,7 +370,7 @@ export function ContentRatingHeroStudio({
                   <p className="upload-subtitle">
                     Direct local analysis of video bitrate, LUFS loudness, keyframes, and engagement logs.
                   </p>
-                  <label htmlFor={fileInputId} className="btn-browse-file">
+                  <label htmlFor={fileInputId} className="btn-browse-file focus-ring touch-target tactile-press">
                     Browse File
                   </label>
                 </div>
@@ -380,83 +382,107 @@ export function ContentRatingHeroStudio({
               <div className="content-presets-grid scroll-reveal">
                 {/* Preset 1: Viral Short (Section 6 Worked Example) */}
                 <div
-                  className={`preset-card ${selectedDemoKey === 'short_video' ? 'is-selected' : ''}`}
+                  className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'short_video' ? 'is-selected' : ''}`}
                   onClick={() => {
                     setSelectedDemoKey('short_video');
                     onSelectDemo('short_video');
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedDemoKey('short_video');
+                      onSelectDemo('short_video');
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
+                  aria-label="Load preset audit: How I doubled my coding speed with 1 shortcut"
                 >
                   <div className="preset-card-top">
                     <span className="preset-type-pill short">9:16 VERTICAL SHORT</span>
-                    <span className="preset-expected-score">70.8 / 100</span>
+                    <span className="preset-expected-score font-tabular-nums">70.8 / 100</span>
                   </div>
                   <h4 className="preset-card-title">How I doubled my coding speed with 1 shortcut</h4>
                   <p className="preset-card-desc">
                     Canonical 34s YouTube Short from Section 6. High platform fit, clear value, but weak CTA and delayed hook.
                   </p>
-                  <button type="button" className="btn-load-preset">
+                  <div className="btn-load-preset" aria-hidden="true">
                     <span>Load &amp; Inspect Audit</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
                     </svg>
-                  </button>
+                  </div>
                 </div>
 
                 {/* Preset 2: Design Token Carousel */}
                 <div
-                  className={`preset-card ${selectedDemoKey === 'carousel' ? 'is-selected' : ''}`}
+                  className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'carousel' ? 'is-selected' : ''}`}
                   onClick={() => {
                     setSelectedDemoKey('carousel');
                     onSelectDemo('carousel');
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedDemoKey('carousel');
+                      onSelectDemo('carousel');
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
+                  aria-label="Load preset audit: 8 Design Token Rules That Save 100 Hours"
                 >
                   <div className="preset-card-top">
                     <span className="preset-type-pill carousel">4:5 CAROUSEL</span>
-                    <span className="preset-expected-score">83.5 / 100</span>
+                    <span className="preset-expected-score font-tabular-nums">83.5 / 100</span>
                   </div>
                   <h4 className="preset-card-title">8 Design Token Rules That Save 100 Hours</h4>
                   <p className="preset-card-desc">
                     Educational Instagram carousel with 3-layer architecture, 88% retention, and high saves ratio.
                   </p>
-                  <button type="button" className="btn-load-preset">
+                  <div className="btn-load-preset" aria-hidden="true">
                     <span>Load &amp; Inspect Audit</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
                     </svg>
-                  </button>
+                  </div>
                 </div>
 
                 {/* Preset 3: YouTube Long Explainer */}
                 <div
-                  className={`preset-card ${selectedDemoKey === 'long_video' ? 'is-selected' : ''}`}
+                  className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'long_video' ? 'is-selected' : ''}`}
                   onClick={() => {
                     setSelectedDemoKey('long_video');
                     onSelectDemo('long_video');
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedDemoKey('long_video');
+                      onSelectDemo('long_video');
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
+                  aria-label="Load preset audit: Building Autonomous AI Multi-Agent Systems"
                 >
                   <div className="preset-card-top">
                     <span className="preset-type-pill long">16:9 DEEP-DIVE</span>
-                    <span className="preset-expected-score">87.1 / 100</span>
+                    <span className="preset-expected-score font-tabular-nums">87.1 / 100</span>
                   </div>
                   <h4 className="preset-card-title">Building Autonomous AI Multi-Agent Systems</h4>
                   <p className="preset-card-desc">
                     12-minute technical masterclass with timestamp chapters, verified LUFS clarity, and high watch time.
                   </p>
-                  <button type="button" className="btn-load-preset">
+                  <div className="btn-load-preset" aria-hidden="true">
                     <span>Load &amp; Inspect Audit</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
                     </svg>
-                  </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -517,11 +543,14 @@ export function ContentRatingHeroStudio({
                   src={currentItem.media.thumbnailUrl || '/face_beauty_hero_bg.jpg'}
                   alt={currentItem.title}
                   className="active-media-img"
+                  onError={(e) => {
+                    e.currentTarget.src = '/face_beauty_hero_bg.jpg';
+                  }}
                 />
                 <div className="active-media-overlay" />
                 <div className="active-media-center-badge">
                   <div className="dock-play-bubble-small">▶</div>
-                  <span className="media-duration-chip">
+                  <span className="media-duration-chip font-tabular-nums">
                     {currentItem.media.durationSec > 0
                       ? `${currentItem.media.durationSec}s`
                       : 'CAROUSEL'}
@@ -532,10 +561,10 @@ export function ContentRatingHeroStudio({
               {/* Creator Metadata Bar */}
               <div className="active-creator-bar">
                 <div className="creator-info">
-                  <span className="creator-handle">{currentItem.creator.handle}</span>
-                  <span className="creator-niche">{currentItem.creator.niche}</span>
+                  <span className="creator-handle text-truncate">{currentItem.creator.handle}</span>
+                  <span className="creator-niche text-truncate">{currentItem.creator.niche}</span>
                 </div>
-                <div className="creator-reach-chip">
+                <div className="creator-reach-chip font-tabular-nums">
                   {currentItem.metrics.views.toLocaleString()} views
                 </div>
               </div>
@@ -545,7 +574,7 @@ export function ContentRatingHeroStudio({
                 <div className="dock-audio-waveform-bar">
                   <div className="waveform-label">
                     <span>AUDIO SPECTRUM</span>
-                    <span>{currentItem.audioMetrics.integratedLufs.toFixed(1)} LUFS</span>
+                    <span className="font-tabular-nums">{currentItem.audioMetrics.integratedLufs.toFixed(1)} LUFS</span>
                   </div>
                   <div className="waveform-bars">
                     {[40, 65, 85, 30, 95, 70, 50, 90, 60, 45, 80, 55, 75, 90, 65, 40, 85, 70, 50, 30, 95, 60].map((h, i) => (
@@ -577,7 +606,7 @@ export function ContentRatingHeroStudio({
           <div className="dock-glass-footer">
             <div className="dock-meta-item">
               <span className="dock-meta-label">TARGET LOUDNESS</span>
-              <span className="dock-meta-val">
+              <span className="dock-meta-val font-tabular-nums">
                 {currentItem?.audioMetrics
                   ? `${currentItem.audioMetrics.integratedLufs.toFixed(1)} LUFS`
                   : '-14 ± 3 LUFS'}
@@ -585,7 +614,7 @@ export function ContentRatingHeroStudio({
             </div>
             <div className="dock-meta-item">
               <span className="dock-meta-label">TIME TO VALUE</span>
-              <span className="dock-meta-val">
+              <span className="dock-meta-val font-tabular-nums">
                 {currentItem?.transcriptSegments?.[0]
                   ? `~${currentItem.transcriptSegments[0].startSec}s`
                   : '≤ 3 SECONDS'}
@@ -593,7 +622,7 @@ export function ContentRatingHeroStudio({
             </div>
             <div className="dock-meta-item">
               <span className="dock-meta-label">RESOLUTION</span>
-              <span className="dock-meta-val">
+              <span className="dock-meta-val font-tabular-nums">
                 {currentItem ? `${currentItem.media.width}x${currentItem.media.height}` : '1080x1920 (9:16)'}
               </span>
             </div>
