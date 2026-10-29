@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useWebviewSafeNavigation } from '@/shared/hooks/useWebviewSafeNavigation';
 
 export interface AppFooterProps {
   onOpenPrivacyModal?: () => void;
@@ -16,6 +17,8 @@ export function AppFooter({
   onOpenMethodologyModal,
   onAboutClick,
 }: AppFooterProps) {
+  const { getNavHref, createNavClickHandler } = useWebviewSafeNavigation();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -93,27 +96,52 @@ export function AppFooter({
             <span className="footer-col-title">Evaluation Engines</span>
             <ul className="footer-links-list">
               <li>
-                <Link href="/" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/')}
+                >
                   Outfit Score Matrix (100 Pts)
                 </Link>
               </li>
               <li>
-                <Link href="/beauty-rating" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/beauty-rating')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/beauty-rating')}
+                >
                   Beauty Rating Matrix (8 Params)
                 </Link>
               </li>
               <li>
-                <span className="footer-link-btn is-upcoming">
-                  Content Rating <span className="footer-upcoming-badge">Coming Soon</span>
-                </span>
+                <Link
+                  href={getNavHref('/content-rating')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/content-rating')}
+                >
+                  Content Rating Suite (100 Pts)
+                </Link>
               </li>
               <li>
-                <Link href="/" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/')}
+                >
                   Color Harmony Engine
                 </Link>
               </li>
               <li>
-                <Link href="/beauty-rating" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/beauty-rating')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/beauty-rating')}
+                >
                   Facial Thirds &amp; Fifths (φ)
                 </Link>
               </li>
@@ -125,22 +153,42 @@ export function AppFooter({
             <span className="footer-col-title">Scoring Architecture</span>
             <ul className="footer-links-list">
               <li>
-                <Link href="/" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/')}
+                >
                   Tier 1: Foundations (71 Pts)
                 </Link>
               </li>
               <li>
-                <Link href="/" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/')}
+                >
                   Tier 2: Details &amp; Craft (20 Pts)
                 </Link>
               </li>
               <li>
-                <Link href="/" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/')}
+                >
                   Tier 3: Expert Polish (9 Pts)
                 </Link>
               </li>
               <li>
-                <Link href="/beauty-rating" className="footer-link-btn">
+                <Link
+                  href={getNavHref('/beauty-rating')}
+                  prefetch={false}
+                  className="footer-link-btn"
+                  onClick={createNavClickHandler('/beauty-rating')}
+                >
                   10-Parameter Biometric Rubric
                 </Link>
               </li>

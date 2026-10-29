@@ -7,6 +7,7 @@ export { useScrollState } from './hooks/useScrollState';
 export { useIntersectionReveal } from './hooks/useIntersectionReveal';
 export { useNumberShuffle, type ShuffleItem } from './hooks/useNumberShuffle';
 export { useClipboard, type UseClipboardResult } from './hooks/useClipboard';
+export { useWebviewSafeNavigation, type UseWebviewSafeNavigationOptions } from './hooks/useWebviewSafeNavigation';
 
 // Layout Components
 export { AppNavbar, type AppNavbarProps } from './components/layout/AppNavbar';

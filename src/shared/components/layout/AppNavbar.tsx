@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useScrollState } from '@/shared/hooks/useScrollState';
+import { useWebviewSafeNavigation } from '@/shared/hooks/useWebviewSafeNavigation';
 
 export interface AppNavbarProps {
   activeFeature: 'fit-check' | 'beauty-rating' | 'content-rating';
@@ -11,26 +12,21 @@ export interface AppNavbarProps {
 
 export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
   const isScrolled = useScrollState(20);
-
-  const handleBrandClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (onBrandClick) {
-      e.preventDefault();
-      onBrandClick();
-    } else if (activeFeature === 'fit-check') {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+  const { getNavHref, createNavClickHandler } = useWebviewSafeNavigation({
+    activeFeature,
+    onCurrentPageClick: onBrandClick,
+  });
 
   return (
     <header className={`navbar-wrapper ${isScrolled ? 'scrolled' : ''}`} id="gabru-navbar">
       <div className="navbar-container">
         {/* Left Section: Premium Brand Logo */}
         <Link
-          href="/"
+          href={getNavHref('/')}
+          prefetch={false}
           className="navbar-brand focus-ring"
           id="nav-brand-logo"
-          onClick={handleBrandClick}
+          onClick={createNavClickHandler('/', onBrandClick)}
           aria-label="Gabru Studio Home"
         >
           <div className="brand-icon-box" id="brand-camera-icon">
@@ -59,9 +55,11 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
           <ul className="navbar-nav">
             <li>
               <Link
-                href="/"
+                href={getNavHref('/')}
+                prefetch={false}
                 className={`nav-link focus-ring ${activeFeature === 'fit-check' ? 'active' : ''}`}
                 id="nav-link-home"
+                onClick={createNavClickHandler('/')}
               >
                 <svg
                   width="15"
@@ -81,9 +79,11 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
             </li>
             <li>
               <Link
-                href="/beauty-rating"
+                href={getNavHref('/beauty-rating')}
+                prefetch={false}
                 className={`nav-link focus-ring ${activeFeature === 'beauty-rating' ? 'active' : ''}`}
                 id="nav-btn-beauty-rating"
+                onClick={createNavClickHandler('/beauty-rating')}
               >
                 <svg
                   width="15"
@@ -106,9 +106,11 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
             </li>
             <li>
               <Link
-                href="/content-rating"
+                href={getNavHref('/content-rating')}
+                prefetch={false}
                 className={`nav-link nav-link-content focus-ring ${activeFeature === 'content-rating' ? 'active' : ''}`}
                 id="nav-btn-content-rating"
+                onClick={createNavClickHandler('/content-rating')}
                 title="Social Media Content Rating & Advisory"
               >
                 <svg
