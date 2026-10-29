@@ -12,10 +12,12 @@ export interface AppNavbarProps {
 export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
   const isScrolled = useScrollState(20);
 
-  const handleBrandClick = () => {
+  const handleBrandClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onBrandClick) {
+      e.preventDefault();
       onBrandClick();
-    } else {
+    } else if (activeFeature === 'fit-check') {
+      e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -24,13 +26,12 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
     <header className={`navbar-wrapper ${isScrolled ? 'scrolled' : ''}`} id="gabru-navbar">
       <div className="navbar-container">
         {/* Left Section: Premium Brand Logo */}
-        <div
-          className="navbar-brand"
+        <Link
+          href="/"
+          className="navbar-brand focus-ring"
           id="nav-brand-logo"
           onClick={handleBrandClick}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && handleBrandClick()}
+          aria-label="Gabru Studio Home"
         >
           <div className="brand-icon-box" id="brand-camera-icon">
             <svg
@@ -51,7 +52,7 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
             <span className="brand-name">GABRU</span>
             <span className="brand-tag">STUDIO</span>
           </div>
-        </div>
+        </Link>
 
         {/* Center/Right Section: Frosted Segmented Navigation Dock */}
         <nav aria-label="Main Navigation" className="navbar-nav-wrapper">
@@ -59,7 +60,7 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
             <li>
               <Link
                 href="/"
-                className={`nav-link ${activeFeature === 'fit-check' ? 'active' : ''}`}
+                className={`nav-link focus-ring ${activeFeature === 'fit-check' ? 'active' : ''}`}
                 id="nav-link-home"
               >
                 <svg
@@ -74,13 +75,14 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
                 >
                   <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
                 </svg>
-                <span>Fit Check</span>
+                <span className="nav-label-full">Fit Check</span>
+                <span className="nav-label-compact" aria-hidden="true">Outfit</span>
               </Link>
             </li>
             <li>
               <Link
                 href="/beauty-rating"
-                className={`nav-link ${activeFeature === 'beauty-rating' ? 'active' : ''}`}
+                className={`nav-link focus-ring ${activeFeature === 'beauty-rating' ? 'active' : ''}`}
                 id="nav-btn-beauty-rating"
               >
                 <svg
@@ -98,13 +100,14 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
                   <line x1="9" y1="9" x2="9.01" y2="9" />
                   <line x1="15" y1="9" x2="15.01" y2="9" />
                 </svg>
-                <span>Beauty Rating</span>
+                <span className="nav-label-full">Beauty Rating</span>
+                <span className="nav-label-compact" aria-hidden="true">Face</span>
               </Link>
             </li>
             <li>
               <Link
                 href="/content-rating"
-                className={`nav-link nav-link-content ${activeFeature === 'content-rating' ? 'active' : ''}`}
+                className={`nav-link nav-link-content focus-ring ${activeFeature === 'content-rating' ? 'active' : ''}`}
                 id="nav-btn-content-rating"
                 title="Social Media Content Rating & Advisory"
               >
@@ -121,7 +124,8 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
                   <polygon points="23 7 16 12 23 17 23 7" />
                   <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                 </svg>
-                <span>Content Rating</span>
+                <span className="nav-label-full">Content Rating</span>
+                <span className="nav-label-compact" aria-hidden="true">Content</span>
               </Link>
             </li>
           </ul>
@@ -129,7 +133,20 @@ export function AppNavbar({ activeFeature, onBrandClick }: AppNavbarProps) {
 
         {/* Far Right: Trust Chip */}
         <div className="navbar-trust-chip" title="All processing executes privately in your browser memory">
-          <span className="trust-pulse-dot" />
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
           <span>100% In-Browser</span>
         </div>
       </div>

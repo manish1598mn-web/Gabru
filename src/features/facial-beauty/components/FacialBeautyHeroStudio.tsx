@@ -326,19 +326,9 @@ export function FacialBeautyHeroStudio({
 
               {isAnalyzing && (
                 <div className="photo-scanner-hud" aria-live="polite">
-                  <div className="scanner-laser-beam" />
-                  <div className="scanner-grid-mesh" />
-                  <div className="scanner-bracket bracket-tl" />
-                  <div className="scanner-bracket bracket-tr" />
-                  <div className="scanner-bracket bracket-bl" />
-                  <div className="scanner-bracket bracket-br" />
-                  <div className="scanner-reticle-box">
-                    <div className="reticle-crosshair" />
-                    <span className="reticle-target-tag">TRACKING: 468 BIOMETRIC MESH POINTS</span>
-                  </div>
                   <div className="scanner-status-chip">
                     <span className="scanner-spin-icon" />
-                    <span>Scanning 8 Facial Parameters...</span>
+                    <span>Evaluating Facial Biometrics...</span>
                   </div>
                 </div>
               )}

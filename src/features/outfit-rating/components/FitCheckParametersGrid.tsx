@@ -79,7 +79,7 @@ export function FitCheckParametersGrid({
 
             {photoScore && (
               <Button
-                variant="primary"
+                variant="secondary"
                 size="sm"
                 onClick={onShareClick}
                 id="btn-strip-share-card"
