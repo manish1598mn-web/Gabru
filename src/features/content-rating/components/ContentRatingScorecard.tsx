@@ -132,7 +132,7 @@ export function ContentRatingScorecard({
           const score = scoreData ? scoreData.qualityBreakdown.parameterScores[param.id] : null;
           const rating = scoreData ? scoreData.qualityBreakdown.parameterRatings[param.id] : null;
           const paramResult = scoreData?.qualityBreakdown.parameters.find((p) => p.id === param.id);
-          const isExcluded = paramResult?.isRenormalized && paramResult?.points === 0;
+          const isExcluded = paramResult ? !paramResult.isObserved : false;
 
           return (
             <div

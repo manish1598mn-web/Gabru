@@ -148,6 +148,22 @@ export function ContentRatingHeroStudio({
 
             {/* Split Pillars & Confidence Badges */}
             <div className="content-score-pillars-row">
+              <div
+                className="pillar-chip data-tier-pillar"
+                title={`Tier ${scoreData.dataTier}: ${
+                  scoreData.dataTier === 'C'
+                    ? 'Uploaded full media file & owner analytics'
+                    : scoreData.dataTier === 'B'
+                    ? 'Link plus OAuth owner analytics'
+                    : 'Public link only (pacing & audio unobserved; shrinkage active)'
+                }`}
+              >
+                <span className="pillar-label">DATA TIER</span>
+                <span className="pillar-value">
+                  TIER {scoreData.dataTier} ({scoreData.dataTier === 'C' ? 'Full Media' : scoreData.dataTier === 'B' ? 'OAuth' : 'Link-Only'})
+                </span>
+              </div>
+
               <div className="pillar-chip quality-pillar">
                 <span className="pillar-label">QUALITY (70%)</span>
                 <span className="pillar-value font-tabular-nums">{scoreData.qualityScore.toFixed(1)}/100</span>
@@ -160,9 +176,16 @@ export function ContentRatingHeroStudio({
                 </span>
               </div>
 
-              <div className="pillar-chip confidence-pillar">
+              <div
+                className="pillar-chip confidence-pillar"
+                title={`Blended: ${Math.round(scoreData.confidenceScore * 100)}% | Quality Conf: ${Math.round(scoreData.qualityConfidence * 100)}% | Perf Conf: ${
+                  scoreData.performanceConfidence !== null ? `${Math.round(scoreData.performanceConfidence * 100)}%` : 'N/A'
+                }`}
+              >
                 <span className="pillar-label">CONFIDENCE</span>
-                <span className="pillar-value">{scoreData.confidence.toUpperCase()}</span>
+                <span className="pillar-value">
+                  {Math.round(scoreData.confidenceScore * 100)}% ({scoreData.confidence.toUpperCase()})
+                </span>
               </div>
             </div>
 
@@ -365,7 +388,7 @@ export function ContentRatingHeroStudio({
             {/* MODE 3: DEMO PRESETS */}
             {inputMode === 'demo' && (
               <div className="content-presets-grid scroll-reveal">
-                {/* Preset 1: Viral Short (Section 6 Worked Example) */}
+                {/* Preset 1: Viral Short (Tier C Worked Example) */}
                 <div
                   className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'short_video' ? 'is-selected' : ''}`}
                   onClick={() => {
@@ -381,15 +404,15 @@ export function ContentRatingHeroStudio({
                   }}
                   role="button"
                   tabIndex={0}
-                  aria-label="Load preset audit: How I doubled my coding speed with 1 shortcut"
+                  aria-label="Load preset audit: Three cinematic lighting tricks with one bedside lamp"
                 >
                   <div className="preset-card-top">
-                    <span className="preset-type-pill short">9:16 VERTICAL SHORT</span>
-                    <span className="preset-expected-score font-tabular-nums">70.8 / 100</span>
+                    <span className="preset-type-pill short">TIER C • 9:16 REEL</span>
+                    <span className="preset-expected-score font-tabular-nums">88.6 / 100</span>
                   </div>
-                  <h4 className="preset-card-title">How I doubled my coding speed with 1 shortcut</h4>
+                  <h4 className="preset-card-title">Three cinematic lighting tricks with one bedside lamp</h4>
                   <p className="preset-card-desc">
-                    Canonical 34s YouTube Short from Section 6. High platform fit, clear value, but weak CTA and delayed hook.
+                    Canonical 34s Reel from worked example. Full media file, 10 craft dimensions, Quality 88.6, Performance 88.6, High Confidence (0.92).
                   </p>
                   <div className="btn-load-preset" aria-hidden="true">
                     <span>Load &amp; Inspect Audit</span>
@@ -400,7 +423,7 @@ export function ContentRatingHeroStudio({
                   </div>
                 </div>
 
-                {/* Preset 2: Design Token Carousel */}
+                {/* Preset 2: Same Reel as Tier A Link-Only */}
                 <div
                   className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'carousel' ? 'is-selected' : ''}`}
                   onClick={() => {
@@ -416,15 +439,15 @@ export function ContentRatingHeroStudio({
                   }}
                   role="button"
                   tabIndex={0}
-                  aria-label="Load preset audit: 8 Design Token Rules That Save 100 Hours"
+                  aria-label="Load preset audit: Same 34s Reel in Link-Only Tier A"
                 >
                   <div className="preset-card-top">
-                    <span className="preset-type-pill carousel">4:5 CAROUSEL</span>
-                    <span className="preset-expected-score font-tabular-nums">83.5 / 100</span>
+                    <span className="preset-type-pill carousel">TIER A • LINK ONLY</span>
+                    <span className="preset-expected-score font-tabular-nums">84.3 / 100</span>
                   </div>
-                  <h4 className="preset-card-title">8 Design Token Rules That Save 100 Hours</h4>
+                  <h4 className="preset-card-title">Same 34s Reel (Public Link-Only Mode)</h4>
                   <p className="preset-card-desc">
-                    Educational Instagram carousel with 3-layer architecture, 88% retention, and high saves ratio.
+                    Link-only submission. Storytelling unobserved (V=0), visibility shrinkage active toward 7.0, Medium Confidence (0.57).
                   </p>
                   <div className="btn-load-preset" aria-hidden="true">
                     <span>Load &amp; Inspect Audit</span>
@@ -435,7 +458,7 @@ export function ContentRatingHeroStudio({
                   </div>
                 </div>
 
-                {/* Preset 3: YouTube Long Explainer */}
+                {/* Preset 3: Compliance & Flaw Capped Reel */}
                 <div
                   className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'long_video' ? 'is-selected' : ''}`}
                   onClick={() => {
@@ -451,15 +474,15 @@ export function ContentRatingHeroStudio({
                   }}
                   role="button"
                   tabIndex={0}
-                  aria-label="Load preset audit: Building Autonomous AI Multi-Agent Systems"
+                  aria-label="Load preset audit: Secret supplement that cures joint pain overnight"
                 >
                   <div className="preset-card-top">
-                    <span className="preset-type-pill long">16:9 DEEP-DIVE</span>
-                    <span className="preset-expected-score font-tabular-nums">87.1 / 100</span>
+                    <span className="preset-type-pill long">TIER B • FLAW CAPPED</span>
+                    <span className="preset-expected-score font-tabular-nums">60.0 (Cap)</span>
                   </div>
-                  <h4 className="preset-card-title">Building Autonomous AI Multi-Agent Systems</h4>
+                  <h4 className="preset-card-title">Secret supplement that cures joint pain overnight</h4>
                   <p className="preset-card-desc">
-                    12-minute technical masterclass with timestamp chapters, verified LUFS clarity, and high watch time.
+                    Major undisclosed sponsorship (TC1) and misleading medical claim (TC3). Automatically capped at 60.0.
                   </p>
                   <div className="btn-load-preset" aria-hidden="true">
                     <span>Load &amp; Inspect Audit</span>

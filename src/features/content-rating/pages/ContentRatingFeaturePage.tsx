@@ -81,13 +81,15 @@ export default function ContentRatingFeaturePage() {
 
     // Simulate multi-model ingestion pipeline latency (650ms)
     setTimeout(() => {
-      // Synthesize resolved content item based on the link
+      // Synthesize resolved content item based on the link (Tier A: Link Only)
       const resolvedItem: UnifiedContentItem = {
         ...DEMO_VIRAL_SHORT,
         id: `url:${Date.now()}`,
         url: contentUrl,
         platform,
         inputMode: 'link',
+        dataTier: 'A',
+        ownerAnalytics: null,
         title: `Public ${platform.toUpperCase()} Post Analysis`,
         postedAt: new Date().toISOString(),
       };

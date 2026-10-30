@@ -2,10 +2,11 @@
  * GABRU — CONTENT RATING DOMAIN TYPES
  * 
  * Strict TypeScript models for the Social Media Content Rating & Advisory Platform:
- * - Unified Multi-Platform Content Ingestion Schema (Paths A, B, and C)
- * - 10-Parameter Evidence-Gated Quality Score Rubric
- * - Empirical Creator-Baseline Performance Model (z-score distribution)
- * - Actionable Advice, Delta-Gain Estimation, and Concrete AI Rewrites
+ * - 3 Data Tiers (A: Link only, B: Link + OAuth, C: Uploaded media / CSV)
+ * - 10-Parameter Evidence-Gated Quality Score Rubric with Parameter-Specific Betas
+ * - Empirical Creator-Baseline Performance Model (MAD-based robust z-score)
+ * - Exact Delta-Gain Estimation via Engine Re-simulation
+ * - Strict Evidence Gate Verification
  */
 
 export type ContentPlatform =
@@ -26,6 +27,8 @@ export type ContentFormat =
 
 export type InputMode = 'link' | 'upload' | 'demo';
 
+export type DataTier = 'A' | 'B' | 'C';
+
 export type EffortTier = 'quick' | 'medium' | 'heavy';
 
 export type ContentRatingVerdict =
@@ -34,7 +37,8 @@ export type ContentRatingVerdict =
   | 'Good'
   | 'Average'
   | 'Weak'
-  | 'Needs Rework';
+  | 'Needs Rework'
+  | 'Not Rated';
 
 export type DeepDiveContentTabKey =
   | 'hook'
@@ -75,16 +79,20 @@ export interface ContentOwnerAnalytics {
   avgWatchTimeSec: number | null;
   completionRatePercent: number | null;
   audienceHours: number | null;
+  shares?: number | null;
+  saves?: number | null;
 }
 
 export interface CreatorBaselineStats {
   postCount: number;
   medianViews: number;
-  stdDevViews?: number;
-  medianLikes: number;
-  medianComments: number;
+  madViews?: number;
   medianEngagementRate: number;
-  stdDevEngagementRate: number;
+  madEngagementRate?: number;
+  medianCommentsPer1k?: number;
+  madCommentsPer1k?: number;
+  medianRetentionRatio?: number;
+  madRetentionRatio?: number;
 }
 
 export interface KeyframeSample {
@@ -109,6 +117,8 @@ export interface AudioAnalysisMetrics {
   maxDeadAirSec: number;
   speechRateWpm: number;
   voiceClarityRatio: number; // 0..1
+  snrDb?: number;
+  clippingShare?: number;
 }
 
 export interface UnifiedContentItem {
@@ -117,6 +127,7 @@ export interface UnifiedContentItem {
   platform: ContentPlatform;
   format: ContentFormat;
   inputMode: InputMode;
+  dataTier: DataTier; // Tier A, B, or C
   creator: CreatorProfile;
   postedAt: string;
   title: string;
@@ -146,6 +157,14 @@ export interface UnifiedContentItem {
     transcript: boolean;
     keyframes: boolean;
   };
+  // Optional intent flags
+  isIntentionalPivot?: boolean;
+  performanceZScores?: {
+    engagement?: number;
+    views?: number;
+    retention?: number | null;
+    commentQuality?: number;
+  };
 }
 
 // -------------------------------------------------------------
@@ -166,11 +185,16 @@ export interface ContentPenalty {
 }
 
 export interface ContentSubfactorDef {
-  code: string; // e.g. 'HK1', 'VL1'
+  code: string; // e.g. 'HK1', 'VR1', 'ST1', 'VA1', 'CP1', 'CT1', 'PF1', 'OC1', 'TM1', 'TC1'
   name: string;
   weight: number; // subfactor weight (sum = 100 within parameter)
   observableChecks: string;
   objectiveRule: string;
+  visibilityByTier: {
+    A: number; // 0.0, 0.5, or 1.0
+    B: number;
+    C: number;
+  };
 }
 
 export interface ContentSubfactorResult {
@@ -182,6 +206,7 @@ export interface ContentSubfactorResult {
   adjustedRating: number;
   penalties: ContentPenalty[];
   isApplicable: boolean;
+  isObserved: boolean;
   notes?: string;
 }
 
@@ -190,6 +215,7 @@ export interface ContentParameterDef {
   code: string;
   name: string;
   weight: number; // parameter weight (sum = 100 total)
+  beta: number; // 0.10, 0.15 for VA, 0.20 for TC
   subfactors: ContentSubfactorDef[];
   evidenceSummary: string;
 }
@@ -199,12 +225,14 @@ export interface ContentParameterResult {
   code: string;
   name: string;
   weight: number;
+  beta: number;
   rating: number; // 0..10
   points: number; // Rating * (Weight / 10)
   maxPoints: number;
   confidence: number; // 0..1
   subfactors: ContentSubfactorResult[];
   lowestSubfactor: string;
+  isObserved: boolean;
   isRenormalized?: boolean;
 }
 
@@ -220,7 +248,7 @@ export interface ActionableSuggestion {
   description: string;
   parameterId: number;
   subfactorCode: string;
-  estimatedGain: number; // e.g. +2.6
+  estimatedGain: number; // e.g. +1.0
   effort: EffortTier;
   concreteRewrite?: {
     type: 'hooks' | 'caption' | 'cta' | 'technical';
@@ -234,6 +262,7 @@ export interface QualityScoreResult {
   score: number; // 0..100
   pointsTotal: number;
   maxObservablePoints: number;
+  confidence: number; // 0..1
   parameterScores: Record<number, number>;
   parameterRatings: Record<number, number>;
   parameters: ContentParameterResult[];
@@ -243,18 +272,18 @@ export interface QualityScoreResult {
 export interface PerformanceScoreResult {
   score: number; // 0..100
   isAvailable: boolean;
-  engagementRate: number;
-  baselineEngagementRate: number;
+  confidence: number; // 0..1
+  gatedReason?: string;
   zScores: {
     engagement: number;
-    reach: number;
-    retention?: number;
+    views: number;
+    retention?: number | null;
     commentQuality?: number;
   };
   subfactorRatings: {
     engagement: number;
-    reach: number;
-    retention: number;
+    views: number;
+    retention: number | null;
     commentQuality: number;
   };
   statusMessage: string;
@@ -267,7 +296,11 @@ export interface ContentScoreData {
   verdict: ContentRatingVerdict;
   confidence: 'High' | 'Medium' | 'Low';
   confidenceScore: number; // 0..1
+  qualityConfidence: number; // 0..1
+  performanceConfidence: number | null;
+  dataTier: DataTier;
   isQualityOnly: boolean;
+  isSevereSafetyFlagged?: boolean;
   pros: Array<{
     title: string;
     rating: number;
@@ -285,4 +318,3 @@ export interface ContentScoreData {
   qualityBreakdown: QualityScoreResult;
   performanceBreakdown?: PerformanceScoreResult;
 }
-
