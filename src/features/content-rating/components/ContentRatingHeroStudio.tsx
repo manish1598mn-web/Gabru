@@ -4,75 +4,125 @@
  * GABRU — CONTENT RATING HERO STUDIO
  * 
  * Interactive studio workspace supporting:
- * - Path A: URL Link Input with auto platform detection (YouTube, Instagram, TikTok, X, etc.)
- * - Path C: Direct Media File & Analytics CSV Drag & Drop
- * - Instant Demo Presets (Worked Example Short, Carousel, Long Video)
- * - Interactive Right Media Dock with Waveforms, Technical LUFS, and Playback
+ * - Single-Post Link Input with auto platform detection (Instagram, TikTok, YouTube Shorts, X, etc.)
+ * - 3 Entertaining Demo Presets (Group-Chat Hall of Famer, Aesthetic Flex, 3 AM Goblin Hours)
+ * - Entertaining cycling loading state animations while analyzing
+ * - Right Single-Post Preview Dock with verified verdict stamp overlay
  */
 
-import React, { useState, useId } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ContentScoreData,
   InputMode,
   UnifiedContentItem,
 } from '../types/ContentRatingTypes';
-import { SAMPLE_DEMO_CONTENTS } from '../constants/ContentRatingConstants';
+import {
+  ENTERTAINING_LOADING_STEPS,
+} from '../constants/ContentRatingConstants';
 import { Button } from '@/shared/components/ui/Button';
+import { ScanningReticleOverlay } from '@/shared';
 import { detectPlatformFromUrl } from '../utils/ContentPlatformUtil';
 
 export interface ContentRatingHeroStudioProps {
   scoreData: ContentScoreData | null;
   currentItem: UnifiedContentItem | null;
-  inputMode: InputMode;
+  inputMode?: InputMode;
   contentUrl: string;
   isAnalyzing: boolean;
-  isDragging: boolean;
+  scanPhase?: 1 | 2 | 3 | 4;
+  scanProgress?: number;
+  scanStatusMessage?: string;
+  isPreviewLoading?: boolean;
+  isDragging?: boolean;
   errorMessage: string | null;
   onUrlChange: (url: string) => void;
-  onModeChange: (mode: InputMode) => void;
+  onModeChange?: (mode: InputMode) => void;
   onAnalyzeUrl: () => void;
-  onSelectDemo: (demoKey: 'short_video' | 'carousel' | 'long_video') => void;
-  onFileUpload: (file: File) => void;
-  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
-  onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
-  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
+  onSelectDemo?: (demoKey: 'short_video' | 'carousel' | 'long_video') => void;
+  onFileUpload?: (file: File) => void;
+  onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragLeave?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop?: (e: React.DragEvent<HTMLDivElement>) => void;
   onReset: () => void;
   onShareClick: () => void;
+  onRecalculate?: () => void;
 }
 
 export function ContentRatingHeroStudio({
   scoreData,
   currentItem,
-  inputMode,
   contentUrl,
   isAnalyzing,
-  isDragging,
+  scanPhase = 1,
+  scanProgress = 0,
+  scanStatusMessage,
+  isPreviewLoading = false,
   errorMessage,
   onUrlChange,
-  onModeChange,
   onAnalyzeUrl,
-  onSelectDemo,
-  onFileUpload,
-  onDragOver,
-  onDragLeave,
-  onDrop,
   onReset,
   onShareClick,
+  onRecalculate,
 }: ContentRatingHeroStudioProps) {
-  const [selectedDemoKey, setSelectedDemoKey] = useState<'short_video' | 'carousel' | 'long_video'>('short_video');
+  const [loadingStepIndex, setLoadingStepIndex] = useState(0);
+  const [loadedAspect, setLoadedAspect] = useState<number | null>(null);
   const detectedPlatform = detectPlatformFromUrl(contentUrl);
-  const fileInputId = useId();
+
+  useEffect(() => {
+    setLoadedAspect(null);
+  }, [currentItem?.media?.thumbnailUrl]);
+
+  const rawAspect =
+    currentItem?.media?.aspectRatio ||
+    (currentItem?.media?.width && currentItem?.media?.height
+      ? currentItem.media.width / currentItem.media.height
+      : null);
+
+  const effectiveAspect =
+    loadedAspect ||
+    rawAspect ||
+    (currentItem?.format === 'short_video'
+      ? 9 / 16
+      : currentItem?.format === 'long_video'
+      ? 16 / 9
+      : 4 / 5);
+
+  const formatLabel = (() => {
+    if (effectiveAspect < 0.7) return '9:16 REEL / SHORT';
+    if (effectiveAspect >= 0.7 && effectiveAspect < 0.9) return '4:5 PORTRAIT POST';
+    if (effectiveAspect >= 0.9 && effectiveAspect <= 1.15) return '1:1 SQUARE POST';
+    if (effectiveAspect > 1.15) return '16:9 WIDESCREEN';
+    return currentItem ? currentItem.format.toUpperCase().replace('_', ' ') : 'SINGLE POST';
+  })();
+
+  const containerAspectStyle: React.CSSProperties = currentItem?.media?.thumbnailUrl
+    ? {
+        aspectRatio: `${Number(effectiveAspect.toFixed(3))}`,
+        maxHeight: effectiveAspect < 0.7 ? '520px' : effectiveAspect > 1.3 ? '320px' : '440px',
+        width: '100%',
+        margin: '0 auto',
+      }
+    : {
+        aspectRatio: '4 / 5',
+        maxHeight: '440px',
+        width: '100%',
+      };
+
+  // Cycling entertaining loading steps while analyzing
+  useEffect(() => {
+    if (!isAnalyzing) {
+      setLoadingStepIndex(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setLoadingStepIndex((prev) => (prev + 1) % ENTERTAINING_LOADING_STEPS.length);
+    }, 1100);
+    return () => clearInterval(interval);
+  }, [isAnalyzing]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !isAnalyzing && contentUrl.trim().length > 0) {
       onAnalyzeUrl();
-    }
-  };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onFileUpload(file);
     }
   };
 
@@ -81,15 +131,36 @@ export function ContentRatingHeroStudio({
       {/* Left Column: Command & Input Studio */}
       <div className="hero-left-column">
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
-          Paste Content Link,
+          Post Anatomy,
           <br />
-          <span className="gradient-text content-gradient-text">Rate Social Reach</span>
+          <span className="gradient-text content-gradient-text">Audited for Virality</span>
         </h1>
 
         <p className="hero-description scroll-reveal" id="hero-description">
-          Evidence-gated audit across 10 craft dimensions and creator-baseline metrics.
-          Instant hook analysis, audio LUFS verification, retention pacing, and concrete rewrites.
+          10-dimension hook, retention, and engagement audit for creators. Instant feedback.
         </p>
+
+        {/* Entertaining Cycling Loading Banner While Analyzing */}
+        {isAnalyzing && (
+          <div className="content-analyzing-card scroll-reveal" role="status" aria-live="polite" style={{ marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div className="analyzing-spinner-box">
+                <span className="analyzing-spinner" aria-hidden="true" />
+              </div>
+              <div className="analyzing-text-content">
+                <span className="analyzing-eyebrow" style={{ fontSize: '11px', letterSpacing: '0.08em', color: '#c084fc', textTransform: 'uppercase', fontWeight: 600 }}>
+                  MULTIMODAL AI &amp; TELEMETRY AUDIT
+                </span>
+                <h4 className="analyzing-title" style={{ margin: '2px 0 0', fontSize: '16px', color: '#fff', fontWeight: 600 }}>
+                  {ENTERTAINING_LOADING_STEPS[loadingStepIndex]}
+                </h4>
+                <p className="analyzing-sub" style={{ margin: '2px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                  Scraping post counters, running vision LLM rubrics, and calculating viral forward velocity...
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {scoreData ? (
           /* Evaluated State: Clean Executive Content Score Hub */
@@ -97,20 +168,15 @@ export function ContentRatingHeroStudio({
             <div className="score-summary-header">
               <div className="score-metric-display">
                 <span className="score-big-number content-score-number font-tabular-nums">
-                  {Number.isInteger(scoreData.contentScore)
-                    ? String(scoreData.contentScore)
-                    : scoreData.contentScore.toFixed(1)}
+                  {scoreData.contentScore}
                 </span>
                 <span className="score-scale-denom font-tabular-nums">/100</span>
-                <span className="score-verdict-tag content-verdict-tag">
-                  {scoreData.verdict}
-                </span>
               </div>
 
               <div className="evaluated-header-actions">
                 <Button
                   variant="primary"
-                  size="md"
+                  size="sm"
                   onClick={onShareClick}
                   id="btn-content-share"
                   title="Export 1080x1350 High-Res Share Card"
@@ -127,12 +193,30 @@ export function ContentRatingHeroStudio({
                   Share Card
                 </Button>
 
+                {onRecalculate && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={onRecalculate}
+                    id="btn-recalculate-content"
+                    title="Re-calculate content parameter scores"
+                    leftIcon={
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                        <polyline points="23 4 23 10 17 10" />
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                      </svg>
+                    }
+                  >
+                    Re-calculate
+                  </Button>
+                )}
+
                 <Button
                   variant="secondary"
-                  size="md"
+                  size="sm"
                   onClick={onReset}
                   id="btn-analyze-new"
-                  title="Analyze another link or media"
+                  title="Analyze another link"
                   leftIcon={
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="23 4 23 10 17 10" />
@@ -146,113 +230,60 @@ export function ContentRatingHeroStudio({
               </div>
             </div>
 
-            {/* Split Pillars & Confidence Badges */}
+            {/* 3 Symmetrical Pillars in 3-Column Grid */}
             <div className="content-score-pillars-row">
               <div
-                className="pillar-chip data-tier-pillar"
-                title={`Tier ${scoreData.dataTier}: ${
-                  scoreData.dataTier === 'C'
-                    ? 'Uploaded full media file & owner analytics'
-                    : scoreData.dataTier === 'B'
-                    ? 'Link plus OAuth owner analytics'
-                    : 'Public link only (pacing & audio unobserved; shrinkage active)'
-                }`}
+                className="pillar-chip verdict-pillar"
+                style={{ background: 'rgba(217, 70, 239, 0.12)', borderColor: 'rgba(217, 70, 239, 0.28)' }}
+                title="Single-Post Verdict Badge assigned by deterministic priority tree"
               >
-                <span className="pillar-label">DATA TIER</span>
-                <span className="pillar-value">
-                  TIER {scoreData.dataTier} ({scoreData.dataTier === 'C' ? 'Full Media' : scoreData.dataTier === 'B' ? 'OAuth' : 'Link-Only'})
-                </span>
-              </div>
-
-              <div className="pillar-chip quality-pillar">
-                <span className="pillar-label">QUALITY (70%)</span>
-                <span className="pillar-value font-tabular-nums">{scoreData.qualityScore.toFixed(1)}/100</span>
-              </div>
-
-              <div className="pillar-chip performance-pillar">
-                <span className="pillar-label">PERFORMANCE (30%)</span>
-                <span className="pillar-value font-tabular-nums">
-                  {scoreData.performanceScore !== null ? `${scoreData.performanceScore.toFixed(1)}/100` : 'N/A (Too Fresh)'}
+                <span className="pillar-label">VERDICT BADGE</span>
+                <span className="pillar-value" style={{ color: '#f0abfc' }}>
+                  {scoreData.verdictBadge}
                 </span>
               </div>
 
               <div
-                className="pillar-chip confidence-pillar"
-                title={`Blended: ${Math.round(scoreData.confidenceScore * 100)}% | Quality Conf: ${Math.round(scoreData.qualityConfidence * 100)}% | Perf Conf: ${
-                  scoreData.performanceConfidence !== null ? `${Math.round(scoreData.performanceConfidence * 100)}%` : 'N/A'
-                }`}
+                className="pillar-chip archetype-pillar"
+                style={{ background: 'rgba(56, 189, 248, 0.12)', borderColor: 'rgba(56, 189, 248, 0.28)' }}
+                title="Personality archetype derived from visual aesthetic and creative dynamics"
               >
-                <span className="pillar-label">CONFIDENCE</span>
-                <span className="pillar-value">
-                  {Math.round(scoreData.confidenceScore * 100)}% ({scoreData.confidence.toUpperCase()})
+                <span className="pillar-label">ARCHETYPE</span>
+                <span className="pillar-value" style={{ color: '#7dd3fc' }}>
+                  {scoreData.archetypeTier}
                 </span>
               </div>
+
+              <div className="pillar-chip quality-pillar" title="Calibrated overall tier on 100-point scale">
+                <span className="pillar-label">AUDIT VERDICT</span>
+                <span className="pillar-value" style={{ color: '#34d399' }}>{scoreData.verdict}</span>
+              </div>
             </div>
 
-            {/* Top Quick Fix Callout */}
-            {scoreData.suggestions.length > 0 && (
-              <div className="content-hero-top-fix">
-                <div className="top-fix-eyebrow">
-                  <span className="fix-icon" aria-hidden="true">⚡</span>
-                  <span className="fix-tag">TOP PRIORITY FIX</span>
-                  <span className="fix-gain font-tabular-nums">+{scoreData.suggestions[0].estimatedGain.toFixed(1)} PTS</span>
-                </div>
-                <div className="top-fix-title">{scoreData.suggestions[0].title}</div>
-                <div className="top-fix-desc">{scoreData.suggestions[0].description}</div>
-              </div>
-            )}
+            <div className="hero-sub-actions" style={{ marginTop: '16px', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <span className="privacy-pill">🔒 Zero Server Retention · 100% In-Browser Privacy</span>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', margin: 0, lineHeight: 1.4 }}>
+                ⚖️ Ratings evaluate creative craft and public format mechanics; does not guarantee actual algorithm distribution.
+              </p>
+            </div>
           </div>
         ) : (
-          /* Pre-Evaluated State: Input Mode Selection & Forms */
-          <>
-            {/* Mode Switcher Dock */}
-            <div className="content-mode-dock scroll-reveal" role="tablist" aria-label="Input Mode">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={inputMode === 'link'}
-                className={`content-mode-btn focus-ring tactile-press ${inputMode === 'link' ? 'is-active' : ''}`}
-                onClick={() => onModeChange('link')}
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                </svg>
-                <span>Paste Social Link</span>
-              </button>
-
-              <button
-                type="button"
-                role="tab"
-                aria-selected={inputMode === 'upload'}
-                className={`content-mode-btn focus-ring tactile-press ${inputMode === 'upload' ? 'is-active' : ''}`}
-                onClick={() => onModeChange('upload')}
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                <span>Upload Media</span>
-              </button>
-
-              <button
-                type="button"
-                role="tab"
-                aria-selected={inputMode === 'demo'}
-                className={`content-mode-btn focus-ring tactile-press ${inputMode === 'demo' ? 'is-active' : ''}`}
-                onClick={() => onModeChange('demo')}
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                </svg>
-                <span>Try Demo Presets</span>
-              </button>
+          /* Pre-Evaluated State: Clean Single-Post Link Input */
+          <div className="content-input-card scroll-reveal">
+            <div className="content-link-header">
+              <div className="link-header-left">
+                <span className="link-header-spark" aria-hidden="true">🔗</span>
+                <h3 className="link-header-title">Paste Single Post Link</h3>
+              </div>
+              <span className="link-header-badge">Instant Visual &amp; Craft Audit</span>
             </div>
+            <p className="link-header-subtitle">
+              Inspect retention triggers, 1.2s hook threshold, visual framing, caption wit, and viral pacing across public posts.
+            </p>
 
             {/* Error Message Alert */}
             {errorMessage && (
-              <div className="content-error-banner" role="alert">
+              <div className="content-error-banner" role="alert" style={{ marginBottom: '14px' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="8" x2="12" y2="12" />
@@ -262,239 +293,116 @@ export function ContentRatingHeroStudio({
               </div>
             )}
 
-            {/* MODE 1: PASTE LINK */}
-            {inputMode === 'link' && (
-              <div className="content-input-card scroll-reveal">
-                <div className="content-link-field-wrapper">
-                  <div className="content-link-icon-box">
-                    {detectedPlatform === 'youtube' && (
-                      <span className="platform-active-pill yt">YouTube</span>
-                    )}
-                    {detectedPlatform === 'instagram' && (
-                      <span className="platform-active-pill ig">Instagram</span>
-                    )}
-                    {detectedPlatform === 'tiktok' && (
-                      <span className="platform-active-pill tt">TikTok</span>
-                    )}
-                    {detectedPlatform === 'x' && (
-                      <span className="platform-active-pill x">X / Twitter</span>
-                    )}
-                    {detectedPlatform === 'linkedin' && (
-                      <span className="platform-active-pill in">LinkedIn</span>
-                    )}
-                    {!detectedPlatform && (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="2" y1="12" x2="22" y2="12" />
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                      </svg>
-                    )}
-                  </div>
-
-                  <input
-                    type="url"
-                    value={contentUrl}
-                    onChange={(e) => onUrlChange(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Paste YouTube Short, Instagram Reel, TikTok, or X link..."
-                    className="content-link-input"
-                    id="content-url-input"
-                    disabled={isAnalyzing}
-                  />
-
-                  {contentUrl && (
-                    <button
-                      type="button"
-                      className="btn-clear-url focus-ring"
-                      onClick={() => onUrlChange('')}
-                      title="Clear URL"
-                      aria-label="Clear URL"
-                    >
-                      ✕
-                    </button>
+            <div className="content-link-field-wrapper">
+              <div className="content-link-input-row">
+                <div className="content-link-icon-box">
+                  {detectedPlatform === 'youtube' && (
+                    <span className="platform-active-pill yt">YouTube</span>
                   )}
-
-                  <Button
-                    variant="primary"
-                    size="md"
-                    id="btn-analyze-content"
-                    onClick={onAnalyzeUrl}
-                    disabled={contentUrl.trim().length === 0}
-                    isLoading={isAnalyzing}
-                    rightIcon={
-                      !isAnalyzing ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                          <polyline points="12 5 19 12 12 19" />
-                        </svg>
-                      ) : undefined
-                    }
-                  >
-                    {isAnalyzing ? 'Auditing...' : 'Analyze'}
-                  </Button>
+                  {detectedPlatform === 'instagram' && (
+                    <span className="platform-active-pill ig">Instagram</span>
+                  )}
+                  {detectedPlatform === 'tiktok' && (
+                    <span className="platform-active-pill tt">TikTok</span>
+                  )}
+                  {detectedPlatform === 'x' && (
+                    <span className="platform-active-pill x">X</span>
+                  )}
+                  {detectedPlatform === 'linkedin' && (
+                    <span className="platform-active-pill in">LinkedIn</span>
+                  )}
+                  {!detectedPlatform && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                  )}
                 </div>
 
-                {/* Supported Platform Badges */}
-                <div className="content-supported-pills">
-                  <span className="platform-tag">YouTube Shorts &amp; Videos</span>
-                  <span className="platform-tag">Instagram Reels</span>
-                  <span className="platform-tag">TikTok</span>
-                  <span className="platform-tag">X / Twitter</span>
-                  <span className="platform-tag">LinkedIn</span>
-                </div>
-              </div>
-            )}
-
-            {/* MODE 2: UPLOAD MEDIA */}
-            {inputMode === 'upload' && (
-              <div
-                className={`content-upload-dropzone scroll-reveal ${isDragging ? 'is-dragging' : ''}`}
-                onDragOver={onDragOver}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-              >
                 <input
-                  type="file"
-                  id={fileInputId}
-                  className="visually-hidden"
-                  accept="video/mp4,video/quicktime,video/webm,image/jpeg,image/png,text/csv"
-                  onChange={handleFileInputChange}
+                  type="url"
+                  className="content-link-input focus-ring font-sans"
+                  placeholder="Paste single post link (e.g., instagram.com/reel/..., tiktok.com/@user/video/..., x.com/...)"
+                  value={contentUrl}
+                  onChange={(e) => onUrlChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isAnalyzing}
+                  id="input-content-url"
+                  aria-label="Social media post URL input"
                 />
 
-                <div className="upload-dropzone-inner">
-                  <div className="upload-icon-circle">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
-                      <line x1="7" y1="2" x2="7" y2="22" />
-                      <line x1="17" y1="2" x2="17" y2="22" />
-                      <line x1="2" y1="12" x2="22" y2="12" />
-                      <line x1="2" y1="7" x2="7" y2="7" />
-                      <line x1="2" y1="17" x2="7" y2="17" />
-                      <line x1="17" y1="17" x2="22" y2="17" />
-                      <line x1="17" y1="7" x2="22" y2="7" />
-                    </svg>
-                  </div>
-                  <h3 className="upload-title">Drop your video, image, or analytics CSV</h3>
-                  <p className="upload-subtitle">
-                    Direct local analysis of video bitrate, LUFS loudness, keyframes, and engagement logs.
-                  </p>
-                  <label htmlFor={fileInputId} className="btn-browse-file focus-ring touch-target tactile-press">
-                    Browse File
-                  </label>
-                </div>
+                {!contentUrl && (
+                  <button
+                    type="button"
+                    className="btn-paste-clipboard focus-ring tactile-press"
+                    onClick={async () => {
+                      try {
+                        if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.readText) {
+                          const text = await navigator.clipboard.readText();
+                          if (text && text.trim().length > 0) {
+                            onUrlChange(text.trim());
+                          }
+                        }
+                      } catch {
+                        // clipboard access denied
+                      }
+                    }}
+                    title="Paste URL from clipboard"
+                  >
+                    <span>📋 Paste</span>
+                  </button>
+                )}
+
+                {contentUrl && (
+                  <button
+                    type="button"
+                    className="btn-clear-url focus-ring"
+                    onClick={() => onUrlChange('')}
+                    title="Clear URL"
+                    aria-label="Clear URL"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
-            )}
 
-            {/* MODE 3: DEMO PRESETS */}
-            {inputMode === 'demo' && (
-              <div className="content-presets-grid scroll-reveal">
-                {/* Preset 1: Viral Short (Tier C Worked Example) */}
-                <div
-                  className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'short_video' ? 'is-selected' : ''}`}
-                  onClick={() => {
-                    setSelectedDemoKey('short_video');
-                    onSelectDemo('short_video');
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setSelectedDemoKey('short_video');
-                      onSelectDemo('short_video');
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Load preset audit: Three cinematic lighting tricks with one bedside lamp"
-                >
-                  <div className="preset-card-top">
-                    <span className="preset-type-pill short">TIER C • 9:16 REEL</span>
-                    <span className="preset-expected-score font-tabular-nums">88.6 / 100</span>
-                  </div>
-                  <h4 className="preset-card-title">Three cinematic lighting tricks with one bedside lamp</h4>
-                  <p className="preset-card-desc">
-                    Canonical 34s Reel from worked example. Full media file, 10 craft dimensions, Quality 88.6, Performance 88.6, High Confidence (0.92).
-                  </p>
-                  <div className="btn-load-preset" aria-hidden="true">
-                    <span>Load &amp; Inspect Audit</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <Button
+                variant="primary"
+                size="md"
+                id="btn-analyze-content"
+                onClick={onAnalyzeUrl}
+                disabled={contentUrl.trim().length === 0 || isAnalyzing}
+                isLoading={isAnalyzing}
+                rightIcon={
+                  !isAnalyzing ? (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
                     </svg>
-                  </div>
-                </div>
+                  ) : undefined
+                }
+              >
+                {isAnalyzing ? 'Auditing...' : 'Analyze'}
+              </Button>
+            </div>
 
-                {/* Preset 2: Same Reel as Tier A Link-Only */}
-                <div
-                  className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'carousel' ? 'is-selected' : ''}`}
-                  onClick={() => {
-                    setSelectedDemoKey('carousel');
-                    onSelectDemo('carousel');
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setSelectedDemoKey('carousel');
-                      onSelectDemo('carousel');
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Load preset audit: Same 34s Reel in Link-Only Tier A"
-                >
-                  <div className="preset-card-top">
-                    <span className="preset-type-pill carousel">TIER A • LINK ONLY</span>
-                    <span className="preset-expected-score font-tabular-nums">84.3 / 100</span>
-                  </div>
-                  <h4 className="preset-card-title">Same 34s Reel (Public Link-Only Mode)</h4>
-                  <p className="preset-card-desc">
-                    Link-only submission. Storytelling unobserved (V=0), visibility shrinkage active toward 7.0, Medium Confidence (0.57).
-                  </p>
-                  <div className="btn-load-preset" aria-hidden="true">
-                    <span>Load &amp; Inspect Audit</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </div>
-                </div>
+            {/* Supported Platform Badges */}
+            <div className="content-supported-pills">
+              <span className="platform-tag">Instagram Reels &amp; Posts</span>
+              <span className="platform-tag">TikTok Videos</span>
+              <span className="platform-tag">YouTube Shorts</span>
+              <span className="platform-tag">X / Twitter</span>
+              <span className="platform-tag">LinkedIn</span>
+            </div>
 
-                {/* Preset 3: Compliance & Flaw Capped Reel */}
-                <div
-                  className={`preset-card focus-ring tactile-press ${selectedDemoKey === 'long_video' ? 'is-selected' : ''}`}
-                  onClick={() => {
-                    setSelectedDemoKey('long_video');
-                    onSelectDemo('long_video');
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setSelectedDemoKey('long_video');
-                      onSelectDemo('long_video');
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Load preset audit: Secret supplement that cures joint pain overnight"
-                >
-                  <div className="preset-card-top">
-                    <span className="preset-type-pill long">TIER B • FLAW CAPPED</span>
-                    <span className="preset-expected-score font-tabular-nums">60.0 (Cap)</span>
-                  </div>
-                  <h4 className="preset-card-title">Secret supplement that cures joint pain overnight</h4>
-                  <p className="preset-card-desc">
-                    Major undisclosed sponsorship (TC1) and misleading medical claim (TC3). Automatically capped at 60.0.
-                  </p>
-                  <div className="btn-load-preset" aria-hidden="true">
-                    <span>Load &amp; Inspect Audit</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
+            <div className="hero-sub-actions" style={{ marginTop: '16px', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <span className="privacy-pill">🔒 Zero Server Retention · 100% In-Browser Privacy</span>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', margin: 0, lineHeight: 1.4 }}>
+                ⚖️ Ratings evaluate creative craft and public format mechanics; does not guarantee actual algorithm distribution.
+              </p>
+            </div>
+          </div>
         )}
       </div>
 
@@ -503,141 +411,111 @@ export function ContentRatingHeroStudio({
         <div className="content-preview-dock scroll-reveal" id="content-media-dock">
           {/* Dock Top Header */}
           <div className="dock-glass-header">
-            <span className="dock-title-label">STUDIO WORKSPACE</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: currentItem?.media.thumbnailUrl && !isPreviewLoading ? '#10b981' : 'rgba(255, 255, 255, 0.3)',
+                  boxShadow: currentItem?.media.thumbnailUrl && !isPreviewLoading ? '0 0 8px rgba(16, 185, 129, 0.6)' : 'none',
+                }}
+              />
+              <span className="dock-title-label">
+                {isPreviewLoading
+                  ? 'FETCHING PREVIEW...'
+                  : currentItem?.media.thumbnailUrl
+                  ? 'LIVE PREVIEW LOADED'
+                  : 'CONTENT MONITOR'}
+              </span>
+            </div>
             <span className="dock-format-badge">
-              {currentItem
-                ? currentItem.format.toUpperCase().replace('_', ' ')
-                : '9:16 VERTICAL'}
+              {formatLabel}
             </span>
           </div>
 
-          {/* Dock Body: Active Preview or Placeholder */}
-          {isAnalyzing ? (
-            /* Analysis Pipeline Stepper Animation */
-            <div className="dock-analyzing-stepper">
-              <div className="stepper-spinner-bubble">
-                <span className="stepper-spinner" />
+          {/* Visual Container (Dynamically responsive according to content dimensions) */}
+          <div className="dock-visual-container" style={containerAspectStyle}>
+            {isPreviewLoading ? (
+              <div className="dock-placeholder-box dock-fetching-box">
+                <div className="analyzing-spinner-ring" style={{ width: 38, height: 38, borderWidth: 3, marginBottom: 8 }} />
+                <span className="placeholder-text" style={{ color: '#e4e4e7', fontWeight: 600 }}>
+                  Fetching post preview image...
+                </span>
               </div>
-              <h4 className="stepper-title">Executing Multi-Model Audit</h4>
-              <div className="stepper-list">
-                <div className="step-item is-done">
-                  <span className="step-check">✓</span>
-                  <span>Resolving link &amp; public telemetry</span>
-                </div>
-                <div className="step-item is-active">
-                  <span className="step-pulse" />
-                  <span>Sampling keyframes &amp; OCR text</span>
-                </div>
-                <div className="step-item">
-                  <span className="step-dot" />
-                  <span>Measuring vocal LUFS &amp; silence gaps</span>
-                </div>
-                <div className="step-item">
-                  <span className="step-dot" />
-                  <span>Evaluating 10 parameters &amp; flaw caps</span>
-                </div>
-                <div className="step-item">
-                  <span className="step-dot" />
-                  <span>Synthesizing delta-gain rewrites</span>
-                </div>
-              </div>
-            </div>
-          ) : currentItem ? (
-            /* Media Loaded View */
-            <div className="dock-media-active-view">
-              <div className="active-media-backdrop">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+            ) : currentItem?.media.thumbnailUrl ? (
+              <>
                 <img
-                  src={currentItem.media.thumbnailUrl || '/face_beauty_hero_bg.jpg'}
-                  alt={currentItem.title}
-                  className="active-media-img"
+                  src={currentItem.media.thumbnailUrl}
+                  alt={currentItem.title || 'Post preview'}
+                  className={`dock-media-thumbnail ${isAnalyzing ? 'is-analyzing-blur' : ''}`}
+                  onLoad={(e) => {
+                    const img = e.currentTarget;
+                    if (img.naturalWidth && img.naturalHeight) {
+                      setLoadedAspect(img.naturalWidth / img.naturalHeight);
+                    }
+                  }}
                   onError={(e) => {
-                    e.currentTarget.src = '/face_beauty_hero_bg.jpg';
+                    const target = e.currentTarget;
+                    target.onerror = null;
+                    target.src = '/content_rating_sketch.jpg';
                   }}
                 />
-                <div className="active-media-overlay" />
-                <div className="active-media-center-badge">
-                  <div className="dock-play-bubble-small">▶</div>
-                  <span className="media-duration-chip font-tabular-nums">
-                    {currentItem.media.durationSec > 0
-                      ? `${currentItem.media.durationSec}s`
-                      : 'CAROUSEL'}
-                  </span>
-                </div>
-              </div>
 
-              {/* Creator Metadata Bar */}
-              <div className="active-creator-bar">
-                <div className="creator-info">
-                  <span className="creator-handle text-truncate">{currentItem.creator.handle}</span>
-                  <span className="creator-niche text-truncate">{currentItem.creator.niche}</span>
-                </div>
-                <div className="creator-reach-chip font-tabular-nums">
-                  {currentItem.metrics.views.toLocaleString()} views
+                {/* Holographic Laser Sweep & Reticle Overlay During Live Analysis */}
+                <ScanningReticleOverlay
+                  studio="content-rating"
+                  isAnalyzing={isAnalyzing}
+                  phase={scanPhase}
+                  progressRatio={scanProgress}
+                  statusMessage={scanStatusMessage}
+                />
+              </>
+            ) : (
+              <div className="dock-placeholder-box dock-blueprint-stage">
+                <img
+                  src="/content_rating_sketch.jpg"
+                  alt="Viral Architecture & Storyboard Blueprint"
+                  className="dock-media-thumbnail"
+                />
+                <div className="dock-blueprint-chip">
+                  <span aria-hidden="true">🏛</span>
+                  <span>VIRAL ARCHITECTURE BLUEPRINT</span>
                 </div>
               </div>
+            )}
 
-              {/* Live Audio Waveform Simulation Bar */}
-              {currentItem.audioMetrics && (
-                <div className="dock-audio-waveform-bar">
-                  <div className="waveform-label">
-                    <span>AUDIO SPECTRUM</span>
-                    <span className="font-tabular-nums">{currentItem.audioMetrics.integratedLufs.toFixed(1)} LUFS</span>
-                  </div>
-                  <div className="waveform-bars">
-                    {[40, 65, 85, 30, 95, 70, 50, 90, 60, 45, 80, 55, 75, 90, 65, 40, 85, 70, 50, 30, 95, 60].map((h, i) => (
-                      <span
-                        key={i}
-                        className="waveform-bar"
-                        style={{ height: `${h}%` }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Empty Placeholder State */
-            <div className="dock-placeholder-body">
-              <div className="dock-play-bubble">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
+            {/* Verdict Badge Stamp Overlay (Floating Corner Badge) */}
+            {scoreData && !isPreviewLoading && (
+              <div className="dock-evaluated-badge" id="content-evaluated-badge">
+                <span className="dock-badge-title">POST IMPACT</span>
+                <span className="dock-badge-score font-tabular-nums">
+                  {scoreData.contentScore}
+                  <span className="denom">/100</span>
+                </span>
+                <span className="dock-badge-band">{scoreData.verdictBadge}</span>
               </div>
-              <p className="dock-prompt-text">
-                Paste a public link or load a preset demo to preview media playback, keyframe breakdown, and audio waveforms.
-              </p>
+            )}
+          </div>
+
+          {/* Scraped Post Meta Strip */}
+          {currentItem && (
+            <div className="dock-meta-strip">
+              <div className="dock-creator-meta">
+                <span className="creator-handle">{currentItem.creator.handle}</span>
+                <span className="creator-niche" title={currentItem.title}>
+                  {currentItem.title && currentItem.title.length > 35
+                    ? `${currentItem.title.substring(0, 32)}...`
+                    : currentItem.title || currentItem.creator.niche || 'Creator'}
+                </span>
+              </div>
+              <div className="dock-post-hour">
+                <span>Upload: {currentItem.uploadHourLocal !== undefined ? `${currentItem.uploadHourLocal}:00` : 'Peak Time'}</span>
+              </div>
             </div>
           )}
-
-          {/* Dock Technical Metadata Footer */}
-          <div className="dock-glass-footer">
-            <div className="dock-meta-item">
-              <span className="dock-meta-label">TARGET LOUDNESS</span>
-              <span className="dock-meta-val font-tabular-nums">
-                {currentItem?.audioMetrics
-                  ? `${currentItem.audioMetrics.integratedLufs.toFixed(1)} LUFS`
-                  : '-14 ± 3 LUFS'}
-              </span>
-            </div>
-            <div className="dock-meta-item">
-              <span className="dock-meta-label">TIME TO VALUE</span>
-              <span className="dock-meta-val font-tabular-nums">
-                {currentItem?.transcriptSegments?.[0]
-                  ? `~${currentItem.transcriptSegments[0].startSec}s`
-                  : '≤ 3 SECONDS'}
-              </span>
-            </div>
-            <div className="dock-meta-item">
-              <span className="dock-meta-label">RESOLUTION</span>
-              <span className="dock-meta-val font-tabular-nums">
-                {currentItem ? `${currentItem.media.width}x${currentItem.media.height}` : '1080x1920 (9:16)'}
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
 }
-

@@ -173,10 +173,6 @@ export default function HandReadingFeaturePage() {
     [tradition, absentPolicy, analysis]
   );
 
-  const handleSamplePalm = useCallback(() => {
-    handleSelectPreset(DEMO_PALM_PRESETS[0]);
-  }, [handleSelectPreset]);
-
   const handleRecalculate = useCallback(async () => {
     if (!currentScores || !userImageUri || !qualityGate) {
       setErrorMessage('Please upload a clear palm photo to evaluate.');

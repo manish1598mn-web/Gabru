@@ -3,10 +3,10 @@ import './globals.css';
 import { CssInspectorCompanion } from '@/shared';
 
 export const metadata: Metadata = {
-  title: 'Gabru — Upload Your Photo, See It Instantly',
+  title: 'Gabru — Aesthetic & Visual Intelligence Studio',
   description:
-    'A simple, fast and free way to upload your photos and see them right here. No sign up, no hassle — just you and your moments.',
-  keywords: ['Gabru', 'Photo Upload', 'Instant Photo Preview', 'Image Sharing', 'Gallery'],
+    'Instant, private visual analysis for outfit tailoring, facial proportions, social media content, and traditional palmistry.',
+  keywords: ['Gabru', 'Style Analysis', 'Fit Check', 'Facial Proportions', 'Content Rating', 'Hand Reading'],
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -15,8 +15,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#1e1e1e',
-  colorScheme: 'dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8fafc' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
+  ],
 };
 
 export default function RootLayout({
@@ -25,8 +27,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var stored=localStorage.getItem('gabru-theme');var theme=stored==='light'?'light':'dark';document.documentElement.setAttribute('data-theme',theme);document.documentElement.classList.add(theme);var meta=document.querySelector('meta[name="theme-color"]');if(meta){meta.setAttribute('content',theme==='light'?'#f8fafc':'#09090b');}}catch(e){}})();`,
+          }}
+        />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -38,7 +45,7 @@ export default function RootLayout({
       </head>
       <body id="gabru-root">
         {children}
-        <CssInspectorCompanion />
+        {process.env.NODE_ENV === 'development' && <CssInspectorCompanion />}
       </body>
     </html>
   );

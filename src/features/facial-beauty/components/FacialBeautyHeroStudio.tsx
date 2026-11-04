@@ -243,8 +243,11 @@ export function FacialBeautyHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
-              <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
+            <div className="hero-sub-actions" style={{ flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <span className="privacy-pill">🔒 Zero Cloud Uploads · 100% In-Browser Biometric Analysis</span>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', textAlign: 'center', margin: 0, maxWidth: '420px', lineHeight: 1.4 }}>
+                By uploading, you confirm you are 18+ and consent to private on-device facial landmark processing. Photos are never stored or uploaded.
+              </p>
             </div>
           </>
         ) : (
@@ -300,8 +303,11 @@ export function FacialBeautyHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
-              <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
+            <div className="hero-sub-actions" style={{ flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <span className="privacy-pill">🔒 Zero Cloud Uploads · 100% In-Browser Biometric Analysis</span>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', textAlign: 'center', margin: 0, maxWidth: '420px', lineHeight: 1.4 }}>
+                By uploading, you confirm you are 18+ and consent to private on-device facial landmark processing. Photos are never stored or uploaded.
+              </p>
             </div>
           </>
         )}
