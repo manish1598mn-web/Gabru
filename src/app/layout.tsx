@@ -3,14 +3,61 @@ import './globals.css';
 import { CssInspectorCompanion } from '@/shared';
 
 export const metadata: Metadata = {
-  title: 'Gabru — Aesthetic & Visual Intelligence Studio',
+  metadataBase: new URL('https://gabru.app'),
+  title: {
+    default: 'Gabru — Aesthetic & Visual Intelligence Studio',
+    template: '%s | Gabru',
+  },
   description:
-    'Instant, private visual analysis for outfit tailoring, facial proportions, social media content, and traditional palmistry.',
-  keywords: ['Gabru', 'Style Analysis', 'Fit Check', 'Facial Proportions', 'Content Rating', 'Hand Reading'],
+    'Instant, private visual analysis for outfit tailoring, facial proportions, social media content, and traditional palmistry. 100% on-device processing.',
+  keywords: [
+    'Gabru',
+    'Style Analysis',
+    'Fit Check',
+    'Facial Proportions',
+    'Content Rating',
+    'Hand Reading',
+    'Biometrics',
+    'Aesthetic Score',
+  ],
+  authors: [{ name: 'Gabru Studio' }],
+  creator: 'Gabru Studio',
+  publisher: 'Gabru Studio',
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://gabru.app',
+    siteName: 'Gabru Studio',
+    title: 'Gabru — Aesthetic & Visual Intelligence Studio',
+    description:
+      'Instant, private visual analysis for outfit tailoring, facial proportions, social media content, and traditional palmistry.',
+    images: [
+      {
+        url: '/hero_fashion_mosaic.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Gabru Visual Intelligence Studio',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gabru — Aesthetic & Visual Intelligence Studio',
+    description:
+      'Instant, private visual analysis for outfit tailoring, facial proportions, social media content, and traditional palmistry.',
+    images: ['/hero_fashion_mosaic.jpg'],
+  },
+  alternates: {
+    canonical: 'https://gabru.app',
   },
 };
 
