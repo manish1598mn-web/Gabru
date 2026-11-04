@@ -35,16 +35,6 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({
         <div className="gov-cards-grid">
           <div className="gov-card-item">
             <div className="gov-card-header">
-              <span className="gov-card-icon" aria-hidden="true">📱</span>
-              <h4 className="gov-card-title">Zero Cloud Uploads</h4>
-            </div>
-            <p className="gov-card-text">
-              Photos stay in temporary device memory. We operate zero image-storing servers, databases, or remote pipelines.
-            </p>
-          </div>
-
-          <div className="gov-card-item">
-            <div className="gov-card-header">
               <span className="gov-card-icon" aria-hidden="true">👤</span>
               <h4 className="gov-card-title">No Identity Tracking</h4>
             </div>

@@ -440,7 +440,11 @@
   background: currentColor;
 }
 
-/* --- Skeleton Shimmer --- */
+  /* --- Skeleton Shimmer --- */
+  .studio-hero-backdrop svg text {
+    display: none;
+  }
+
 .skeleton-shimmer {
   background: linear-gradient(90deg,
       rgba(255, 255, 255, 0.03) 0%,
@@ -1008,6 +1012,35 @@ body {
   position: relative;
   overflow: hidden;
   background: transparent !important;
+}
+
+/* ==========================================================
+   COMPACT INTERFACE COPY
+   ========================================================== */
+/* Keep the studio focused on uploads, scores, and actionable results. */
+.hero-description,
+.upload-subtitle,
+.privacy-pill,
+.about-section-subtitle,
+.feature-description,
+.guide-feature-desc,
+.how-to-subtitle,
+.step-desc,
+.diag-panel-desc,
+.diag-suite-subtitle,
+.golden-ratio-desc,
+.levers-subtitle,
+.link-header-subtitle,
+.timing-notice-desc,
+.brand-voice-desc,
+.segment-desc,
+.cta-flag-desc,
+.evidence-column-subtitle,
+.sug-card-desc,
+.scorecard-strip-sub,
+.section-subtitle,
+.quote-eyebrow {
+  display: none !important;
 }
 
 /* ==========================================================

@@ -51,9 +51,6 @@ export function FitCheckHeroStudio({
           <span className="gradient-text">Scored in Seconds</span>
         </h1>
 
-        <p className="hero-description scroll-reveal" id="hero-description">
-          10-point sartorial analysis across silhouette, harmony, and tailoring. 100% on-device.
-        </p>
 
         {photoScore ? (
           /* Evaluated State: Clean Executive Style Score Hub */
@@ -152,9 +149,6 @@ export function FitCheckHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
-              <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
-            </div>
           </>
         ) : (
           /* Initial State: Accessible Semantic Upload Dropzone */
@@ -197,7 +191,6 @@ export function FitCheckHeroStudio({
                   <p className="upload-title text-truncate">
                     {isDragging ? 'Drop outfit photo to analyze' : 'Drop your outfit photo here, or browse'}
                   </p>
-                  <p className="upload-subtitle">JPG, PNG, or WebP &bull; Max 15MB</p>
                 </div>
 
                 <Button
@@ -214,9 +207,6 @@ export function FitCheckHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
-              <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
-            </div>
           </>
         )}
 

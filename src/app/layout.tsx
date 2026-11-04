@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: '%s | Gabru',
   },
   description:
-    'Instant, private visual analysis for outfit tailoring, facial proportions, social media content, and traditional palmistry. 100% on-device processing.',
+    'Visual analysis for outfit tailoring, facial proportions, social media content, and traditional palmistry.',
   keywords: [
     'Gabru',
     'Style Analysis',
