@@ -182,3 +182,5 @@ Gabru adheres to strict client-side data privacy standards:
 Copyright &copy; 2026 Gabru Technologies Inc. All rights reserved.
 For internal developer inquiries, consult the Engineering Architecture Council.
 
+#   G a b r u  
+ 
