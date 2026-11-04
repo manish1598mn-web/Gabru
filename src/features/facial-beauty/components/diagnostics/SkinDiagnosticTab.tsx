@@ -20,10 +20,10 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>✨ Parameter 1: Skin Quality &amp; Glow</span>
-            <span className="diag-stat-code">14 Pts Max · β = 0.10 · Changeable</span>
+            <span className="diag-stat-code">14 Pts Max &bull; Controllable</span>
           </div>
           <div className="diag-panel-desc">
-            5-zone epidermal sampling (forehead, both cheeks, nose bridge, chin) evaluated in CIELAB space after white-balance correction. Evaluates tone uniformity, surface clarity, shine balance, and natural warm color saturation.
+            5-zone sampling (forehead, cheeks, nose bridge, chin). Evaluates tone uniformity, surface clarity, natural sheen, and skin vitality.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -36,7 +36,6 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Tone Evenness</span>
-            <span className="diag-stat-code">SK1 · W=30</span>
           </div>
           <div className="diag-stat-val">
             ΔE₀₀ {skinMetrics?.deltaE2000.toFixed(1) ?? '1.8'}
@@ -50,23 +49,21 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Clarity</span>
-            <span className="diag-stat-code">SK2 · W=30</span>
+            <span className="diag-stat-label">Surface Clarity</span>
           </div>
           <div className="diag-stat-val">
             {skinMetrics?.blemishPct.toFixed(1) ?? '1.2'}%
           </div>
           <div className={`diag-stat-status ${(skinMetrics?.blemishPct ?? 1.2) <= 1.0 ? 'status-ideal' : 'status-caution'}`}>
             {(skinMetrics?.blemishPct ?? 1.2) <= 1.0
-              ? '✓ High clarity, clear skin barrier'
+              ? '✓ Clear skin barrier'
               : 'Subtle transient texture variance detected'}
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Radiance &amp; Shine Control</span>
-            <span className="diag-stat-code">SK3 · W=20 · V=0.5</span>
+            <span className="diag-stat-label">Radiance &amp; Shine</span>
           </div>
           <div className="diag-stat-val">
             {skinMetrics?.specularPct.toFixed(1) ?? '3.5'}%
@@ -78,70 +75,110 @@ export function SkinDiagnosticTab({ scoreData, copiedColor, onCopyColor }: SkinD
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
-            <span className="diag-stat-label">Healthy Natural Colour</span>
-            <span className="diag-stat-code">SK4 · W=20 · V≤0.5</span>
+            <span className="diag-stat-label">Chroma Ratio</span>
           </div>
           <div className="diag-stat-val">
             q = {skinMetrics?.chromaRatio.toFixed(2) ?? '1.15'}
           </div>
           <div className={`diag-stat-status ${(skinMetrics?.chromaRatio ?? 1.15) >= 1.0 && (skinMetrics?.chromaRatio ?? 1.15) <= 1.30 ? 'status-ideal' : 'status-caution'}`}>
             {(skinMetrics?.chromaRatio ?? 1.15) >= 1.0 && (skinMetrics?.chromaRatio ?? 1.15) <= 1.30
-              ? '✓ Harmonious cheek/forehead chroma ratio (1.00–1.30)'
+              ? '✓ Harmonious cheek/forehead ratio (1.00–1.30)'
               : 'Slightly muted cheek chroma ratio'}
           </div>
         </div>
       </div>
 
-      {/* Interactive Color Swatches */}
-      <div className="color-palette-section" id="beauty-color-palette" style={{ marginTop: '4px' }}>
+      {/* Interactive Precision Color Swatches & Radiance Suite */}
+      <div className="color-palette-section" id="beauty-color-palette" style={{ marginTop: '6px' }}>
         <div className="section-header-compact">
-          <h4 className="section-title" style={{ fontSize: '13.5px' }}>Sampled Epidermal Pigments &amp; Undertone</h4>
-          <span className="section-subtitle">Click any swatch to copy its hexadecimal color code</span>
+          <div className="palette-title-wrap">
+            <span className="palette-icon" aria-hidden="true">🎨</span>
+            <h4 className="section-title">Sampled Epidermal Pigments &amp; Undertone</h4>
+          </div>
+          <span className="section-subtitle">Click hex chip to copy</span>
         </div>
 
         <div className="color-swatches-grid">
-          <div
-            className="swatch-card"
-            onClick={() => onCopyColor(scoreData.colorPalette.skinTone)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onCopyColor(scoreData.colorPalette.skinTone)}
-          >
-            <div className="swatch-color" style={{ backgroundColor: scoreData.colorPalette.skinTone }} />
+          {/* 1. Skin Foundation Pigment */}
+          <div className="swatch-card focus-ring">
+            <div className="swatch-droplet-wrap">
+              <div
+                className="swatch-color-droplet"
+                style={{ backgroundColor: scoreData.colorPalette.skinTone }}
+                title={`Sampled Epidermal Hex: ${scoreData.colorPalette.skinTone}`}
+              />
+              <span className="swatch-kind-tag">EPIDERMIS</span>
+            </div>
             <div className="swatch-meta">
               <span className="swatch-label">Skin Pigment</span>
-              <span className="swatch-hex">{scoreData.colorPalette.skinTone.toUpperCase()}</span>
+              <button
+                type="button"
+                className="swatch-copy-chip tactile-press"
+                onClick={() => onCopyColor(scoreData.colorPalette.skinTone)}
+                title="Click to copy skin hex code"
+              >
+                <span className="font-tabular-nums">{scoreData.colorPalette.skinTone.toUpperCase()}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+              </button>
               <span className="swatch-sub">{scoreData.colorPalette.undertone}</span>
             </div>
           </div>
 
-          <div
-            className="swatch-card"
-            onClick={() => onCopyColor(scoreData.colorPalette.lipTone)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onCopyColor(scoreData.colorPalette.lipTone)}
-          >
-            <div className="swatch-color" style={{ backgroundColor: scoreData.colorPalette.lipTone }} />
+          {/* 2. Vermilion Lip Tone */}
+          <div className="swatch-card focus-ring">
+            <div className="swatch-droplet-wrap">
+              <div
+                className="swatch-color-droplet"
+                style={{ backgroundColor: scoreData.colorPalette.lipTone }}
+                title={`Sampled Vermilion Hex: ${scoreData.colorPalette.lipTone}`}
+              />
+              <span className="swatch-kind-tag">VERMILION</span>
+            </div>
             <div className="swatch-meta">
               <span className="swatch-label">Vermilion Tone</span>
-              <span className="swatch-hex">{scoreData.colorPalette.lipTone.toUpperCase()}</span>
+              <button
+                type="button"
+                className="swatch-copy-chip tactile-press"
+                onClick={() => onCopyColor(scoreData.colorPalette.lipTone)}
+                title="Click to copy lip hex code"
+              >
+                <span className="font-tabular-nums">{scoreData.colorPalette.lipTone.toUpperCase()}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+              </button>
               <span className="swatch-sub">Natural Lip Flush</span>
             </div>
           </div>
 
-          <div className="swatch-card">
-            <div className="swatch-color" style={{ background: 'linear-gradient(135deg, #2589ff 0%, #10b981 100%)' }} />
+          {/* 3. Vitality & Radiance Index */}
+          <div className="swatch-card swatch-card-vitality focus-ring">
+            <div className="swatch-droplet-wrap">
+              <div className="swatch-vitality-ring" title="Epidermal Perfusion & Glow">
+                <span className="vitality-spark-icon" aria-hidden="true">✨</span>
+              </div>
+              <span className="swatch-kind-tag">VITALITY</span>
+            </div>
             <div className="swatch-meta">
               <span className="swatch-label">Vitality Level</span>
-              <span className="swatch-hex">{scoreData.colorPalette.vitalityLevel}</span>
-              <span className="swatch-sub">Epidermal luminosity &amp; healthy tone</span>
+              <div className="swatch-vitality-badge">
+                <span>{scoreData.colorPalette.vitalityLevel}</span>
+              </div>
+              <span className="swatch-sub">
+                Luminosity &amp; tone (q = {skinMetrics?.chromaRatio.toFixed(2) ?? '1.15'})
+              </span>
             </div>
           </div>
         </div>
 
         {copiedColor && (
-          <div className="copied-toast">Copied {copiedColor} to clipboard!</div>
+          <div className="copied-toast" role="status" aria-live="polite">
+            ✓ Copied {copiedColor.toUpperCase()} to clipboard
+          </div>
         )}
       </div>
     </div>

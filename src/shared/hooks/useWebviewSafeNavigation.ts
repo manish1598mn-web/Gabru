@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 export interface UseWebviewSafeNavigationOptions {
-  activeFeature?: 'fit-check' | 'beauty-rating' | 'content-rating';
+  activeFeature?: 'fit-check' | 'beauty-rating' | 'content-rating' | 'hand-reading';
   onCurrentPageClick?: () => void;
 }
 

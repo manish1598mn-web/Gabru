@@ -20,12 +20,12 @@ export function TimingDiagnosticTab({ scoreData }: DiagnosticTabProps) {
           <div className="diag-param-badge timing-badge">09 • TIMING &amp; FREQUENCY</div>
           <h4 className="diag-param-heading">Audience Active Windows &amp; Publishing Cadence</h4>
           <p className="diag-param-sub">
-            Audits post publishing timestamps against audience activity heat maps and regularity of posting cadence. Requires Path B (OAuth) or Path C (Analytics CSV).
+            Audits post publishing timestamps against audience activity patterns and posting cadence.
           </p>
         </div>
         <div className="diag-pane-score-box">
           {isExcluded ? (
-            <span className="diag-excluded-chip">V=0 EXCLUDED</span>
+            <span className="diag-excluded-chip">EXCLUDED</span>
           ) : (
             <>
               <span className="diag-big-score">{points.toFixed(1)}</span>
@@ -44,7 +44,7 @@ export function TimingDiagnosticTab({ scoreData }: DiagnosticTabProps) {
             <div>
               <h5 className="timing-notice-title">Owner Analytics Required for Timing Audit</h5>
               <p className="timing-notice-desc">
-                Public URLs do not expose private audience hourly geography or retention check drops. In accordance with Rule A2.3, Timing &amp; Frequency is cleanly excluded (V=0) and its 4 points are renormalized across observable parameters without penalizing your score.
+                Public links do not expose private audience hourly geography or retention check drops. Timing &amp; Frequency points are redistributed across observable parameters without penalizing your score.
               </p>
             </div>
           </div>

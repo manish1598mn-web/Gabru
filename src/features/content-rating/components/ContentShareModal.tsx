@@ -1,14 +1,25 @@
 'use client';
 
+/**
+ * GABRU — CONTENT RATING SHARE LIGHTBOX MODAL
+ * 
+ * Content-focused, frameless lightbox:
+ * - Pure focus on the Content Share Card
+ * - Zero outer modal border, zero header boxes, zero technical subtitle clutter
+ * - Single clean action button to download the card
+ */
+
 import React, { useEffect, useState, useRef } from 'react';
 import { ContentScoreData } from '../types/ContentRatingTypes';
 import {
   generateContentShareCard,
   downloadCanvasAsPng,
-  copyCanvasToClipboard,
 } from '../utils/ContentShareCardUtil';
-import { Modal } from '@/shared/components/ui/Modal';
-import { Button } from '@/shared/components/ui/Button';
+import {
+  buildViralSharePayload,
+  executeViralShare,
+  getPlatformShareUrl,
+} from '@/shared';
 
 interface ContentShareModalProps {
   isOpen: boolean;
@@ -23,7 +34,7 @@ export function ContentShareModal({
 }: ContentShareModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [dataUrl, setDataUrl] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [shareCardCopied, setShareCardCopied] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -53,7 +64,25 @@ export function ContentShareModal({
     };
   }, [isOpen, scoreData]);
 
-  if (!scoreData) return null;
+  // Lock scroll and handle Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !scoreData) return null;
 
   const handleDownload = () => {
     if (!canvasRef.current) return;
@@ -64,93 +93,113 @@ export function ContentShareModal({
     downloadCanvasAsPng(canvasRef.current, `gabru-content-audit-${safeTitle || 'report'}.png`);
   };
 
-  const handleCopy = async () => {
-    if (!canvasRef.current) return;
-    const success = await copyCanvasToClipboard(canvasRef.current);
-    if (success) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    }
+  const handleShareWithFriends = async () => {
+    if (!scoreData || !canvasRef.current) return;
+
+    const payload = buildViralSharePayload({
+      featureName: 'Content Virality Audit',
+      path: '/content-rating',
+      scoreText: `My post scored ${scoreData.contentScore}/100`,
+      verdictText: scoreData.verdictBadge,
+      ctaText: 'Audit your post hook, retention & virality free',
+    });
+
+    canvasRef.current.toBlob(async (blob) => {
+      const fileName = `gabru-content-audit-${scoreData.contentScore}pts.png`;
+      const result = await executeViralShare(payload, blob, fileName);
+      if (result.copiedToClipboard || result.sharedViaNative) {
+        setShareCardCopied(true);
+        setTimeout(() => setShareCardCopied(false), 3500);
+      }
+    }, 'image/png');
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="High-Resolution Share Card (1080 × 1350)"
-      subtitle="Instagram/Twitter 4:5 vertical portrait standard. Grounded in deterministic rubric standards."
-      maxWidth="620px"
-      id="share-modal"
-      footer={
-        <div className="share-modal-footer">
-          <div className="share-footer-info">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span>100% Client-Side Rendered • Private &amp; Watermarked</span>
+    <div
+      className="share-frameless-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Content Intelligence Share Card Preview"
+      id="content-share-modal"
+    >
+      <div
+        className="share-frameless-content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Floating Close Button */}
+        <button
+          type="button"
+          className="share-frameless-close-btn focus-ring touch-target"
+          onClick={onClose}
+          aria-label="Close dialog"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        {/* Card Stage — Pure Content Focus */}
+        {isGenerating || !dataUrl ? (
+          <div className="share-frameless-loading">
+            <div className="share-spinner" />
+            <p>Composing content intelligence card...</p>
           </div>
+        ) : (
+          <div className="share-frameless-card-stage">
+            <img
+              src={dataUrl}
+              alt="Gabru Content Intelligence Audit Report"
+              className="share-frameless-image"
+              id="content-share-card-image"
+            />
+          </div>
+        )}
 
-          <div className="share-footer-buttons">
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={handleCopy}
-              disabled={isGenerating || !dataUrl}
-              leftIcon={
-                copied ? (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                ) : (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                  </svg>
-                )
-              }
-            >
-              {copied ? 'Copied to Clipboard!' : 'Copy Image'}
-            </Button>
+        {/* Action Group: Share Card & Link + Download PNG */}
+        {!isGenerating && dataUrl && (
+          <div className="share-action-group">
+            <div className="share-frameless-action-bar">
+              <button
+                type="button"
+                className="share-frameless-download-btn focus-ring tactile-press"
+                onClick={handleShareWithFriends}
+                id="btn-share-content-with-friends"
+                title="Share card with platform URL auto-attached"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                </svg>
+                <span>{shareCardCopied ? 'Link Copied to Clipboard!' : 'Share Card & Link'}</span>
+              </button>
 
-            <Button
-              variant="primary"
-              size="md"
-              onClick={handleDownload}
-              disabled={isGenerating || !dataUrl}
-              leftIcon={
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <button
+                type="button"
+                className="share-frameless-secondary-btn focus-ring tactile-press"
+                onClick={handleDownload}
+                id="btn-download-share-card"
+                title="Download high-resolution 1080x1350 card"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-              }
-            >
-              Download High-Res PNG
-            </Button>
-          </div>
-        </div>
-      }
-    >
-      <div className="share-modal-body">
-        {isGenerating && (
-          <div className="share-card-loading">
-            <div className="share-spinner" />
-            <p>Rendering 1080 &times; 1350 audit card...</p>
-          </div>
-        )}
+                <span>Download PNG</span>
+              </button>
+            </div>
 
-        {!isGenerating && dataUrl && (
-          <div className="share-preview-card-wrap">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={dataUrl}
-              alt="Gabru Content Intelligence Audit Report"
-              className="share-card-preview-image"
-            />
+            <span className="share-url-pill">
+              🔗 Auto-attached: {getPlatformShareUrl('/content-rating')}
+            </span>
           </div>
         )}
       </div>
-    </Modal>
+    </div>
   );
 }

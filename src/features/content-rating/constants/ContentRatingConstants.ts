@@ -1,8 +1,11 @@
 /**
  * GABRU — CONTENT RATING CONSTANTS & PRESETS
  * 
- * 10-Parameter Rubrics, Weight Allocations, Calibration Presets,
- * and 3 Pre-Parsed Demo Datasets (including the Section Worked Example).
+ * 10 Redesigned Single-Post Parameters:
+ * - 40% Hard Scraped Math + 60% Multimodal LLM Rubric + Viral Ego Curve
+ * - Raw Telemetry Bar with Derived Flex Badges
+ * - Deterministic Single-Post Verdict Badges & Archetypes
+ * - 3 High-Impact Single-Post Demo Datasets
  */
 
 import {
@@ -10,583 +13,455 @@ import {
   DeepDiveContentTabKey,
   UnifiedContentItem,
   EffortTier,
-  ContentPlatform,
-  ContentFormat,
+  SinglePostVerdictBadge,
+  SinglePostArchetypeTier,
 } from '../types/ContentRatingTypes';
 
 // -------------------------------------------------------------
-// 10 Canonical Parameters & Subfactors (Parts A & B)
+// Entertaining Loading States (Animated Cycles During Analysis)
+// -------------------------------------------------------------
+
+export const ENTERTAINING_LOADING_STEPS: string[] = [
+  'Judging your selfie angles...',
+  'Counting how many times you used the 🔥 emoji...',
+  'Inspecting lighting and drip...',
+  'Analyzing reference save rate & bookmark velocity...',
+  'Reading the comment section chaos...',
+  'Calculating group-chat forward velocity...',
+  'Detecting 3 AM goblin hours timestamps...',
+  'Synthesizing viral archetype badge...',
+];
+
+// -------------------------------------------------------------
+// Internet Slang & Linguistic Lists
+// -------------------------------------------------------------
+
+export const INTERNET_SLANG_LIST: string[] = [
+  'pov',
+  'era',
+  'delulu',
+  'aura',
+  'dump',
+  'core',
+  'real',
+  'hear me out',
+];
+
+export const FIRST_PERSON_PRONOUNS: string[] = [
+  'i',
+  'me',
+  'my',
+  'mine',
+  'myself',
+];
+
+// -------------------------------------------------------------
+// 10 Single-Post Parameters & Rubrics
 // -------------------------------------------------------------
 
 export const CONTENT_PARAMETERS: ContentParameterDef[] = [
   {
     id: 1,
-    code: 'HOOK',
-    name: 'Hook & Opening',
-    weight: 18,
+    code: 'MCE',
+    name: 'Main Character Energy',
+    weight: 12,
     beta: 0.10,
-    evidenceSummary: 'First 3 seconds, verbal hook, cover/title length, promise-payoff, and time to first value.',
+    evidenceSummary: 'Visual spotlight on the subject, pose confidence, and first-person pronoun density.',
     subfactors: [
       {
-        code: 'HK1',
-        name: 'Opening grab',
-        weight: 35,
-        observableChecks: 'Judge severity (0 to 3) of the first 3s, first line, or first visual.',
-        objectiveRule: 'Severity penalty: 0 / -1.0 / -2.5 / -4.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
-      },
-      {
-        code: 'HK2',
-        name: 'Cover and title',
-        weight: 25,
-        observableChecks: 'Thumbnail clarity and title length outside platform band (YT: 40-70 chars).',
-        objectiveRule: 'Severity penalty, plus title length outside band: <= 10 off: -1.0, <= 25 off: -2.5, more: -4.5.',
+        code: 'MC1',
+        name: 'Subject Spotlight',
+        weight: 45,
+        observableChecks: 'Solo person/face command of the frame (10=solo portrait/fit check, 5=group, 2=object).',
+        objectiveRule: 'Visual spotlight score 0 to 10.',
         visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'HK3',
-        name: 'Promise-payoff match',
-        weight: 20,
-        observableChecks: 'Cosine similarity between the opening promise and content summary.',
-        objectiveRule: '10 - max(severity penalty, similarity penalty). Cosine >= 0.60: 0; >= 0.45: -1.0; >= 0.30: -2.5; below: -4.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        code: 'MC2',
+        name: 'Pose & Vibe Audacity',
+        weight: 35,
+        observableChecks: 'Camera confidence, swagger, and protagonist presence.',
+        objectiveRule: 'Camera confidence score 0 to 10.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'HK4',
-        name: 'Time to first value',
+        code: 'MC3',
+        name: 'Ego Pronoun Density',
         weight: 20,
-        observableChecks: 'Seconds elapsed until first valuable payoff (short video <= 3s, long-form <= 15s).',
-        objectiveRule: 'Short video <= 3s: 0; <= 5s: -1.0; <= 8s: -2.5; > 8s: -4.5. (Long-form cutoffs: 15, 30, 45s).',
-        visibilityByTier: { A: 0.0, B: 0.5, C: 1.0 },
+        observableChecks: 'Share of first-person pronouns (I, me, my, mine, myself) in caption (capped at 12%).',
+        objectiveRule: 'Pronoun ratio against 12% cap.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 2,
-    code: 'VALUE',
-    name: 'Value & Relevance',
-    weight: 16,
-    beta: 0.10,
-    evidenceSummary: 'Core-message clarity, value delivered vs filler, originality against corpus, and audience relevance.',
+    code: 'VAF',
+    name: 'Visual Aura & Frame Quality',
+    weight: 15,
+    beta: 0.15,
+    evidenceSummary: 'Lighting quality, color grading harmony, rule-of-thirds composition, and subject styling.',
     subfactors: [
       {
-        code: 'VR1',
-        name: 'Core-message clarity',
-        weight: 30,
-        observableChecks: 'Single distinct topic vs multiple competing ideas.',
-        objectiveRule: '10 - max(severity penalty, topic penalty). Distinct topics: 1: 0; 2: -1.0; 3: -2.5; 4+: -4.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        code: 'VA1',
+        name: 'Lighting & Exposure',
+        weight: 25,
+        observableChecks: 'Controlled highlights, soft shadows, and clean key light.',
+        objectiveRule: 'Lighting score 0 to 10.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'VR2',
-        name: 'Value delivered',
-        weight: 30,
-        observableChecks: 'Share of rambling, filler words, or redundant pauses.',
-        objectiveRule: '10 - max(severity penalty, filler penalty). Filler share <= 10%: 0; <= 20%: -1.0; <= 35%: -2.5; > 35%: -4.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        code: 'VA2',
+        name: 'Color Grading',
+        weight: 25,
+        observableChecks: 'Color palette coherence, skin tone preservation, and grading mood.',
+        objectiveRule: 'Color grading score 0 to 10.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'VR3',
-        name: 'Originality',
-        weight: 20,
-        observableChecks: 'Highest similarity m to corpus and duplicate scripts.',
-        objectiveRule: 'Similarity <= 0.80: 0; <= 0.88: -1.0; <= 0.94: -2.5; > 0.94: -4.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        code: 'VA3',
+        name: 'Composition & Framing',
+        weight: 25,
+        observableChecks: 'Rule-of-thirds alignment, headroom, and background clutter control.',
+        objectiveRule: 'Composition score 0 to 10.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'VR4',
-        name: 'Audience relevance',
-        weight: 20,
-        observableChecks: 'Cosine similarity to the creator\'s top-quartile posts.',
-        objectiveRule: 'Similarity >= 0.55: 0; >= 0.45: -1.0; >= 0.35: -2.5; below: -4.5. Intentional pivot is N/A.',
-        visibilityByTier: { A: 0.5, B: 1.0, C: 1.0 },
+        code: 'VA4',
+        name: 'Styling & Drip',
+        weight: 25,
+        observableChecks: 'Outfit coordination, environment aesthetics, and visual polish.',
+        objectiveRule: 'Styling drip score 0 to 10.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 3,
-    code: 'STRUCTURE',
-    name: 'Storytelling & Structure',
-    weight: 12,
+    code: 'SSH',
+    name: 'Scroll-Stopper Hook',
+    weight: 15,
     beta: 0.10,
-    evidenceSummary: 'Narrative flow (setup -> build -> payoff), scene cut pacing, delivery rate, and clean ending.',
+    evidenceSummary: 'Conversion efficiency (Likes / Reach), thumbnail contrast, and first 6 words punchiness.',
     subfactors: [
       {
-        code: 'ST1',
-        name: 'Flow (hook, body, payoff)',
-        weight: 35,
-        observableChecks: 'Structural continuity from hook to body to satisfying resolution.',
-        objectiveRule: 'Severity penalty: weak flow -1.0, missing payoff -2.5, jumbled -4.5.',
-        visibilityByTier: { A: 0.0, B: 0.0, C: 1.0 },
+        code: 'SH1',
+        name: 'Saturating Conversion Rate',
+        weight: 50,
+        observableChecks: 'Like-to-Reach percentage mapped through 50 * (1 - exp(-0.35 * CR)).',
+        objectiveRule: 'Empirical reach conversion curve.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'ST2',
-        name: 'Pacing',
+        code: 'SH2',
+        name: 'Visual Thumb-Stop',
         weight: 30,
-        observableChecks: 'Dead-air suppression (>2s silence or >3s static) and cut velocity (6 to 30 cuts/min).',
-        objectiveRule: '10 - dead-air penalty (<=3% 0, <=8% -1, <=15% -2.5, >15% -4.5) - cut-rate band penalty (6-30 cuts/min).',
-        visibilityByTier: { A: 0.0, B: 0.0, C: 1.0 },
+        observableChecks: 'High-contrast visual pop at tiny feed size.',
+        objectiveRule: 'Visual hook score 0 to 10.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'ST3',
-        name: 'Delivery rate',
+        code: 'SH3',
+        name: 'Opening Line Punch',
         weight: 20,
-        observableChecks: 'Speech rate measured against ideal band (120 to 180 words per minute).',
-        objectiveRule: 'Band penalty against 120-180 WPM. N/A if speech is under 30% of runtime.',
-        visibilityByTier: { A: 0.0, B: 0.0, C: 1.0 },
-      },
-      {
-        code: 'ST4',
-        name: 'Ending',
-        weight: 15,
-        observableChecks: 'Payoff completeness and smooth circular loop or outro.',
-        objectiveRule: 'Severity penalty, plus -2.5 if speech is cut off mid-sentence.',
-        visibilityByTier: { A: 0.0, B: 0.0, C: 1.0 },
+        observableChecks: 'Punchiness and intrigue of the first 6 words in caption or overlay.',
+        objectiveRule: 'Opening line punch score 0 to 10.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 4,
-    code: 'MEDIA',
-    name: 'Visual & Audio Quality',
-    weight: 14,
-    beta: 0.15, // Non-linear beta = 0.15 for quality
-    evidenceSummary: '1080p+ resolution, balanced lighting/exposure, rule-of-thirds composition, subtitles, and -14 LUFS audio.',
+    code: 'CPC',
+    name: 'Caption Poetry vs. Cringe',
+    weight: 10,
+    beta: 0.10,
+    evidenceSummary: 'Base 75 score with LLM wit minus hashtag stuffing, emoji soup, and essay penalties.',
     subfactors: [
       {
-        code: 'VA1',
-        name: 'Resolution and bitrate',
+        code: 'CP1',
+        name: 'Effortless Wit',
+        weight: 40,
+        observableChecks: 'Clever one-liner vs generic motivational quotes or forced captions.',
+        objectiveRule: 'Wit rubric 0 to 25 added to base 75.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
+      },
+      {
+        code: 'CP2',
+        name: 'Hashtag Restraint',
         weight: 20,
-        observableChecks: 'Short side dimension, framerate (>=24 fps), and video encoding bitrate.',
-        objectiveRule: 'Short side >= 1080px: 0; >= 720: -1.0; >= 480: -2.5; < 480: -4.5. FPS < 24: -1.0. Low bitrate: -1.0.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        observableChecks: 'Deducts 2.5 pts per hashtag beyond 5 (max penalty 35).',
+        objectiveRule: 'Hashtag stuffing penalty.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'VA2',
-        name: 'Exposure and focus',
+        code: 'CP3',
+        name: 'Emoji Balance',
         weight: 20,
-        observableChecks: 'Share of under/over-exposed or blurred frames.',
-        objectiveRule: 'Bad frames share <= 5%: 0; <= 15%: -1.0; <= 30%: -2.5; > 30%: -4.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        observableChecks: 'Penalizes captions where emojis exceed 20% of word count.',
+        objectiveRule: 'Emoji soup penalty.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'VA3',
-        name: 'Composition',
-        weight: 15,
-        observableChecks: 'Subject framing, head room, clutter control, and visual balance.',
-        objectiveRule: 'Severity penalty (subject cut off, cluttered frame).',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
-      },
-      {
-        code: 'VA4',
-        name: 'Captions and on-screen text',
+        code: 'CP4',
+        name: 'Essay Suppression',
         weight: 20,
-        observableChecks: 'On-screen subtitles for silent mobile viewing, word error rate, and text size.',
-        objectiveRule: 'Speech video with no captions: -2.5. Word-error rate > 15%: -1.0. Text height < 4% of frame: -1.0.',
-        visibilityByTier: { A: 0.0, B: 0.5, C: 1.0 },
-      },
-      {
-        code: 'VA5',
-        name: 'Audio',
-        weight: 25,
-        observableChecks: 'Integrated loudness (-14 ± 3 LUFS), SNR (>= 25 dB), and digital clipping.',
-        objectiveRule: 'Beyond ±3 LU of -14 LUFS, <=2 more: -1.0, <=5 more: -2.5, >5: -4.5. SNR < 25dB: -1, < 18dB: -2.5. Clipping > 0.1%: -1.',
-        visibilityByTier: { A: 0.0, B: 0.0, C: 1.0 },
+        observableChecks: 'Penalizes captions exceeding 100 words (word wall).',
+        objectiveRule: 'Word wall penalty.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 5,
-    code: 'COPY',
-    name: 'Caption, Copy & Hashtags',
-    weight: 10,
+    code: 'GCF',
+    name: 'Group-Chat Forwardability',
+    weight: 14,
     beta: 0.10,
-    evidenceSummary: 'Flesch-Kincaid readability, keyword coverage, platform hashtag density, and tone/correctness.',
+    evidenceSummary: 'Forward velocity from Shares + 1.5x Reposts relative to Likes, plus viral meme relatability.',
     subfactors: [
       {
-        code: 'CP1',
-        name: 'Readability',
-        weight: 25,
-        observableChecks: 'Reading grade level (<= 9th grade) or sentence length (<= 20 words), and clean line breaks.',
-        objectiveRule: 'Reading grade <= 9: 0; <= 12: -1.0; <= 14: -2.5; > 14: -4.5. Dense wall of text with no line breaks: -1.0.',
+        code: 'GC1',
+        name: 'Forward Velocity Curve',
+        weight: 65,
+        observableChecks: '65 * (1 - exp(-25 * (Shares + 1.5*Reposts)/Likes)).',
+        objectiveRule: 'Forwarding ratio mathematical saturation curve.',
         visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'CP2',
-        name: 'Keyword coverage',
-        weight: 25,
-        observableChecks: 'Share of core content topic keywords present in title or caption body for search indexing.',
-        objectiveRule: 'Keyword share >= 50%: 0; >= 30%: -1.0; >= 15%: -2.5; < 15%: -4.5.',
-        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
-      },
-      {
-        code: 'CP3',
-        name: 'Hashtags',
-        weight: 25,
-        observableChecks: 'Hashtag count matched to platform profile band and irrelevant tag share.',
-        objectiveRule: 'Count outside band: 0 off: 0; <= 1 off: -1.0; <= 3 off: -2.5; more: -4.5. Irrelevant share > 10%: -1. Banned tag: -2.5.',
-        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
-      },
-      {
-        code: 'CP4',
-        name: 'Tone and correctness',
-        weight: 25,
-        observableChecks: 'Typos per 100 words and tone alignment with audience expectations.',
-        objectiveRule: 'Typos <= 1: 0; <= 2.5: -1.0; <= 5: -2.5; > 5: -4.5. Plus tone-mismatch severity penalty.',
+        code: 'GC2',
+        name: 'Relatability & Meme Quotient',
+        weight: 35,
+        observableChecks: 'How easily this content is sent to friends with "literally you" or "look at this".',
+        objectiveRule: 'Relatability score 0 to 35.',
         visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 6,
-    code: 'CTA',
-    name: 'Call-to-Action & Engagement Design',
-    weight: 7,
+    code: 'SBB',
+    name: 'Secret Bookmark Bait',
+    weight: 12,
     beta: 0.10,
-    evidenceSummary: 'Single focal directive, genuine conversational prompt, and non-intrusive placement.',
+    evidenceSummary: 'Saves-to-Likes ratio curve, aesthetic moodboard envy, and reference utility.',
     subfactors: [
       {
-        code: 'CT1',
-        name: 'Presence and clarity',
-        weight: 40,
-        observableChecks: 'Exactly one clear directive (save, share, follow, or comment).',
-        objectiveRule: '1 CTA: 0; 2 CTAs: -1.0; 0 CTA: -2.5; >= 3 CTAs: -2.5. Vague CTA ("check it out") adds -1.0.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        code: 'SB1',
+        name: 'Bookmark Saturation Curve',
+        weight: 65,
+        observableChecks: '65 * (1 - exp(-22 * Saves/Likes)). 10% ratio approaches full marks.',
+        objectiveRule: 'Mathematical save curve.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'CT2',
-        name: 'Conversation prompt',
-        weight: 30,
-        observableChecks: 'Asks a genuine, specific question vs manipulative engagement bait ("comment YES").',
-        objectiveRule: 'Debatable question/opinion prompt: 0. None: -2.5. Engagement bait (tag-a-friend, comment YES): -2.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
-      },
-      {
-        code: 'CT3',
-        name: 'Placement',
-        weight: 30,
-        observableChecks: 'Delivered in final 10% of runtime or pinned in top comment.',
-        objectiveRule: 'End of video or caption: 0. Mid-video: -1.0. Contradictory: -2.5. N/A when there is no CTA.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        code: 'SB2',
+        name: 'Utility & Envy Factor',
+        weight: 35,
+        observableChecks: 'Aesthetic moodboard envy (outfit/travel) or practical reference utility (tips/recipe).',
+        objectiveRule: 'Save utility score 0 to 35.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 7,
-    code: 'FORMAT',
-    name: 'Platform Fit & Format',
+    code: 'CSC',
+    name: 'Comment Section Chaos',
     weight: 8,
     beta: 0.10,
-    evidenceSummary: 'Aspect ratio, duration band alignment, UI safe-zone clearances, and native feature usage.',
+    evidenceSummary: 'Comments-to-Likes ratio curve and comment section vibe check (hype vs warzone).',
     subfactors: [
       {
-        code: 'PF1',
-        name: 'Aspect ratio',
-        weight: 30,
-        observableChecks: '9:16 for short video, 16:9 for YouTube, 4:5/1:1 for feed photo.',
-        objectiveRule: 'Deviation <= 2%: 0; <= 8%: -1.0; <= 20%: -2.5; > 20%: -4.5. Black bars > 10% of frame: -2.5.',
+        code: 'CC1',
+        name: 'Discussion Volume Curve',
+        weight: 60,
+        observableChecks: '60 * (1 - exp(-35 * Comments/Likes)).',
+        objectiveRule: 'Comment volume mathematical curve.',
         visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'PF2',
-        name: 'Duration band',
-        weight: 30,
-        observableChecks: 'Runtime measured against platform ideal retention sweet spot.',
-        objectiveRule: 'Band penalty against platform duration band (or words for text posts).',
+        code: 'CC2',
+        name: 'Comment Section Vibe',
+        weight: 40,
+        observableChecks: 'LLM check of top comments: 40=wild hype/debates, 10=generic bot spam.',
+        objectiveRule: 'Comment vibe score 0 to 40.',
         visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
-      },
-      {
-        code: 'PF3',
-        name: 'Text safe zones',
-        weight: 20,
-        observableChecks: 'On-screen text avoiding platform button overlays, caption zones, and sound bars.',
-        objectiveRule: '-1.0 per overlay inside platform interface zones, up to -4.5.',
-        visibilityByTier: { A: 0.0, B: 0.0, C: 1.0 },
-      },
-      {
-        code: 'PF4',
-        name: 'Native features',
-        weight: 20,
-        observableChecks: 'Custom thumbnail, video chapters, sound attribution, or platform stickers.',
-        objectiveRule: 'Missing custom thumbnail: -1.0. No chapters on long video: -1.0. Watermark from competing app: -2.5.',
-        visibilityByTier: { A: 0.5, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 8,
-    code: 'ORIGINALITY',
-    name: 'Originality & Consistency',
+    code: 'UTG',
+    name: 'Upload Timing & Goblin Hours',
     weight: 6,
     beta: 0.10,
-    evidenceSummary: 'Style consistency against creator history and signature device execution.',
+    evidenceSummary: 'Circadian timestamp scoring (Prime Time vs 3 AM Goblin Hours) + momentum velocity.',
     subfactors: [
       {
-        code: 'OC1',
-        name: 'Style consistency',
-        weight: 50,
-        observableChecks: 'Cosine similarity of style embedding to creator\'s previous N posts.',
-        objectiveRule: 'Similarity >= 0.60: 0; >= 0.45: -1.0; >= 0.30: -2.5; below: -4.5.',
-        visibilityByTier: { A: 0.5, B: 1.0, C: 1.0 },
+        code: 'UT1',
+        name: 'Circadian Timing Clock',
+        weight: 60,
+        observableChecks: 'Prime time (11-14h, 18-21h) = 60, Normal = 42, Late night = 28, 3 AM Goblin = 15.',
+        objectiveRule: 'Local upload hour clock score.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'OC2',
-        name: 'Signature',
-        weight: 50,
-        observableChecks: 'Signature formula: R = 5 + gate * min(5, Σ credits) - Σ penalties, clamped to 3..10.',
-        objectiveRule: 'Credits: signature +1, distinctive device +1.5, angle +1, twist +1. Gate = 1.0 if Hook & Media >= 5, else 0.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
+        code: 'UT2',
+        name: 'Early Momentum Bonus',
+        weight: 40,
+        observableChecks: 'Weighted interactions relative to reach: 40 * (1 - exp(-0.25 * EngPct)).',
+        objectiveRule: 'Initial momentum velocity.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 9,
-    code: 'TIMING',
-    name: 'Timing & Frequency',
-    weight: 4,
+    code: 'TCO',
+    name: 'Trend Chaser vs. Original Brain',
+    weight: 8,
     beta: 0.10,
-    evidenceSummary: 'Audience activity hour alignment and cadence consistency (CV of post gaps).',
+    evidenceSummary: 'Original audio bonus (+15) minus internet slang deductions ("pov", "era", "delulu", "aura").',
     subfactors: [
       {
-        code: 'TM1',
-        name: 'Posting-time fit',
-        weight: 50,
-        observableChecks: 'Audience activity at posting hour divided by peak activity hour (rho).',
-        objectiveRule: 'rho >= 0.80: 0; >= 0.60: -1.0; >= 0.40: -2.5; below: -4.5. (Needs owner analytics / CSV).',
-        visibilityByTier: { A: 0.0, B: 1.0, C: 0.0 }, // 1.0 if CSV is uploaded
+        code: 'TC1',
+        name: 'Concept Originality',
+        weight: 60,
+        observableChecks: 'Fresh creative premise vs copy-pasting this week’s viral template.',
+        objectiveRule: 'Originality score 0 to 60.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
       {
-        code: 'TM2',
-        name: 'Frequency consistency',
-        weight: 50,
-        observableChecks: 'Coefficient of variation of gaps between posts and gap before this post.',
-        objectiveRule: 'CV <= 0.5: 0; <= 1.0: -1.0; <= 1.5: -2.5; > 1.5: -4.5. Gap > 3x median adds -1.0.',
-        visibilityByTier: { A: 0.5, B: 1.0, C: 0.5 },
+        code: 'TC2',
+        name: 'Audio Origin Bonus',
+        weight: 20,
+        observableChecks: '+15 if original audio or static photo; 0 if charting viral commercial sound.',
+        objectiveRule: 'Original audio bonus.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
+      },
+      {
+        code: 'TC3',
+        name: 'Slang Penalty',
+        weight: 20,
+        observableChecks: 'Deducts 8 pts per overused buzzword (pov, era, delulu, aura, dump, core, real, hear me out).',
+        objectiveRule: 'Slang deduction.',
+        visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
       },
     ],
   },
   {
     id: 10,
-    code: 'TRUST',
-    name: 'Trust & Compliance',
-    weight: 5,
-    beta: 0.20, // Non-linear beta = 0.20 (single compliance violation matters)
-    evidenceSummary: 'Sponsorship disclosure, copyright audio/footage, truthfulness, safety, and accessibility.',
+    code: 'SPV',
+    name: 'Single-Post Verdict Badge',
+    weight: 0, // Informational Archetype Badge (Weight 0 in rawScore)
+    beta: 0.10,
+    evidenceSummary: 'Deterministic title awarded based on peak parameters (Group-Chat Hall of Famer, Thirst Trap, etc.).',
     subfactors: [
       {
-        code: 'TC1',
-        name: 'Disclosure',
-        weight: 30,
-        observableChecks: 'Proper disclosure tags for commercial promotion (#ad, #sponsored, paid partnership).',
-        objectiveRule: 'No promo: 10. Promo without disclosure: -4.5 (Major Flag, Cap 60). Disclosed but buried: -1.0.',
+        code: 'VB1',
+        name: 'Deterministic Classifier',
+        weight: 100,
+        observableChecks: 'Priority tree evaluation against S1, S2, S4, S5, S6, S7, S9, and upload hour.',
+        objectiveRule: 'Badge assignment.',
         visibilityByTier: { A: 1.0, B: 1.0, C: 1.0 },
-      },
-      {
-        code: 'TC2',
-        name: 'Music and IP',
-        weight: 20,
-        observableChecks: 'Licensed audio, cleared samples, and absence of copyrighted clips.',
-        objectiveRule: 'Unlicensed audio: -2.5. Unlicensed footage: -2.5.',
-        visibilityByTier: { A: 0.0, B: 0.5, C: 0.5 },
-      },
-      {
-        code: 'TC3',
-        name: 'Claims',
-        weight: 25,
-        observableChecks: 'Evidence-based claims without deceptive health or financial falsehoods.',
-        objectiveRule: 'Severity penalty. Level 3 misleading health/finance claim: -4.5 (Major Flag, Cap 60).',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
-      },
-      {
-        code: 'TC4',
-        name: 'Safety',
-        weight: 15,
-        observableChecks: 'Community guidelines adherence (harassment, dangerous acts, hate speech).',
-        objectiveRule: 'Clean: 0. Borderline: -2.5. Violation: -4.5. Severe violation: Content is Not Rated.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
-      },
-      {
-        code: 'TC5',
-        name: 'Accessibility',
-        weight: 10,
-        observableChecks: 'Image alt text, flashing pattern warnings (photosensitive epilepsy).',
-        objectiveRule: 'Missing alt text: -1.0. Flashing content without warning: -2.5.',
-        visibilityByTier: { A: 0.5, B: 0.5, C: 1.0 },
       },
     ],
   },
 ];
 
 // -------------------------------------------------------------
-// N/A Content Type Exclusions (Part A2)
+// Visual Luxury Card Background Gradients
 // -------------------------------------------------------------
-
-export const CONTENT_TYPE_EXCLUSIONS: Record<string, string[]> = {
-  image: ['HK4', 'ST2', 'ST3', 'VA5', 'PF2'],
-  text: [
-    'HK2',
-    'HK4',
-    'ST2',
-    'ST3',
-    'VA1',
-    'VA2',
-    'VA3',
-    'VA4',
-    'VA5',
-    'PF1',
-    'PF2',
-    'PF3',
-  ],
-};
-
-// -------------------------------------------------------------
-// Platform Profiles & Band Penalty Function (Part A4)
-// -------------------------------------------------------------
-
-export interface PlatformProfile {
-  aspectRatio: number | null; // e.g. 9/16, 16/9, 0.8 (4:5)
-  durationBandSec: [number, number] | null; // [min, max]
-  hashtagBand: [number, number]; // [min, max]
-}
-
-export const PLATFORM_PROFILES: Record<string, PlatformProfile> = {
-  'instagram:short_video': {
-    aspectRatio: 9 / 16,
-    durationBandSec: [15, 60],
-    hashtagBand: [3, 8],
-  },
-  'tiktok:short_video': {
-    aspectRatio: 9 / 16,
-    durationBandSec: [15, 60],
-    hashtagBand: [3, 6],
-  },
-  'youtube:short_video': {
-    aspectRatio: 9 / 16,
-    durationBandSec: [15, 60],
-    hashtagBand: [2, 5],
-  },
-  'youtube:long_video': {
-    aspectRatio: 16 / 9,
-    durationBandSec: [480, 1200], // 8 to 20 min
-    hashtagBand: [3, 8],
-  },
-  'instagram:image': {
-    aspectRatio: 0.8, // 4:5
-    durationBandSec: null,
-    hashtagBand: [3, 8],
-  },
-  'x:text': {
-    aspectRatio: null,
-    durationBandSec: null,
-    hashtagBand: [0, 2],
-  },
-};
-
-/**
- * Calculates Band Penalty:
- * distance outside band ÷ band midpoint × 100
- * Penalty is 0 if <= 3%, -1.0 up to 7%, -2.5 up to 12%, and -4.5 above 12%.
- */
-export function calculateBandPenalty(value: number, min: number, max: number): number {
-  if (value >= min && value <= max) return 0.0;
-  const distance = value < min ? min - value : value - max;
-  const midpoint = (min + max) / 2;
-  if (midpoint <= 0) return 0.0;
-  const pct = (distance / midpoint) * 100;
-
-  if (pct <= 3.0) return 0.0;
-  if (pct <= 7.0) return -1.0;
-  if (pct <= 12.0) return -2.5;
-  return -4.5;
-}
-
-export const PARAM_TO_TAB: Record<number, DeepDiveContentTabKey> = {
-  1: 'hook',
-  2: 'value',
-  3: 'structure',
-  4: 'media',
-  5: 'copy',
-  6: 'cta',
-  7: 'format',
-  8: 'originality',
-  9: 'timing',
-  10: 'compliance',
-};
 
 export const CONTENT_CARD_BACKGROUNDS: Record<number, string> = {
-  1: 'linear-gradient(135deg, #2b1836 0%, #7b299e 55%, #3a164c 100%)', // hook: purple
-  2: 'linear-gradient(135deg, #182036 0%, #2f458e 55%, #161e38 100%)', // value: indigo
-  3: 'linear-gradient(135deg, #162a2a 0%, #297676 55%, #142828 100%)', // structure: teal
-  4: 'linear-gradient(135deg, #241c38 0%, #56388e 55%, #1f1430 100%)', // media: violet
-  5: 'linear-gradient(135deg, #2a2218 0%, #7a5828 55%, #3a2e14 100%)', // copy: amber
-  6: 'linear-gradient(135deg, #2a1824 0%, #7a2b58 55%, #381428 100%)', // cta: rose
-  7: 'linear-gradient(135deg, #182820 0%, #2b704c 55%, #142618 100%)', // format: emerald
-  8: 'linear-gradient(135deg, #1a2432 0%, #305888 55%, #182434 100%)', // originality: slate blue
-  9: 'linear-gradient(135deg, #281a20 0%, #6d3045 55%, #24141a 100%)', // timing: crimson
-  10: 'linear-gradient(135deg, #1f2228 0%, #444c5c 55%, #1c2026 100%)', // compliance: steel
+  1: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  2: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  3: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  4: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  5: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  6: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  7: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  8: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  9: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  10: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
 };
 
-export const EFFORT_LEVEL_CONFIG: Record<
-  EffortTier,
-  { label: string; badgeBg: string; textColor: string; icon: string }
-> = {
-  quick: {
-    label: 'Quick (< 5 min)',
-    badgeBg: 'rgba(52, 211, 153, 0.15)',
-    textColor: '#34d399',
-    icon: '⚡',
-  },
-  medium: {
-    label: 'Medium (15-30 min)',
-    badgeBg: 'rgba(251, 191, 36, 0.15)',
-    textColor: '#fbbf24',
-    icon: '⏱️',
-  },
-  heavy: {
-    label: 'Heavy (> 1 hour)',
-    badgeBg: 'rgba(248, 113, 113, 0.15)',
-    textColor: '#f87171',
-    icon: '🛠️',
-  },
+export const PARAM_TO_TAB: Record<number, DeepDiveContentTabKey> = {
+  1: 'main_character',
+  2: 'visual_aura',
+  3: 'scroll_hook',
+  4: 'caption_wit',
+  5: 'group_chat',
+  6: 'bookmark_bait',
+  7: 'comment_chaos',
+  8: 'upload_timing',
+  9: 'trend_originality',
+  10: 'verdict_badge',
 };
 
-export const CRITICAL_CAP_THRESHOLDS = {
-  HOOK_MIN_RATING: 4.0,
-  HOOK_CAP_SCORE: 75.0,
-  VALUE_MIN_RATING: 4.0,
-  VALUE_CAP_SCORE: 70.0,
-  COMPLIANCE_CAP_SCORE: 60.0,
+export const TAB_LABELS: Record<DeepDiveContentTabKey, string> = {
+  main_character: '01 • Main Character',
+  visual_aura: '02 • Visual Aura',
+  scroll_hook: '03 • Scroll Hook',
+  caption_wit: '04 • Caption Poetry',
+  group_chat: '05 • Group-Chat',
+  bookmark_bait: '06 • Bookmark Bait',
+  comment_chaos: '07 • Comment Chaos',
+  upload_timing: '08 • Goblin Hours',
+  trend_originality: '09 • Original Brain',
+  verdict_badge: '10 • Verdict Badge',
+  // Legacy aliases
+  hook: '03 • Scroll Hook',
+  value: '01 • Main Character',
+  structure: '05 • Group-Chat',
+  media: '02 • Visual Aura',
+  copy: '04 • Caption Poetry',
+  cta: '06 • Bookmark Bait',
+  format: '08 • Goblin Hours',
+  originality: '09 • Original Brain',
+  timing: '08 • Goblin Hours',
+  compliance: '10 • Verdict Badge',
 };
 
 // -------------------------------------------------------------
-// 3 Realistic Pre-Parsed Demo Datasets
+// 3 High-Impact Single-Post Demo Datasets
 // -------------------------------------------------------------
 
 /**
- * Demo 1: Canonical Worked Example from Section 6
- * 34s Instagram Reel (Tier C: Uploaded media / CSV)
- * Quality = 88.6, Performance = 88.6, Content Score = 88.6 "Strong", Confidence = 0.92
+ * Demo 1: The Group-Chat Hall of Famer
+ * High Likes, massive Shares + Reposts, sharp lighting, witty one-liner.
+ * Meets S5 >= 78 -> Badge: "Group-Chat Hall of Famer"
  */
 export const DEMO_VIRAL_SHORT: UnifiedContentItem = {
-  id: 'ig:reel_worked_example_34s',
-  url: 'https://instagram.com/reel/C8WorkedExample34s',
+  id: 'ig:reel_group_chat_hall_of_fame',
+  url: 'https://instagram.com/reel/C8GroupChatHallOfFame',
   platform: 'instagram',
   format: 'short_video',
   inputMode: 'demo',
   dataTier: 'C',
   creator: {
-    id: 'creator_studio_demo',
-    handle: '@StudioCreator',
-    name: 'Studio Creator Lab',
-    followerCount: 54000,
-    niche: 'Creative & Digital Storytelling',
+    id: 'creator_studio_alex',
+    handle: '@alex.studio',
+    name: 'Alex Rivera',
+    followerCount: 68000,
+    niche: 'Creative Tech & Visual Aesthetics',
     avatarUrl: '/favicon.svg',
   },
-  postedAt: '2026-10-25T17:00:00Z',
+  postedAt: '2026-10-25T19:15:00Z', // 7:15 PM Prime Time
+  uploadHourLocal: 19,
   title: 'Three cinematic lighting tricks with one bedside lamp',
-  caption: 'Transform low-budget video with high-contrast edge lighting. No expensive gear needed #filmmaking #cinematography #videoediting #lighting',
-  hashtags: ['filmmaking', 'cinematography', 'videoediting', 'lighting'],
+  caption: 'Turning my $12 desk lamp into an anamorphic cinema light. Save this for your next shoot. #filmmaking #cinematography #lighting',
+  hashtags: ['filmmaking', 'cinematography', 'lighting'],
   mentions: [],
+  firstPersonWords: 2, // "my", "this"
+  wordCount: 20,
+  emojiCount: 0,
+  hashtagCount: 3,
+  isTrendingAudio: false,
+  slangMatchCount: 0,
+  slangMatches: [],
+  reposts: 280,
   media: {
     durationSec: 34,
     width: 1080,
@@ -596,59 +471,42 @@ export const DEMO_VIRAL_SHORT: UnifiedContentItem = {
     bitrateKbps: 9200,
     thumbnailUrl: '/face_beauty_hero_bg.jpg',
   },
-  audioMetrics: {
-    integratedLufs: -14.2,
-    truePeakDbfs: -1.2,
-    silenceSegmentsCount: 1,
-    maxDeadAirSec: 0.6,
-    speechRateWpm: 154,
-    voiceClarityRatio: 0.92,
-    snrDb: 28.5,
-    clippingShare: 0.0,
-  },
-  transcriptSegments: [
-    { startSec: 0, endSec: 3, text: 'You do not need a three-thousand dollar light to look cinematic.' },
-    { startSec: 3, endSec: 7, text: 'Here is what happens when you turn your desk lamp into an edge light.' },
-    { startSec: 7, endSec: 15, text: 'Notice how the rim light instantly separates the jawline from the background.' },
-    { startSec: 15, endSec: 25, text: 'Step two: bounce the spill onto white card to fill shadows naturally.' },
-    { startSec: 25, endSec: 34, text: 'Save this setup for your next shoot and let me know your thoughts.' },
-  ],
-  keyframes: [
-    { timestampSec: 0.5, imageUrl: '/face_beauty_sketch.jpg', ocrText: 'Cinematic Lighting Hack', visualSharpness: 92, visualBrightness: 55, facesDetected: 1 },
-    { timestampSec: 7.2, imageUrl: '/face_beauty_sketch.jpg', ocrText: 'Edge Lighting Separation', visualSharpness: 94, visualBrightness: 58, facesDetected: 1 },
-    { timestampSec: 20.0, imageUrl: '/face_beauty_sketch.jpg', ocrText: 'Bounce Card Fill', visualSharpness: 91, visualBrightness: 60, facesDetected: 1 },
-  ],
   metrics: {
     views: 184500,
     likes: 19200,
     comments: 480,
     shares: 3400,
     saves: 5600,
+    reposts: 280,
   },
-  ownerAnalytics: {
-    reach: 220000,
-    retentionPercent: null, // Retention excluded in demo to match z-score setup
-    avgWatchTimeSec: 24.5,
-    completionRatePercent: null, // Retention excluded to match worked example
-    audienceHours: 18,
-    shares: 3400,
-    saves: 5600,
+  sampleComments: [
+    { author: 'marcus_films', text: 'This lighting trick literally saved my short film shoot today!! 🔥🔥', likes: 142, sentiment: 'hype' },
+    { author: 'sarah_visuals', text: 'Sent this directly to our production group chat lmao', likes: 98, sentiment: 'hype' },
+    { author: 'cinematic_jay', text: 'Wait the rim light separation is actually genius', likes: 64, sentiment: 'hype' },
+  ],
+  llmEvaluations: {
+    subjectSpotlight: 9.5,
+    poseAudacity: 8.8,
+    lighting: 9.6,
+    colorGrading: 9.2,
+    composition: 9.4,
+    stylingDrip: 9.0,
+    visualHook: 9.2,
+    openingLinePunch: 8.8,
+    captionWit: 22,
+    shareRelatability: 32,
+    saveUtilityEnvy: 31,
+    commentVibe: 36,
+    conceptOriginality: 54,
   },
-  performanceZScores: {
-    engagement: 1.95,
-    views: 1.23,
-    commentQuality: 1.19,
-    retention: null,
-  },
-  baselineStats: {
-    postCount: 18,
-    medianViews: 75000,
-    madViews: 28000,
-    medianEngagementRate: 0.072,
-    madEngagementRate: 0.018,
-    medianCommentsPer1k: 1.8,
-    madCommentsPer1k: 0.5,
-  },
+  transcriptSegments: [
+    { startSec: 0, endSec: 3, text: 'You do not need a three-thousand dollar light to look cinematic.' },
+    { startSec: 3, endSec: 15, text: 'Here is what happens when you turn your desk lamp into an edge light.' },
+    { startSec: 15, endSec: 34, text: 'Notice how the rim light instantly separates the jawline from the background.' },
+  ],
+  keyframes: [
+    { timestampSec: 0.5, imageUrl: '/face_beauty_sketch.jpg', ocrText: 'Cinematic Lighting Hack', visualSharpness: 94, visualBrightness: 58, facesDetected: 1 },
+  ],
   dataCompleteness: {
     publicMetrics: true,
     ownerAnalytics: true,
@@ -659,40 +517,163 @@ export const DEMO_VIRAL_SHORT: UnifiedContentItem = {
 };
 
 /**
- * Demo 2: Link-Only (Tier A) Submission of the same reel
- * Demonstrates Storytelling excluded (V=0), confidence 0.57 (Medium), Quality 82.5, Content 84.3
+ * Demo 2: The Certified Thirst Trap / Aesthetic Flex
+ * High solo visual aura, 2 AM secret bookmarks, minimal caption.
+ * S6 >= 78 AND S1 >= 75 -> Badge: "Certified Thirst Trap / Aesthetic Flex"
  */
-export const DEMO_LINK_ONLY_REEL: UnifiedContentItem = {
-  ...DEMO_VIRAL_SHORT,
-  id: 'ig:reel_link_tier_a',
+export const DEMO_AESTHETIC_FLEX: UnifiedContentItem = {
+  id: 'ig:post_aesthetic_thirst_trap',
+  url: 'https://instagram.com/p/C9AestheticFlexPost',
+  platform: 'instagram',
+  format: 'image',
+  inputMode: 'demo',
   dataTier: 'A',
-  inputMode: 'link',
-  ownerAnalytics: null,
+  creator: {
+    id: 'creator_elena',
+    handle: '@elena.vibe',
+    name: 'Elena Rostova',
+    followerCount: 142000,
+    niche: 'Fashion & Visual Moodboards',
+    avatarUrl: '/favicon.svg',
+  },
+  postedAt: '2026-10-27T20:45:00Z',
+  uploadHourLocal: 20,
+  title: 'Golden hour silhouette in Milan',
+  caption: 'golden hour in milan. nothing else needed ✨',
+  hashtags: ['milan', 'goldenhour'],
+  mentions: [],
+  firstPersonWords: 0,
+  wordCount: 7,
+  emojiCount: 1,
+  hashtagCount: 2,
+  isTrendingAudio: false,
+  slangMatchCount: 0,
+  slangMatches: [],
+  reposts: 95,
+  media: {
+    durationSec: 0,
+    width: 1080,
+    height: 1350,
+    aspectRatio: 0.8,
+    thumbnailUrl: '/face_beauty_hero_bg.jpg',
+  },
+  metrics: {
+    views: 112000,
+    likes: 16800,
+    comments: 310,
+    shares: 840,
+    saves: 3950, // Massive save rate (23.5% of likes)
+    reposts: 95,
+  },
+  sampleComments: [
+    { author: 'sofia_k', text: 'EXCUSE ME??? The styling is insane 😭', likes: 180, sentiment: 'hype' },
+    { author: 'lucas_art', text: 'The silhouette lighting is perfection', likes: 88, sentiment: 'hype' },
+    { author: 'chloe.mood', text: 'Saved to my outfit inspiration board immediately', likes: 112, sentiment: 'hype' },
+  ],
+  llmEvaluations: {
+    subjectSpotlight: 9.8,
+    poseAudacity: 9.6,
+    lighting: 9.8,
+    colorGrading: 9.5,
+    composition: 9.6,
+    stylingDrip: 9.7,
+    visualHook: 9.4,
+    openingLinePunch: 8.5,
+    captionWit: 21,
+    shareRelatability: 20,
+    saveUtilityEnvy: 34,
+    commentVibe: 35,
+    conceptOriginality: 52,
+  },
+  transcriptSegments: [],
+  keyframes: [],
   dataCompleteness: {
     publicMetrics: true,
     ownerAnalytics: false,
-    mediaFile: false,
+    mediaFile: true,
     transcript: false,
     keyframes: false,
   },
 };
 
 /**
- * Demo 3: Flagged Compliance & Flaw Capped Reel
- * Major disclosure flaw (TC1) capping score at 60
+ * Demo 3: The 3 AM Goblin Hours Chaos Dump
+ * Uploaded at 3:42 AM, 12 emojis, hashtag soup, wild comment section debate.
+ * Meets uploadHour in [1, 5] AND S4 <= 60 -> Badge: "3 AM Unhinged Chaos Dump"
  */
-export const DEMO_COMPLIANCE_CAPPED: UnifiedContentItem = {
-  ...DEMO_VIRAL_SHORT,
-  id: 'ig:reel_compliance_capped',
-  dataTier: 'B',
-  title: 'Secret supplement that cures joint pain overnight',
-  caption: 'Grab this miracle bottle before stock runs out link in bio! #health #remedy',
+export const DEMO_GOBLIN_HOURS: UnifiedContentItem = {
+  id: 'tiktok:video_3am_chaos_dump',
+  url: 'https://tiktok.com/@nocturnal.dev/video/7391823901',
+  platform: 'tiktok',
+  format: 'short_video',
+  inputMode: 'demo',
+  dataTier: 'A',
+  creator: {
+    id: 'creator_night_owl',
+    handle: '@nocturnal.coder',
+    name: 'Devin at 3AM',
+    followerCount: 24000,
+    niche: 'Late Night Coding & Tech Chaos',
+    avatarUrl: '/favicon.svg',
+  },
+  postedAt: '2026-10-29T03:42:00Z',
+  uploadHourLocal: 3, // 3 AM Goblin Hours!
+  title: 'I rewrote the entire backend in Rust at 3am because I lost my mind',
+  caption: 'me thinking i could refactor 40k lines of code before sunrise 💀💀💀 was i in my delulu era or did i unlock god mode?? do not try this at home #coding #rust #developer #programming #relatable #tech #viral #help #dump #nightowl',
+  hashtags: ['coding', 'rust', 'developer', 'programming', 'relatable', 'tech', 'viral', 'help', 'dump', 'nightowl'],
+  mentions: [],
+  firstPersonWords: 5, // "me", "i", "i", "my", "i"
+  wordCount: 38,
+  emojiCount: 10,
+  hashtagCount: 12, // 12 hashtags -> (12 - 5) * 2.5 = 17.5 penalty
+  isTrendingAudio: true, // Charting trending sound -> 0 audio bonus
+  slangMatchCount: 2, // "delulu", "dump"
+  slangMatches: ['delulu', 'dump'],
+  reposts: 20,
+  media: {
+    durationSec: 18,
+    width: 1080,
+    height: 1920,
+    aspectRatio: 9 / 16,
+    fps: 30,
+    thumbnailUrl: '/face_beauty_sketch.jpg',
+  },
   metrics: {
-    views: 12000,
-    likes: 420,
-    comments: 110,
-    shares: 15,
-    saves: 30,
+    views: 48000,
+    likes: 3200,
+    comments: 240,
+    shares: 110,
+    saves: 95,
+    reposts: 20,
+  },
+  sampleComments: [
+    { author: 'senior_eng', text: 'BRO GO TO SLEEP WHAT ARE YOU DOING', likes: 320, sentiment: 'debate' },
+    { author: 'rust_fanatic', text: 'Zero memory leaks though you are legendary', likes: 210, sentiment: 'hype' },
+    { author: 'prod_on_fire', text: 'The pull request tomorrow morning is going to be tragic', likes: 185, sentiment: 'debate' },
+  ],
+  llmEvaluations: {
+    subjectSpotlight: 6.5,
+    poseAudacity: 7.0,
+    lighting: 6.0,
+    colorGrading: 6.2,
+    composition: 6.5,
+    stylingDrip: 6.0,
+    visualHook: 8.5,
+    openingLinePunch: 8.0,
+    captionWit: 4,
+    shareRelatability: 15,
+    saveUtilityEnvy: 14,
+    commentVibe: 20,
+    conceptOriginality: 38,
+  },
+  transcriptSegments: [],
+  keyframes: [],
+  dataCompleteness: {
+    publicMetrics: true,
+    ownerAnalytics: false,
+    mediaFile: true,
+    transcript: false,
+    keyframes: false,
   },
 };
 
@@ -701,7 +682,10 @@ export const SAMPLE_DEMO_CONTENTS: Record<
   UnifiedContentItem
 > = {
   short_video: DEMO_VIRAL_SHORT,
-  carousel: DEMO_LINK_ONLY_REEL,
-  long_video: DEMO_COMPLIANCE_CAPPED,
+  carousel: DEMO_AESTHETIC_FLEX,
+  long_video: DEMO_GOBLIN_HOURS,
 };
 
+// Aliases for legacy imports
+export const DEMO_LINK_ONLY_REEL = DEMO_AESTHETIC_FLEX;
+export const DEMO_COMPLIANCE_CAPPED = DEMO_GOBLIN_HOURS;

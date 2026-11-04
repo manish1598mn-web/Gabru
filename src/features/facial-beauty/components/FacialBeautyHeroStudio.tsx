@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BeautyScoreData } from '../types/FacialBeautyTypes';
+import { BeautyScoreData, DeepDiveTabKey } from '../types/FacialBeautyTypes';
 import { Button } from '@/shared/components/ui/Button';
 import { ScanningReticleOverlay } from '@/shared';
 
@@ -21,6 +21,7 @@ export interface FacialBeautyHeroStudioProps {
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onShareClick: () => void;
   onReevaluate: () => void;
+  onSelectTab?: (tab: DeepDiveTabKey) => void;
 }
 
 export function FacialBeautyHeroStudio({
@@ -39,6 +40,7 @@ export function FacialBeautyHeroStudio({
   onDrop,
   onShareClick,
   onReevaluate,
+  onSelectTab,
 }: FacialBeautyHeroStudioProps) {
   const primaryGoldenRatio =
     scoreData?.metrics?.phase3?.harmony?.goldenRatios?.[0]?.value ??
@@ -50,6 +52,114 @@ export function FacialBeautyHeroStudio({
     : primaryGoldenRatio > 0
     ? Number((100 * Math.exp(-Math.pow(primaryGoldenRatio - 1.618, 2) / (2 * Math.pow(0.095, 2)))).toFixed(1))
     : 72;
+
+  const getVerdictStyle = (verdict: string) => {
+    const upper = (verdict || '').toUpperCase();
+    if (upper.includes('VERY HIGH') || upper.includes('EXCELLENT')) {
+      return { bg: 'rgba(16, 185, 129, 0.15)', text: '#34d399', border: 'rgba(16, 185, 129, 0.35)' };
+    }
+    if (upper.includes('HIGH')) {
+      return { bg: 'rgba(56, 189, 248, 0.15)', text: '#38bdf8', border: 'rgba(56, 189, 248, 0.35)' };
+    }
+    if (upper.includes('TYPICAL') && !upper.includes('BELOW')) {
+      return { bg: 'rgba(245, 158, 11, 0.15)', text: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' };
+    }
+    return { bg: 'rgba(244, 63, 94, 0.15)', text: '#fb7185', border: 'rgba(244, 63, 94, 0.35)' };
+  };
+
+  const verdictStyle = scoreData ? getVerdictStyle(scoreData.verdict) : { bg: '', text: '', border: '' };
+
+  const getPillarStatus = (val: number) => {
+    if (val >= 90) return { label: 'Optimal', color: '#10b981' };
+    if (val >= 80) return { label: 'High', color: '#38bdf8' };
+    if (val >= 70) return { label: 'Harmonious', color: '#a855f7' };
+    return { label: 'Balanced', color: '#f59e0b' };
+  };
+
+  const handlePillarClick = (tab: DeepDiveTabKey) => {
+    if (onSelectTab) {
+      onSelectTab(tab);
+      const el = document.getElementById('phase3-diagnostic-suite');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const pillars = scoreData
+    ? [
+        {
+          id: 'eyes',
+          label: 'Eyes',
+          icon: '👁️',
+          score: scoreData.beautyPillars?.eyes ?? Math.round((scoreData.parameterRatings[2] ?? 8.5) * 10),
+          detail: 'Canthal tilt & aperture',
+          tab: 'eyes' as DeepDiveTabKey,
+        },
+        {
+          id: 'nose',
+          label: 'Nose',
+          icon: '👃',
+          score: scoreData.beautyPillars?.nose ?? Math.round((scoreData.subfactorScores['NC1'] ?? scoreData.parameterRatings[6] ?? 8.5) * 10),
+          detail: 'Bridge linearity & dorsum',
+          tab: 'features' as DeepDiveTabKey,
+        },
+        {
+          id: 'lips',
+          label: 'Lips',
+          icon: '👄',
+          score: scoreData.beautyPillars?.lips ?? Math.round((scoreData.subfactorScores['NC3'] ?? scoreData.parameterRatings[6] ?? 8.5) * 10),
+          detail: 'Fullness & Cupid\'s bow',
+          tab: 'features' as DeepDiveTabKey,
+        },
+        {
+          id: 'smoothness',
+          label: 'Smoothness',
+          icon: '✨',
+          score: scoreData.beautyPillars?.smoothness ?? 85,
+          detail: 'Epidermal texture clarity',
+          tab: 'skin' as DeepDiveTabKey,
+        },
+        {
+          id: 'faceHealth',
+          label: 'Face Health',
+          icon: '🌿',
+          score: scoreData.beautyPillars?.faceHealth ?? 84,
+          detail: 'Hydration & vitality glow',
+          tab: 'skin' as DeepDiveTabKey,
+        },
+        {
+          id: 'jawline',
+          label: 'Jawline',
+          icon: '💎',
+          score: scoreData.beautyPillars?.jawline ?? Math.round((scoreData.parameterRatings[9] ?? 8.2) * 10),
+          detail: 'Mandibular line & chin',
+          tab: 'jaw' as DeepDiveTabKey,
+        },
+        {
+          id: 'attractiveness',
+          label: 'Attractiveness',
+          icon: '⚜️',
+          score: scoreData.beautyPillars?.attractiveness ?? Math.round(((scoreData.parameterRatings[3] ?? 8.6) * 10 * 0.5) + (goldenRatioAdherence * 0.5)),
+          detail: 'Thirds & golden ratio φ',
+          tab: 'harmony' as DeepDiveTabKey,
+        },
+        {
+          id: 'smile',
+          label: 'Smile',
+          icon: '😊',
+          score: scoreData.beautyPillars?.smile ?? Math.round((scoreData.parameterRatings[4] ?? 8.0) * 10),
+          detail: 'Duchenne smile dynamics',
+          tab: 'expression' as DeepDiveTabKey,
+        },
+        {
+          id: 'featuresSymmetry',
+          label: 'Symmetry',
+          icon: '🪞',
+          score: scoreData.beautyPillars?.featuresSymmetry ?? Math.round((scoreData.parameterRatings[7] ?? 8.2) * 10),
+          detail: 'Bilateral feature parity',
+          tab: 'symmetry' as DeepDiveTabKey,
+        },
+      ]
+    : [];
 
   return (
     <div className="hero-container">
@@ -81,7 +191,16 @@ export function FacialBeautyHeroStudio({
                     {Number.isInteger(scoreData.faceScore) ? String(scoreData.faceScore) : scoreData.faceScore.toFixed(1)}
                   </span>
                   <span className="score-scale-denom font-tabular-nums">/100</span>
-                  <span className="score-verdict-tag">{scoreData.verdict}</span>
+                  <span
+                    className="score-verdict-tag"
+                    style={{
+                      backgroundColor: verdictStyle.bg,
+                      color: verdictStyle.text,
+                      borderColor: verdictStyle.border,
+                    }}
+                  >
+                    {scoreData.verdict}
+                  </span>
                 </div>
 
                 <Button
@@ -125,7 +244,7 @@ export function FacialBeautyHeroStudio({
                   </div>
                   <div className="golden-ratio-adherence-pill">
                     <span className="adherence-dot" />
-                    <span>{goldenRatioAdherence}% Match</span>
+                    <span>{goldenRatioAdherence}% Neoclassical Match</span>
                   </div>
                 </div>
                 <div className="golden-ratio-card-body">
@@ -134,10 +253,10 @@ export function FacialBeautyHeroStudio({
                     <span className="golden-ratio-phi-val font-tabular-nums">
                       {primaryGoldenRatio.toFixed(3)}
                     </span>
-                    <span className="golden-ratio-match-badge font-tabular-nums">
-                      {goldenRatioAdherence}% Match
-                    </span>
                     <span className="golden-ratio-ideal font-tabular-nums">(Ideal 1.618)</span>
+                    <span className="golden-ratio-thirds-tag font-tabular-nums">
+                      {scoreData.metrics?.facialThirdsBalance ? `Thirds ${scoreData.metrics.facialThirdsBalance.split(' ')[0]}` : 'Thirds 1:1:1'}
+                    </span>
                   </div>
                   <div className="golden-ratio-progress-track">
                     <div
@@ -148,6 +267,53 @@ export function FacialBeautyHeroStudio({
                   <p className="golden-ratio-desc">
                     Neoclassical facial thirds (1:1:1) and divine horizontal proportion alignment across zygomatic width and lateral canthi.
                   </p>
+                </div>
+              </div>
+
+              {/* Essential Facial Beauty Pillars Matrix (Human-Calibrated Aesthetic Dimensions) */}
+              <div className="beauty-pillars-module" id="beauty-pillars-module">
+                <div className="pillars-module-header">
+                  <div className="pillars-module-title">
+                    <span className="pillars-sparkle-icon" aria-hidden="true">✨</span>
+                    <span className="pillars-heading">ESSENTIAL FACIAL FEATURES MATRIX</span>
+                  </div>
+                  <span className="pillars-meta-tag">Human-Calibrated</span>
+                </div>
+
+                <div className="beauty-pillars-grid">
+                  {pillars.map((pillar) => {
+                    const status = getPillarStatus(pillar.score);
+                    return (
+                      <button
+                        key={pillar.id}
+                        type="button"
+                        className="beauty-pillar-card"
+                        onClick={() => handlePillarClick(pillar.tab)}
+                        title={`Click to inspect ${pillar.label} diagnostics (${pillar.detail})`}
+                      >
+                        <div className="pillar-card-top">
+                          <span className="pillar-icon" aria-hidden="true">{pillar.icon}</span>
+                          <span className="pillar-score font-tabular-nums">{pillar.score}</span>
+                        </div>
+                        <div className="pillar-card-middle">
+                          <span className="pillar-name">{pillar.label}</span>
+                          <span className="pillar-status" style={{ color: status.color }}>
+                            {status.label}
+                          </span>
+                        </div>
+                        <div className="pillar-progress-track">
+                          <div
+                            className="pillar-progress-bar"
+                            style={{
+                              width: `${Math.min(100, Math.max(10, pillar.score))}%`,
+                              backgroundColor: status.color,
+                            }}
+                          />
+                        </div>
+                        <span className="pillar-detail">{pillar.detail}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -366,6 +532,22 @@ export function FacialBeautyHeroStudio({
                 progressRatio={scanProgress}
                 statusMessage={scanStatusMessage}
               />
+
+              {/* Floating Landmark Mesh Count Badge (Top-Left) */}
+              {!isAnalyzing && scoreData && (
+                <div className="preview-mesh-badge" id="preview-mesh-badge">
+                  <span className="mesh-beacon-dot" />
+                  <span>468 3D Mesh Landmarks</span>
+                </div>
+              )}
+
+              {/* Floating Golden Ratio Pill (Top-Right) */}
+              {!isAnalyzing && scoreData && (
+                <div className="preview-phi-badge" id="preview-phi-badge">
+                  <span>⚜️ φ {primaryGoldenRatio.toFixed(3)}</span>
+                  <span className="phi-match-sub">({goldenRatioAdherence}%)</span>
+                </div>
+              )}
 
               {/* Post-Analysis Subject Verification Pill */}
               {!isAnalyzing && scoreData && (

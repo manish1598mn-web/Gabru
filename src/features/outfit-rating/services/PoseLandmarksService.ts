@@ -74,10 +74,45 @@ export async function getPoseLandmarker(): Promise<unknown> {
   });
 }
 
+function createRotatedPoseCanvas(src: HTMLCanvasElement, angleDeg: number): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  if (angleDeg === 90 || angleDeg === 270) {
+    c.width = src.height;
+    c.height = src.width;
+  } else {
+    c.width = src.width;
+    c.height = src.height;
+  }
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.translate(c.width / 2, c.height / 2);
+    ctx.rotate((angleDeg * Math.PI) / 180);
+    ctx.drawImage(src, -src.width / 2, -src.height / 2);
+  }
+  return c;
+}
+
+function unrotatePosePoint(
+  p: LandmarkPoint,
+  angleDeg: number
+): LandmarkPoint {
+  if (angleDeg === 90) {
+    return { ...p, x: p.y, y: 1 - p.x };
+  }
+  if (angleDeg === 180) {
+    return { ...p, x: 1 - p.x, y: 1 - p.y };
+  }
+  if (angleDeg === 270) {
+    return { ...p, x: 1 - p.y, y: p.x };
+  }
+  return p;
+}
+
 export interface PoseDetectionResult {
   humanDetected: boolean;
   detectedCount: number;
   primaryPose: LandmarkPoint[] | null;
+  serviceAvailable: boolean;
 }
 
 /**
@@ -89,13 +124,27 @@ export async function detectPose(canvas: HTMLCanvasElement): Promise<PoseDetecti
   } | null;
 
   if (!landmarker) {
-    return { humanDetected: false, detectedCount: 0, primaryPose: null };
+    return { humanDetected: false, detectedCount: 0, primaryPose: null, serviceAvailable: false };
   }
 
-  const result = executeWithConsoleFilter(() => landmarker.detect(canvas));
+  let result = executeWithConsoleFilter(() => landmarker.detect(canvas));
+  let winningAngle = 0;
 
   if (!result || !result.landmarks || result.landmarks.length === 0) {
-    return { humanDetected: false, detectedCount: 0, primaryPose: null };
+    // 4-Way Multi-Orientation Search (90°, 270°, 180°) for rotated mobile outfit photos
+    for (const angle of [90, 270, 180]) {
+      const rotCanvas = createRotatedPoseCanvas(canvas, angle);
+      const rotResult = executeWithConsoleFilter(() => landmarker.detect(rotCanvas));
+      if (rotResult?.landmarks && rotResult.landmarks.length > 0) {
+        result = rotResult;
+        winningAngle = angle;
+        break;
+      }
+    }
+  }
+
+  if (!result || !result.landmarks || result.landmarks.length === 0) {
+    return { humanDetected: false, detectedCount: 0, primaryPose: null, serviceAvailable: true };
   }
 
   const candidatePoses = result.landmarks;
@@ -119,6 +168,11 @@ export async function detectPose(canvas: HTMLCanvasElement): Promise<PoseDetecti
     const torsoHeight = Math.abs((leftHip.y + rightHip.y) / 2 - (leftShoulder.y + rightShoulder.y) / 2);
     const bodyBoxArea = Math.max(shoulderDist, hipDist) * torsoHeight;
 
+    // Filter out microscopic noise artifacts (< 0.5% of frame)
+    if (bodyBoxArea < 0.005 && shoulderDist < 0.05) {
+      continue;
+    }
+
     const centerX = (leftShoulder.x + rightShoulder.x) / 2;
     const centerY = (leftShoulder.y + rightShoulder.y) / 2;
     const distFromCenter = Math.hypot(centerX - 0.5, centerY - 0.5);
@@ -139,10 +193,24 @@ export async function detectPose(canvas: HTMLCanvasElement): Promise<PoseDetecti
     }
   }
 
+  if (winningAngle !== 0 && primaryPose) {
+    primaryPose = primaryPose.map((pt) => unrotatePosePoint(pt, winningAngle));
+  }
+
+  if (maxProminence < 0) {
+    return {
+      humanDetected: false,
+      detectedCount: 0,
+      primaryPose: null,
+      serviceAvailable: true,
+    };
+  }
+
   return {
     humanDetected: true,
     detectedCount,
     primaryPose,
+    serviceAvailable: true,
   };
 }
 

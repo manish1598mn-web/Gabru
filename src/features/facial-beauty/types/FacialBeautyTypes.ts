@@ -106,6 +106,7 @@ export type {
   EngineRunResult,
   ScoreCalculationInput,
   ScoreCalculationResult,
+  BeautyPillarsBreakdown,
   DimorphismNorms,
   FacialEvaluationOptions,
   Phase3Metrics,

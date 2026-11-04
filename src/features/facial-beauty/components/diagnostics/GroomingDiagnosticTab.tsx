@@ -18,10 +18,10 @@ export function GroomingDiagnosticTab({ scoreData }: GroomingDiagnosticTabProps)
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>💈 Parameter 5: Grooming &amp; Styling</span>
-            <span className="diag-stat-code">11 Pts Max · β = 0.10 · High Changeability</span>
+            <span className="diag-stat-code">11 Pts Max &bull; Controllable</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates actionable presentational styling signals: haircut, clean perimeter edges, controlled flyaways, facial hair trimming, makeup application/finish, eyewear fit, and aesthetic cohesion.
+            Evaluates actionable styling signals: hairstyle neatness, clean perimeter edges, facial hair grooming, eyewear coordination, and aesthetic polish.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -34,7 +34,6 @@ export function GroomingDiagnosticTab({ scoreData }: GroomingDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Hair</span>
-            <span className="diag-stat-code">GR1 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {grooming?.hairScore.toFixed(1) ?? '9.0'}/10
@@ -47,7 +46,6 @@ export function GroomingDiagnosticTab({ scoreData }: GroomingDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Facial Hair &amp; Brow Tidiness</span>
-            <span className="diag-stat-code">GR2 · W=25</span>
           </div>
           <div className="diag-stat-val">
             {grooming?.browScore.toFixed(1) ?? '8.8'}/10
@@ -60,7 +58,6 @@ export function GroomingDiagnosticTab({ scoreData }: GroomingDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Makeup Application</span>
-            <span className="diag-stat-code">GR3 · W=20 · V=0</span>
           </div>
           <div className="diag-stat-val">
             Natural Baseline
@@ -73,7 +70,6 @@ export function GroomingDiagnosticTab({ scoreData }: GroomingDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Glasses</span>
-            <span className="diag-stat-code">GR4 · W=10 · V=0</span>
           </div>
           <div className="diag-stat-val">
             Unobstructed
@@ -86,7 +82,6 @@ export function GroomingDiagnosticTab({ scoreData }: GroomingDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Overall Cohesion</span>
-            <span className="diag-stat-code">GR5 · W=15</span>
           </div>
           <div className="diag-stat-val">
             {grooming?.stylingScore.toFixed(1) ?? '9.1'}/10

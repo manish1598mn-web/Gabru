@@ -51,11 +51,14 @@ export function MediaQualityDiagnosticTab({ scoreData }: DiagnosticTabProps) {
             <span className="meter-val">{`${media.width}x${media.height}`}</span>
           </div>
           <div className="res-badge-row">
-            <span className={`res-badge ${media.height >= 1080 ? 'active' : ''}`}>1080p Full HD</span>
-            <span className="res-badge">60 FPS</span>
-            <span className="res-badge">8.2 Mbps Bitrate</span>
+            <span className={`res-badge ${media.height >= 1080 ? 'active' : ''}`}>
+              {media.height >= 1080 ? 'Full HD (1080p+)' : 'Standard HD'}
+            </span>
+            <span className="res-badge">Aspect: {media.aspectRatio < 1 ? '9:16 Vertical' : '16:9 Landscape'}</span>
           </div>
-          <span className="meter-caption">Short side &ge; 1080px (Zero compression penalty)</span>
+          <span className="meter-caption">
+            {media.height >= 1080 ? 'Optimal resolution for modern feeds' : 'Standard display clarity'}
+          </span>
         </div>
       </div>
 

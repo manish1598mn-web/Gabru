@@ -18,10 +18,10 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>🦒 Parameter 10: Neck, Ears &amp; Head Carriage</span>
-            <span className="diag-stat-code">4 Pts Max · β = 0.10 · Mixed Changeability</span>
+            <span className="diag-stat-code">4 Pts Max &bull; Mixed Factor</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates cervical support line under the jaw, bilateral ear symmetry/placement (or V = 0 if hair-occluded), and Frankfurt horizontal head posture alignment.
+            Evaluates neck carriage, jaw-neck definition line, bilateral ear symmetry, and neutral head level.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -34,7 +34,6 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Neck Line</span>
-            <span className="diag-stat-code">NE1 · W=35 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             Defined Contour
@@ -47,7 +46,6 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Ears</span>
-            <span className="diag-stat-code">NE2 · W=25 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             Proportional Placement
@@ -60,7 +58,6 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Posture &amp; Head Carriage</span>
-            <span className="diag-stat-code">NE3 · W=40 · Changeable</span>
           </div>
           <div className="diag-stat-val">
             {neckMetrics?.postureAlignmentDeg.toFixed(1) ?? '1.8'}° tilt
@@ -87,7 +84,6 @@ export function NeckPostureDiagnosticTab({ scoreData }: NeckPostureDiagnosticTab
             <div key={item.id} className="diag-stat-card">
               <div className="diag-stat-header">
                 <span className="diag-stat-label">{item.name}</span>
-                <span className="diag-stat-code">{item.id}</span>
               </div>
               <div className="diag-stat-val">
                 {item.rating.toFixed(1)}/10

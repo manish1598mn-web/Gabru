@@ -1,8 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useWebviewSafeNavigation } from '@/shared/hooks/useWebviewSafeNavigation';
+import { GabruLogoIcon } from '../ui/GabruLogoIcon';
+import {
+  PrivacyPolicyModal,
+  TermsOfEvaluationModal,
+  ScientificMethodologyModal,
+} from '../modals';
 
 export interface AppFooterProps {
   onOpenPrivacyModal?: () => void;
@@ -18,21 +24,26 @@ export function AppFooter({
   onAboutClick,
 }: AppFooterProps) {
   const { getNavHref, createNavClickHandler, createNavMouseDownHandler } = useWebviewSafeNavigation();
+  const [activeModal, setActiveModal] = useState<'privacy' | 'terms' | 'methodology' | null>(null);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleModalClick = (type: 'privacy' | 'terms' | 'methodology') => {
-    if (onAboutClick) {
-      onAboutClick();
+    if (type === 'privacy' && onOpenPrivacyModal) {
+      onOpenPrivacyModal();
       return;
     }
-    if (type === 'privacy' && onOpenPrivacyModal) onOpenPrivacyModal();
-    else if (type === 'terms' && onOpenTermsModal) onOpenTermsModal();
-    else if (type === 'methodology' && onOpenMethodologyModal) onOpenMethodologyModal();
-    else if (onOpenMethodologyModal) onOpenMethodologyModal();
-    else if (onOpenPrivacyModal) onOpenPrivacyModal();
+    if (type === 'terms' && onOpenTermsModal) {
+      onOpenTermsModal();
+      return;
+    }
+    if (type === 'methodology' && onOpenMethodologyModal) {
+      onOpenMethodologyModal();
+      return;
+    }
+    setActiveModal(type);
   };
 
   return (
@@ -42,32 +53,19 @@ export function AppFooter({
         <div className="footer-brand-column">
           <div className="footer-brand-row">
             <div className="brand-icon-box">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
+              <GabruLogoIcon size={20} idPrefix="footer-logo" />
             </div>
             <span className="footer-brand-name">Gabru</span>
           </div>
 
           <p className="footer-bio">
-            The premier aesthetic & sartorial intelligence platform. Evaluating wardrobe harmony,
-            facial proportions, color resonance, and grooming craft through objective computer vision architectures.
+            Instant, private visual intelligence with real-time biometric and aesthetic evaluation.
           </p>
 
           <div className="footer-status-pill">
             <span className="status-indicator-dot" />
             <span className="status-text">
-              Vision Engine v3.8 Active &bull; Instant Client-Side Processing
+              Zero Server Retention &bull; Private Execution
             </span>
           </div>
 
@@ -85,15 +83,15 @@ export function AppFooter({
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
-            <span>Zero data retention &bull; Privacy protected local evaluation</span>
+            <span>Your photos and links never leave your device</span>
           </div>
         </div>
 
         {/* Navigation Links Columns */}
         <div className="footer-nav-grid">
-          {/* Column 1: Evaluation Engines */}
+          {/* Column 1: Studio Tools */}
           <div className="footer-col">
-            <span className="footer-col-title">Evaluation Engines</span>
+            <span className="footer-col-title">Studio Tools</span>
             <ul className="footer-links-list">
               <li>
                 <Link
@@ -103,7 +101,7 @@ export function AppFooter({
                   onClick={createNavClickHandler('/')}
                   onMouseDown={createNavMouseDownHandler('/')}
                 >
-                  Outfit Score Matrix (100 Pts)
+                  Fit Check
                 </Link>
               </li>
               <li>
@@ -114,7 +112,7 @@ export function AppFooter({
                   onClick={createNavClickHandler('/beauty-rating')}
                   onMouseDown={createNavMouseDownHandler('/beauty-rating')}
                 >
-                  Beauty Rating Matrix (8 Params)
+                  Beauty Rating
                 </Link>
               </li>
               <li>
@@ -125,86 +123,24 @@ export function AppFooter({
                   onClick={createNavClickHandler('/content-rating')}
                   onMouseDown={createNavMouseDownHandler('/content-rating')}
                 >
-                  Content Rating Suite (100 Pts)
+                  Content Rating
                 </Link>
               </li>
               <li>
                 <Link
-                  href={getNavHref('/')}
+                  href={getNavHref('/hand-reading')}
                   prefetch={false}
                   className="footer-link-btn"
-                  onClick={createNavClickHandler('/')}
-                  onMouseDown={createNavMouseDownHandler('/')}
+                  onClick={createNavClickHandler('/hand-reading')}
+                  onMouseDown={createNavMouseDownHandler('/hand-reading')}
                 >
-                  Color Harmony Engine
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={getNavHref('/beauty-rating')}
-                  prefetch={false}
-                  className="footer-link-btn"
-                  onClick={createNavClickHandler('/beauty-rating')}
-                  onMouseDown={createNavMouseDownHandler('/beauty-rating')}
-                >
-                  Facial Thirds &amp; Fifths (φ)
+                  Hand Reading
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 2: Architectural Frameworks */}
-          <div className="footer-col">
-            <span className="footer-col-title">Scoring Architecture</span>
-            <ul className="footer-links-list">
-              <li>
-                <Link
-                  href={getNavHref('/')}
-                  prefetch={false}
-                  className="footer-link-btn"
-                  onClick={createNavClickHandler('/')}
-                  onMouseDown={createNavMouseDownHandler('/')}
-                >
-                  Tier 1: Foundations (71 Pts)
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={getNavHref('/')}
-                  prefetch={false}
-                  className="footer-link-btn"
-                  onClick={createNavClickHandler('/')}
-                  onMouseDown={createNavMouseDownHandler('/')}
-                >
-                  Tier 2: Details &amp; Craft (20 Pts)
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={getNavHref('/')}
-                  prefetch={false}
-                  className="footer-link-btn"
-                  onClick={createNavClickHandler('/')}
-                  onMouseDown={createNavMouseDownHandler('/')}
-                >
-                  Tier 3: Expert Polish (9 Pts)
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={getNavHref('/beauty-rating')}
-                  prefetch={false}
-                  className="footer-link-btn"
-                  onClick={createNavClickHandler('/beauty-rating')}
-                  onMouseDown={createNavMouseDownHandler('/beauty-rating')}
-                >
-                  10-Parameter Biometric Rubric
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Platform Governance & Trust */}
+          {/* Column 2: Governance & Trust */}
           <div className="footer-col">
             <span className="footer-col-title">Governance &amp; Trust</span>
             <ul className="footer-links-list">
@@ -235,15 +171,6 @@ export function AppFooter({
                   Scientific Methodology
                 </button>
               </li>
-              <li>
-                <button
-                  type="button"
-                  className="footer-link-btn"
-                  onClick={() => handleModalClick('methodology')}
-                >
-                  Platform Architecture
-                </button>
-              </li>
             </ul>
           </div>
         </div>
@@ -253,7 +180,7 @@ export function AppFooter({
       <div className="footer-bottom-strip">
         <div className="footer-bottom-container">
           <span className="footer-bottom-copy">
-            &copy; {new Date().getFullYear()} Gabru Technologies Inc. All rights reserved. Designed for sartorial and aesthetic perfection.
+            &copy; {new Date().getFullYear()} Gabru. All rights reserved.
           </span>
           <button
             type="button"
@@ -277,6 +204,20 @@ export function AppFooter({
           </button>
         </div>
       </div>
+
+      {/* Built-in Governance Modals */}
+      <PrivacyPolicyModal
+        isOpen={activeModal === 'privacy'}
+        onClose={() => setActiveModal(null)}
+      />
+      <TermsOfEvaluationModal
+        isOpen={activeModal === 'terms'}
+        onClose={() => setActiveModal(null)}
+      />
+      <ScientificMethodologyModal
+        isOpen={activeModal === 'methodology'}
+        onClose={() => setActiveModal(null)}
+      />
     </footer>
   );
 }

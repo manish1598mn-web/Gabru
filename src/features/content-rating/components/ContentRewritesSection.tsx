@@ -53,27 +53,28 @@ export function ContentRewritesSection({
   const captionSuggestions = suggestions.find((s) => s.concreteRewrite?.type === 'caption');
   const ctaSuggestions = suggestions.find((s) => s.concreteRewrite?.type === 'cta');
 
-  // Fallback demo rewrites if specific suggestion does not exist
+  // Topic-neutral fallback rewrites grounded in real item data if suggestion does not provide one
   const hookVariants = hookSuggestions?.concreteRewrite?.variants || [
-    'Direct Value: "Here is the exact shortcut that saves 30 minutes every single day."',
-    'Curiosity Gap: "Most creators still waste 500 clicks a day doing this wrong..."',
-    'Contrarian: "Never touch your default settings again. Do this one tweak instead."',
+    'Direct Value: "The most important takeaway you need to know from this post."',
+    'Curiosity Gap: "Why most creators overlook this crucial detail..."',
+    'Contrarian: "The standard approach is missing the point. Here is what works."',
   ];
 
   const captionText =
     captionSuggestions?.concreteRewrite?.fullText ||
-    `Stop wasting hours on manual editing.\n\nHere is the exact retention formula used by top 1% accounts to hold viewers past the critical 3-second drop-off.\n\nSave this checklist for your next upload!`;
+    (scoreData.item.caption
+      ? scoreData.item.caption
+      : `Here is the key takeaway you need to know.\n\nSave this for reference and share your thoughts below.`);
 
-  const hashtagList = captionSuggestions?.concreteRewrite?.tags || [
-    '#contentcreator',
-    '#videotips',
-    '#growthhacking',
-    '#socialmediamarketing',
-  ];
+  const hashtagList =
+    captionSuggestions?.concreteRewrite?.tags ||
+    (scoreData.item.hashtags.length > 0
+      ? scoreData.item.hashtags
+      : ['#trending', '#insights', '#contentcreation']);
 
   const ctaText =
     ctaSuggestions?.concreteRewrite?.fullText ||
-    'Closing line: "Which part of your creation workflow slows you down the most? Let me know in the comments below."';
+    'Closing line: "What is your take on this? Share your experience in the comments below."';
 
   return (
     <section className="content-rewrites-section" id="content-rewrites-section">

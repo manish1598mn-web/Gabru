@@ -479,6 +479,7 @@ export default function BeautyRatingFeaturePage() {
               onDrop={handleDrop}
               onShareClick={handleShareScore}
               onReevaluate={handleRecalculate}
+              onSelectTab={setActiveDeepDiveTab}
             />
 
             {/* Integrated 10-Parameter Beauty Rating Scorecard Area (Always Visible) */}

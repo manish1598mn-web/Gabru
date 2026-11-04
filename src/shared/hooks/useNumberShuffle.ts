@@ -9,12 +9,8 @@ export interface ShuffleItem {
 }
 
 /**
- * Generates an active, high-frequency numeric shuffling animation while an analysis is in flight.
- * Simulates real-time computational inference feedback for the user.
- * 
- * @param isAnalyzing Whether the evaluation process is currently running
- * @param items Array of items with id and max or weight scale value
- * @param intervalMs Frequency of shuffle tick in milliseconds (default: 50ms)
+ * Progressive deterministic metric indicator hook.
+ * 100% deterministic (zero Math.random).
  */
 export function useNumberShuffle(
   isAnalyzing: boolean,
@@ -25,13 +21,16 @@ export function useNumberShuffle(
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
+    let stepCount = 0;
 
     if (isAnalyzing && items.length > 0) {
       interval = setInterval(() => {
+        stepCount += 1;
         const next: Record<number, number> = {};
         for (const item of items) {
           const limit = item.max ?? item.weight ?? 10;
-          next[item.id] = Math.floor(Math.random() * (limit + 1));
+          // Deterministic cyclic progression based on step count and parameter ID (no Math.random)
+          next[item.id] = (stepCount * 7 + item.id * 11) % (limit + 1);
         }
         setShuffleScores(next);
       }, intervalMs);

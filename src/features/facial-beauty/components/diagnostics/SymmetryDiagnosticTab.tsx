@@ -18,10 +18,10 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>⚖️ Parameter 7: Facial Symmetry</span>
-            <span className="diag-stat-code">9 Pts Max · β = 0.10 · Fixed</span>
+            <span className="diag-stat-code">9 Pts Max &bull; Fixed Architecture</span>
           </div>
           <div className="diag-panel-desc">
-            Bilateral horizontal (Ah) and vertical (Av) parity evaluated across pupils, outer canthi, brow peaks, nasal midline alignment, oral commissure level, and bigonial jaw contours.
+            Bilateral horizontal and vertical symmetry evaluated across pupils, eye corners, brow arches, nasal midline, lips, and jaw contours.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -53,7 +53,6 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Overall Symmetry Index</span>
-            <span className="diag-stat-code">100% Scale</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.metrics.symmetryIndex}%
@@ -66,7 +65,6 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Mean Asymmetry (Ah)</span>
-            <span className="diag-stat-code">Ah Ideal ≤ 3.0%</span>
           </div>
           <div className="diag-stat-val">
             {symMetrics?.meanAsymmetryPct.toFixed(1) ?? '2.1'}%
@@ -81,7 +79,6 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Eyes &amp; Brows Parity</span>
-            <span className="diag-stat-code">SY1 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.subfactorRatings?.['SY1']?.raw?.toFixed(1) ?? '8.5'}/10
@@ -94,7 +91,6 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Nose &amp; Midline Parity</span>
-            <span className="diag-stat-code">SY2 · W=20</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.subfactorRatings?.['SY2']?.raw?.toFixed(1) ?? '8.8'}/10
@@ -107,7 +103,6 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Mouth &amp; Chin Parity</span>
-            <span className="diag-stat-code">SY3 · W=25</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.subfactorRatings?.['SY3']?.raw?.toFixed(1) ?? '8.6'}/10
@@ -120,7 +115,6 @@ export function SymmetryDiagnosticTab({ scoreData }: SymmetryDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Cheeks &amp; Jaw Balance</span>
-            <span className="diag-stat-code">SY4 · W=25</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.subfactorRatings?.['SY4']?.raw?.toFixed(1) ?? '8.4'}/10

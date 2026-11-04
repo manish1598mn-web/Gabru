@@ -18,10 +18,10 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>👁️ Parameter 2: Eye Region</span>
-            <span className="diag-stat-code">13 Pts Max · β = 0.10 · Mixed Changeability</span>
+            <span className="diag-stat-code">13 Pts Max &bull; Mixed Factor</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates palpebral aperture geometry, intercanthal spacing, canthal tilt, eyelid alert openness, periorbital under-eye contrast (ΔL*), and eyebrow architectural placement.
+            Evaluates eye aperture geometry, spacing, canthal tilt, alert openness, under-eye vitality, and eyebrow architectural placement.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -34,7 +34,6 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Eye Size &amp; Shape</span>
-            <span className="diag-stat-code">ER1 · W=25 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             {eyeMetrics?.fissureRatio.toFixed(2) ?? '0.35'}
@@ -49,7 +48,6 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Spacing &amp; Canthal Tilt</span>
-            <span className="diag-stat-code">ER2 · W=20 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             +{eyeMetrics?.canthalTiltDeg.toFixed(1) ?? '3.2'}°
@@ -64,7 +62,6 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Eyelids &amp; Iris Coverage</span>
-            <span className="diag-stat-code">ER3 · W=20 · Fixed</span>
           </div>
           <div className="diag-stat-val">
             {(((eyeMetrics?.irisCoverageRatio ?? 0.12)) * 100).toFixed(0)}% Cover
@@ -81,7 +78,6 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Under-Eye &amp; Eye Clarity</span>
-            <span className="diag-stat-code">ER4 · W=20 · Changeable</span>
           </div>
           <div className="diag-stat-val">
             ΔL* {eyeMetrics?.underEyeDeltaL.toFixed(1) ?? '4.5'}
@@ -98,14 +94,13 @@ export function EyeRegionDiagnosticTab({ scoreData }: EyeRegionDiagnosticTabProp
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Eyebrow Shape &amp; Position</span>
-            <span className="diag-stat-code">ER5 · W=15 · Changeable</span>
           </div>
           <div className="diag-stat-val">
             {((eyeMetrics?.browPositionRatio ?? 0.065) * 100).toFixed(1)}%
           </div>
           <div className={`diag-stat-status ${(eyeMetrics?.browPositionRatio ?? 0.065) >= 0.050 && (eyeMetrics?.browPositionRatio ?? 0.065) <= 0.085 ? 'status-ideal' : 'status-caution'}`}>
             {(eyeMetrics?.browPositionRatio ?? 0.065) >= 0.050 && (eyeMetrics?.browPositionRatio ?? 0.065) <= 0.085
-              ? '✓ Harmonious brow-to-eye height ratio (5.0%–8.5% of face)'
+              ? '✓ Harmonious brow-to-eye height ratio'
               : 'Brow position slightly outside canonical ratio'}
           </div>
         </div>

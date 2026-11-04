@@ -16,6 +16,28 @@ import {
   NeckPostureDiagnosticTab,
 } from './diagnostics';
 
+interface TabDefinition {
+  key: DeepDiveTabKey;
+  label: string;
+  shortLabel: string;
+  icon: string;
+  paramId: number;
+  maxScore: number;
+}
+
+const TAB_DEFINITIONS: TabDefinition[] = [
+  { key: 'skin', label: 'Skin Quality & Glow', shortLabel: 'Skin Glow', icon: '✨', paramId: 1, maxScore: 14 },
+  { key: 'eyes', label: 'Eye Region', shortLabel: 'Eye Region', icon: '👁️', paramId: 2, maxScore: 13 },
+  { key: 'harmony', label: 'Harmony & φ', shortLabel: 'Harmony & φ', icon: '📐', paramId: 3, maxScore: 13 },
+  { key: 'expression', label: 'Expression & Gaze', shortLabel: 'Expression', icon: '😊', paramId: 4, maxScore: 12 },
+  { key: 'grooming', label: 'Grooming & Styling', shortLabel: 'Grooming', icon: '✂️', paramId: 5, maxScore: 11 },
+  { key: 'features', label: 'Central Features', shortLabel: 'Features', icon: '🏛️', paramId: 6, maxScore: 10 },
+  { key: 'symmetry', label: 'Facial Symmetry', shortLabel: 'Symmetry', icon: '🪞', paramId: 7, maxScore: 9 },
+  { key: 'averageness', label: 'Averageness', shortLabel: 'Averageness', icon: '📊', paramId: 8, maxScore: 7 },
+  { key: 'jaw', label: 'Jaw, Chin & Cues', shortLabel: 'Jaw & Chin', icon: '💎', paramId: 9, maxScore: 7 },
+  { key: 'neck', label: 'Neck & Carriage', shortLabel: 'Neck & Posture', icon: '🧘', paramId: 10, maxScore: 4 },
+];
+
 export interface FacialDeepDiveSectionProps {
   scoreData: BeautyScoreData;
   activeTab: DeepDiveTabKey;
@@ -50,145 +72,45 @@ export function FacialDeepDiveSection({
       {/* Suite Navigation Header */}
       <div className="diag-tabs-header">
         <div className="diag-suite-title-group">
-          <div className="diag-suite-badge-icon">🔬</div>
+          <div className="diag-suite-badge-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+          </div>
           <div>
-            <h3 className="diag-suite-title">Biometric Diagnostic Deep Dives</h3>
+            <div className="diag-suite-eyebrow">BIOMETRIC TELEMETRY</div>
+            <h3 className="diag-suite-title">Diagnostic Deep Dives</h3>
             <div className="diag-suite-subtitle">
-              Detailed anthropometric, neuromuscular, and styling evidence across all 10 parameters
+              Anthropometric landmark measurements and parameter evidence
             </div>
           </div>
         </div>
 
         <div className="diag-nav-tabs" role="tablist" aria-label="Facial Biometric Diagnostic Tabs" ref={navTabsRef}>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'skin'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'skin' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('skin')}
-          >
-            <span>Skin Quality &amp; Glow</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[1] ?? 11.2).toFixed(1)}/14
-            </span>
-          </button>
+          {TAB_DEFINITIONS.map((tab) => {
+            const score = scoreData.parameterScores[tab.paramId] ?? (tab.maxScore * 0.8);
+            const isActive = activeTab === tab.key;
 
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'eyes'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'eyes' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('eyes')}
-          >
-            <span>Eye Region</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[2] ?? 10.4).toFixed(1)}/13
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'harmony'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'harmony' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('harmony')}
-          >
-            <span>Harmony &amp; φ</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[3] ?? 10.4).toFixed(1)}/13
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'expression'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'expression' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('expression')}
-          >
-            <span>Expression &amp; Gaze</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[4] ?? 9.6).toFixed(1)}/12
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'grooming'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'grooming' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('grooming')}
-          >
-            <span>Grooming &amp; Styling</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[5] ?? 8.8).toFixed(1)}/11
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'features'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'features' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('features')}
-          >
-            <span>Central Features</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[6] ?? 8.0).toFixed(1)}/10
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'symmetry'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'symmetry' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('symmetry')}
-          >
-            <span>Facial Symmetry</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[7] ?? 7.2).toFixed(1)}/9
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'averageness'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'averageness' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('averageness')}
-          >
-            <span>Averageness</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[8] ?? 5.6).toFixed(1)}/7
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'jaw'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'jaw' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('jaw')}
-          >
-            <span>Jaw, Chin &amp; Cues</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[9] ?? 5.6).toFixed(1)}/7
-            </span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'neck'}
-            className={`diag-tab-btn focus-ring tactile-press ${activeTab === 'neck' ? 'is-active' : ''}`}
-            onClick={() => onTabChange('neck')}
-          >
-            <span>Neck &amp; Carriage</span>
-            <span className="diag-tab-score-chip font-tabular-nums">
-              {(scoreData.parameterScores[10] ?? 3.4).toFixed(1)}/4
-            </span>
-          </button>
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={`diag-tab-btn focus-ring tactile-press ${isActive ? 'is-active' : ''}`}
+                onClick={() => onTabChange(tab.key)}
+                title={tab.label}
+              >
+                <span className="diag-tab-icon" aria-hidden="true">{tab.icon}</span>
+                <span className="diag-tab-label">{tab.shortLabel}</span>
+                <span className="diag-tab-score-chip font-tabular-nums">
+                  {score.toFixed(1)}/{tab.maxScore}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

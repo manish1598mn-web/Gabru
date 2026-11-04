@@ -9,14 +9,21 @@ export function FitCheckAboutSection() {
         {/* Section Header */}
         <div className="about-section-header scroll-reveal">
           <div className="about-section-eyebrow">
-            <span>SARTORIAL GUIDE &amp; METHODOLOGY</span>
+            <span>OUTFIT EVALUATION GUIDE</span>
           </div>
           <h2 className="about-section-title">
             Understanding Your Fit &amp; Style Audit
           </h2>
           <p className="about-section-subtitle">
-            How Gabru evaluates garment tailoring, body proportions, color harmony, and visual hierarchy with the discernment of an editorial fashion stylist.
+            Playful, objective analysis of garment tailoring, body proportions, color balance, and styling polish.
           </p>
+
+          <div className="about-vibe-banner">
+            <span className="vibe-emoji" aria-hidden="true">🎉</span>
+            <div className="vibe-text">
+              <strong>Style is Personal &amp; Fun:</strong> Fit Check is an entertaining style sandbox designed to celebrate confidence, inspire outfit experimentation, and spark good vibes with friends—never to judge human worth or diminish anyone.
+            </div>
+          </div>
         </div>
 
         {/* 3 Core Rating Pillars */}
@@ -34,7 +41,7 @@ export function FitCheckAboutSection() {
             <p className="feature-description">
               Evaluates the core architecture of your outfit: shoulder seam fit, torso-to-leg proportions, color harmony, and occasion appropriateness.
             </p>
-            <span className="feature-tier-badge">Bedrock Architecture</span>
+            <span className="feature-tier-badge">Foundations (71 Pts)</span>
           </div>
 
           <div className="feature-block scroll-reveal" id="feature-2">
@@ -48,7 +55,7 @@ export function FitCheckAboutSection() {
             <p className="feature-description">
               Inspects fabric texture interaction, footwear coordination, accessory placement, and overall grooming execution.
             </p>
-            <span className="feature-tier-badge">The Refinements</span>
+            <span className="feature-tier-badge">Details (20 Pts)</span>
           </div>
 
           <div className="feature-block scroll-reveal" id="feature-3">
@@ -61,7 +68,7 @@ export function FitCheckAboutSection() {
             <p className="feature-description">
               Assesses focal point attention control and unique personal signature that elevates an ensemble from standard to memorable.
             </p>
-            <span className="feature-tier-badge">Sartorial Signature</span>
+            <span className="feature-tier-badge">Styling (9 Pts)</span>
           </div>
         </div>
 
@@ -79,12 +86,8 @@ export function FitCheckAboutSection() {
               <div className="step-number">01</div>
               <h4 className="step-title">Full-Length Photo</h4>
               <p className="step-desc">
-                Take a straight-on, full-body portrait showing head-to-toe clothing and footwear in good ambient light.
+                Take a straight-on, full-body portrait showing head-to-toe clothing and footwear in good ambient light. Standing relaxed 2–3 meters away works best.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Camera placed at waist height, 2.5–3 meters away, standing in a natural relaxed posture.</span>
-              </div>
             </div>
 
             <div className="step-card">
@@ -93,10 +96,6 @@ export function FitCheckAboutSection() {
               <p className="step-desc">
                 Drop your image or browse your device. Landmark vision maps garment boundaries and proportion lines in seconds.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>You can also test with the built-in sample photo to preview the complete 10-parameter style report.</span>
-              </div>
             </div>
 
             <div className="step-card">
@@ -105,10 +104,6 @@ export function FitCheckAboutSection() {
               <p className="step-desc">
                 Check your score breakdown and inspect specific suggestions—such as adjusting trouser break or balancing color contrast.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Follow tailored tailoring levers to elevate your silhouette from typical to editorial.</span>
-              </div>
             </div>
           </div>
         </div>

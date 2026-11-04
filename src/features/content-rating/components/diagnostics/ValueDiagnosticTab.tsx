@@ -33,7 +33,7 @@ export function ValueDiagnosticTab({ scoreData }: DiagnosticTabProps) {
       <div className="content-thesis-card">
         <div className="thesis-eyebrow">IDENTIFIED CORE THESIS</div>
         <p className="thesis-text">
-          &ldquo;{scoreData.item.title || 'Practical symbol search and line jump shortcut for senior developer workflows.'}&rdquo;
+          &ldquo;{scoreData.item.title || (scoreData.item.caption ? (scoreData.item.caption.length > 80 ? `${scoreData.item.caption.slice(0, 80)}...` : scoreData.item.caption) : 'Actionable insight and clear value delivery without filler.')}&rdquo;
         </p>
         <div className="thesis-meta-chips">
           <span className="thesis-chip">Niche Fit: 95%</span>

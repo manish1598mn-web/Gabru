@@ -32,14 +32,14 @@ export const PARAM_TO_TAB: Record<number, DeepDiveTabKey> = {
 };
 
 export const BEAUTY_CARD_BACKGROUNDS: Record<number, string> = {
-  1: 'linear-gradient(135deg, #2b1f1a 0%, #6b3f2a 55%, #3a2418 100%)', // skin
-  2: 'linear-gradient(135deg, #182234 0%, #294e77 55%, #162438 100%)', // eyes
-  3: 'linear-gradient(135deg, #2a2418 0%, #7a6228 55%, #3a2e14 100%)', // harmony
-  4: 'linear-gradient(135deg, #2a1a24 0%, #7a3a5a 55%, #3a1828 100%)', // expression
-  5: 'linear-gradient(135deg, #1a2a1e 0%, #3a8a4f 55%, #142418 100%)', // grooming
-  6: 'linear-gradient(135deg, #2a2018 0%, #8a5a2a 55%, #241a12 100%)', // features
-  7: 'linear-gradient(135deg, #1a2e2e 0%, #3a8a8a 55%, #142828 100%)', // symmetry
-  8: 'linear-gradient(135deg, #1a2430 0%, #4a6a8a 55%, #182430 100%)', // averageness
-  9: 'linear-gradient(135deg, #241a30 0%, #6a3a8a 55%, #1e1428 100%)', // jaw
-  10: 'linear-gradient(135deg, #26241a 0%, #6d642f 55%, #222018 100%)', // neck
+  1: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  2: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  3: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  4: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  5: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  6: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  7: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  8: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  9: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  10: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
 };

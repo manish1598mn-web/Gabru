@@ -1,226 +1,218 @@
 /**
- * GABRU — CONTENT SCORING ENGINE CALIBRATION TEST SUITE
+ * GABRU — CONTENT RATING ENGINE TEST SUITE
  * 
- * Verifies mathematical compliance against the specification:
- * 1. 10 Parameters and Subfactors Weight Allocations (Sum = 100)
- * 2. Real Worked Example Calibration from content_score_v1.py (Quality 88.6, Performance 88.6, Content 88.6, Conf 0.92)
- * 3. Link-Only Tier A Calibration (Quality 82.5, Content 84.3, Conf 0.57)
- * 4. Evidence Gate Validation (Timestamp, Quote, Severity)
- * 5. Platform Band Penalty Function
- * 6. Critical Flaw Caps Enforcement (Hook < 4 -> Cap 75, Value < 4 -> Cap 70, Trust < 4 -> Cap 60)
+ * Verifies:
+ * 1. Telemetry parsing & fallback estimations (shares/saves)
+ * 2. Mathematical formulations for S1 to S9
+ * 3. Deterministic Badge Priority Classifier (S10)
+ * 4. Transparent 100-Point Impact Scale with verified benchmark tiers
+ * 5. Pre-parsed Demo Datasets (Group-Chat Hall of Famer, Aesthetic Flex, 3 AM Goblin Hours)
  */
 
 import {
-  calculateQualityScore,
-  calculatePerformanceScore,
+  scoreSinglePost,
   evaluateUnifiedContent,
-  validateEvidenceGate,
+  countFirstPersonWords,
+  countEmojis,
+  detectSlangMatches,
+  resolveSinglePostTelemetry,
 } from '../ContentScoringEngine';
-
 import {
   DEMO_VIRAL_SHORT,
-  DEMO_LINK_ONLY_REEL,
-  CONTENT_PARAMETERS,
-  calculateBandPenalty,
+  DEMO_AESTHETIC_FLEX,
+  DEMO_GOBLIN_HOURS,
 } from '../../constants/ContentRatingConstants';
-
-import type { QualityEngineInputFactor } from '../ContentScoringEngine';
 
 function assert(condition: boolean, message: string) {
   if (!condition) {
     console.error(`❌ FAIL: ${message}`);
-    process.exit(1);
+    throw new Error(`Assertion failed: ${message}`);
   } else {
     console.log(`✅ PASS: ${message}`);
   }
 }
 
-console.log('================================================================');
-console.log('🧪 RUNNING CONTENT SCORING ENGINE CALIBRATION SUITE');
+console.log('\n================================================================');
+console.log('🧪 RUNNING REDESIGNED SINGLE-POST CONTENT SCORING ENGINE TESTS');
 console.log('================================================================\n');
 
 // -------------------------------------------------------------
-// TEST 1: Parameter Weight Allocations & Canonical Sums
+// TEST 1: NLP and Telemetry Parsing Helpers
 // -------------------------------------------------------------
-console.log('--- TEST 1: Parameter & Subfactor Weights ---');
-const totalParamWeight = CONTENT_PARAMETERS.reduce((acc, p) => acc + p.weight, 0);
-assert(totalParamWeight === 100, `Parameters sum to exactly 100 pts (got ${totalParamWeight})`);
-assert(CONTENT_PARAMETERS.length === 10, `Exactly 10 parameters defined (got ${CONTENT_PARAMETERS.length})`);
+console.log('--- TEST 1: NLP & Telemetry Parsing Helpers ---');
 
-for (const p of CONTENT_PARAMETERS) {
-  const subWeightSum = p.subfactors.reduce((acc, s) => acc + s.weight, 0);
-  assert(subWeightSum === 100, `Parameter ${p.id} (${p.name}) subfactors sum to 100 (got ${subWeightSum})`);
-}
+const testCaption = 'Me thinking I could finish this before 3am delulu era #coding #dev #help';
+const firstPersonCount = countFirstPersonWords(testCaption);
+assert(firstPersonCount === 2, `Detected 2 first-person words ("me", "i") in caption (got ${firstPersonCount})`);
 
-// -------------------------------------------------------------
-// TEST 2: Platform Band Penalty Function (Part A4)
-// -------------------------------------------------------------
-console.log('\n--- TEST 2: Band Penalty Function ---');
-// Band: 15 to 60s, midpoint = 37.5
-// 38s: inside band -> 0
-assert(calculateBandPenalty(38, 15, 60) === 0.0, 'Inside band is 0');
-// 61s: distance 1s, midpoint 37.5 -> 2.67% <= 3% -> 0
-assert(calculateBandPenalty(61, 15, 60) === 0.0, 'Within 3% deviation is 0');
-// 62s: distance 2s, midpoint 37.5 -> 5.33% <= 7% -> -1.0
-assert(calculateBandPenalty(62, 15, 60) === -1.0, 'Between 3% and 7% is -1.0');
-// 64s: distance 4s, midpoint 37.5 -> 10.67% <= 12% -> -2.5
-assert(calculateBandPenalty(64, 15, 60) === -2.5, 'Between 7% and 12% is -2.5');
-// 70s: distance 10s, midpoint 37.5 -> 26.67% > 12% -> -4.5
-assert(calculateBandPenalty(70, 15, 60) === -4.5, 'Above 12% is -4.5');
+const emojiCaption = 'Look at this fit 🔥🔥🔥 and this bag ✨';
+const emojiCount = countEmojis(emojiCaption);
+assert(emojiCount === 4, `Detected 4 emojis in caption (got ${emojiCount})`);
+
+const slangCheck = detectSlangMatches(testCaption);
+assert(slangCheck.count === 2, `Detected 2 slang terms ("delulu", "era") (got ${slangCheck.count})`);
 
 // -------------------------------------------------------------
-// TEST 3: Evidence Gate (Part A3)
+// TEST 2: Fallback Telemetry Estimation
 // -------------------------------------------------------------
-console.log('\n--- TEST 3: Evidence Gate Validation ---');
-const validTimestampGate = validateEvidenceGate(
-  'HK4',
-  2,
-  { type: 'timestamp', ref: '00:07', note: 'Payoff at 7s' },
-  DEMO_VIRAL_SHORT
-);
-assert(validTimestampGate.passed === true, 'Valid timestamp within 34s duration passes gate');
+console.log('\n--- TEST 2: Fallback Telemetry Estimation ---');
 
-const invalidTimestampGate = validateEvidenceGate(
-  'HK4',
-  2,
-  { type: 'timestamp', ref: '00:45', note: 'Payoff past end of video' },
-  DEMO_VIRAL_SHORT
-);
-assert(invalidTimestampGate.passed === false, 'Timestamp past end of video is rejected');
-assert(invalidTimestampGate.remediatedVisibility === 0.5, 'Rejected finding falls back to V = 0.5');
-
-const noEvidenceGate = validateEvidenceGate('CT1', 2, undefined, DEMO_VIRAL_SHORT);
-assert(noEvidenceGate.passed === false, 'Severity above 0 with no evidence is rejected');
-
-// -------------------------------------------------------------
-// TEST 4: Real Worked Example (Tier C - Uploaded 34s Reel)
-// -------------------------------------------------------------
-console.log('\n--- TEST 4: Real Worked Example (Tier C) ---');
-/**
- * Exact table from content_score_v1.py run:
- * Hook: R=8.11, Max=18, Points=14.6, Conf=1.00
- * Value: R=9.45, Max=16, Points=15.1, Conf=1.00
- * Storytelling: R=9.31, Max=12, Points=11.2, Conf=1.00
- * Visual & Audio: R=9.34, Max=14, Points=13.1, Conf=1.00
- * Caption, Copy: R=8.96, Max=10, Points=9.0, Conf=1.00
- * CTA: R=7.50, Max=7, Points=5.3, Conf=1.00
- * Platform Fit: R=9.72, Max=8, Points=7.8, Conf=1.00
- * Originality: R=7.90, Max=6, Points=4.7, Conf=1.00
- * Timing: R=8.00, Max=4, Points=3.2, Conf=0.25
- * Trust: R=9.46, Max=5, Points=4.7, Conf=0.90
- * Quality Score: 88.6
- * Performance Score: 88.6
- * Content Score: 88.6 (Strong)
- * Confidence: 0.92 (High)
- */
-const tierCFactors: Record<string, QualityEngineInputFactor> = {
-  // Hook: R = 8.11, Points = 14.6
-  HK1: { V: 1.0, raw: 8.0 },
-  HK2: { V: 1.0, raw: 9.0 },
-  HK3: { V: 1.0, raw: 8.4 },
-  HK4: { V: 1.0, raw: 7.5 }, // 7s to first value -> -2.5 penalty
-
-  // Value: R = 9.45, Points = 15.1
-  VR1: { V: 1.0, raw: 10.0 },
-  VR2: { V: 1.0, raw: 9.5 },
-  VR3: { V: 1.0, raw: 9.0 },
-  VR4: { V: 1.0, raw: 9.0 },
-
-  // Storytelling: R = 9.31, Points = 11.2
-  ST1: { V: 1.0, raw: 9.5 },
-  ST2: { V: 1.0, raw: 9.0 },
-  ST3: { V: 1.0, raw: 9.5 },
-  ST4: { V: 1.0, raw: 9.0 },
-
-  // Visual & Audio: R = 9.34, Points = 13.1 (beta = 0.15)
-  VA1: { V: 1.0, raw: 10.0 },
-  VA2: { V: 1.0, raw: 9.5 },
-  VA3: { V: 1.0, raw: 9.5 },
-  VA4: { V: 1.0, raw: 9.0 },
-  VA5: { V: 1.0, raw: 9.0 },
-
-  // Copy: R = 8.96, Points = 9.0
-  CP1: { V: 1.0, raw: 10.0 },
-  CP2: { V: 1.0, raw: 7.5 }, // 20% keyword coverage -> -2.5 penalty
-  CP3: { V: 1.0, raw: 9.5 },
-  CP4: { V: 1.0, raw: 9.5 },
-
-  // CTA: R = 7.50, Points = 5.3
-  CT1: { V: 1.0, raw: 7.5 }, // No CTA -> -2.5 penalty
-  CT2: { V: 1.0, raw: 7.5 }, // No question -> -2.5 penalty
-  CT3: { V: 1.0, raw: 7.5 },
-
-  // Platform Fit: R = 9.72, Points = 7.8
-  PF1: { V: 1.0, raw: 10.0 },
-  PF2: { V: 1.0, raw: 9.5 },
-  PF3: { V: 1.0, raw: 9.5 },
-  PF4: { V: 1.0, raw: 10.0 },
-
-  // Originality: R = 7.90, Points = 4.7
-  OC1: { V: 1.0, raw: 8.0 },
-  OC2: { V: 1.0, raw: 8.0 },
-
-  // Timing: R = 8.00, Points = 3.2, Conf = 0.25 (TM1 V=0 unobserved; TM2 V=0.5 -> 7.0 + 0.5*9.0 = 8.0)
-  TM1: { V: 0.0, raw: 10.0 },
-  TM2: { V: 0.5, raw: 9.0 },
-
-  // Trust: R = 9.46, Points = 4.7, Conf = 0.90 (beta = 0.20)
-  TC1: { V: 1.0, raw: 10.0 },
-  TC2: { V: 0.5, raw: 8.0 },
-  TC3: { V: 1.0, raw: 9.5 },
-  TC4: { V: 1.0, raw: 10.0 },
-  TC5: { V: 1.0, raw: 10.0 },
+const hiddenMetricsItem = {
+  ...DEMO_VIRAL_SHORT,
+  metrics: {
+    views: 10000,
+    likes: 1000,
+    comments: 50,
+    shares: null, // Hidden on public Instagram
+    saves: null, // Hidden on public Instagram
+    reposts: 20,
+  },
 };
 
-const tierCResult = evaluateUnifiedContent(DEMO_VIRAL_SHORT, tierCFactors);
-console.log(`Tier C Quality Score: ${tierCResult.qualityScore} (Target: 88.6)`);
-console.log(`Tier C Performance Score: ${tierCResult.performanceScore} (Target: 88.6)`);
-console.log(`Tier C Content Score: ${tierCResult.contentScore} (Target: 88.6)`);
-console.log(`Tier C Confidence: ${tierCResult.confidenceScore} (Target: 0.92)`);
-console.log(`Tier C Verdict: ${tierCResult.verdict} (Target: Strong)`);
-
-assert(Math.abs(tierCResult.qualityScore - 88.6) <= 0.2, `Tier C Quality score matches 88.6 (got ${tierCResult.qualityScore})`);
-assert(tierCResult.performanceScore !== null && Math.abs(tierCResult.performanceScore - 88.6) <= 0.2, `Tier C Performance score matches 88.6 (got ${tierCResult.performanceScore})`);
-assert(Math.abs(tierCResult.contentScore - 88.6) <= 0.2, `Tier C Content score matches 88.6 (got ${tierCResult.contentScore})`);
-assert(tierCResult.verdict === 'Strong', `Tier C Verdict is 'Strong' (got ${tierCResult.verdict})`);
-assert(Math.abs(tierCResult.confidenceScore - 0.92) <= 0.03, `Tier C Confidence matches 0.92 (got ${tierCResult.confidenceScore})`);
-assert(tierCResult.confidence === 'High', `Tier C Confidence band is 'High' (got ${tierCResult.confidence})`);
+const telemetry = resolveSinglePostTelemetry(hiddenMetricsItem);
+assert(telemetry.isSharesEstimated === true, 'Shares marked as estimated when null');
+assert(telemetry.isSavesEstimated === true, 'Saves marked as estimated when null');
+// shares fallback: 50 * 0.8 + 1000 * 0.015 = 40 + 15 = 55
+assert(telemetry.shares === 55, `Shares estimated via velocity (expected 55, got ${telemetry.shares})`);
+// saves fallback: 50 * 1.1 + 1000 * 0.025 = 55 + 25 = 80
+assert(telemetry.saves === 80, `Saves estimated via velocity (expected 80, got ${telemetry.saves})`);
+assert(telemetry.bookmarkRate === '8.0%', `Bookmark rate computed correctly (got ${telemetry.bookmarkRate})`);
+assert(telemetry.groupChatMultiplier === '7.5%', `Group chat multiplier computed correctly (got ${telemetry.groupChatMultiplier})`);
 
 // -------------------------------------------------------------
-// TEST 5: Link-Only (Tier A) Calibration
+// TEST 3: Demo 1 (The Group-Chat Hall of Famer)
 // -------------------------------------------------------------
-console.log('\n--- TEST 5: Link-Only (Tier A) Calibration ---');
-// Same raw findings as Tier C, but using Tier A's native visibility factors
-const tierARawFactors: Record<string, QualityEngineInputFactor> = {};
-for (const [k, v] of Object.entries(tierCFactors)) {
-  tierARawFactors[k] = { raw: v.raw };
-}
-const tierAResult = evaluateUnifiedContent(DEMO_LINK_ONLY_REEL, tierARawFactors);
-console.log(`Tier A Quality Score: ${tierAResult.qualityScore} (Target: ~82.5)`);
-console.log(`Tier A Content Score: ${tierAResult.contentScore} (Target: ~84.3)`);
-console.log(`Tier A Confidence: ${tierAResult.confidenceScore} (Target: ~0.57)`);
-console.log(`Tier A Confidence Band: ${tierAResult.confidence} (Target: Medium)`);
+console.log('\n--- TEST 3: Demo 1 (The Group-Chat Hall of Famer) ---');
 
-assert(Math.abs(tierAResult.qualityScore - 82.5) <= 1.5, `Tier A Quality score matches ~82.5 (got ${tierAResult.qualityScore})`);
-assert(tierAResult.confidenceScore < 0.70, `Tier A Confidence is lower than Tier C (got ${tierAResult.confidenceScore})`);
-assert(tierAResult.confidence === 'Medium', `Tier A Confidence band is 'Medium' (got ${tierAResult.confidence})`);
+const result1 = evaluateUnifiedContent(DEMO_VIRAL_SHORT);
+console.log(`Demo 1 Raw Score: ${result1.rawScore}`);
+console.log(`Demo 1 Final Curved Score: ${result1.contentScore}`);
+console.log(`Demo 1 Verdict Badge: "${result1.verdictBadge}"`);
+console.log(`Demo 1 Archetype Tier: "${result1.archetypeTier}"`);
+console.log(`Demo 1 S5 (Group-Chat Forwardability): ${result1.scores.S5}`);
+
+assert(result1.scores.S5 >= 78, `S5 meets or exceeds 78 (got ${result1.scores.S5})`);
+assert(result1.verdictBadge === 'Group-Chat Hall of Famer', `Priority 1 Badge is awarded (got "${result1.verdictBadge}")`);
+assert(result1.contentScore >= 70 && result1.contentScore <= 100, `Final score in valid 0..100 range (got ${result1.contentScore})`);
 
 // -------------------------------------------------------------
-// TEST 6: Critical Flaw Caps Enforcement
+// TEST 4: Demo 2 (The Certified Thirst Trap / Aesthetic Flex)
 // -------------------------------------------------------------
-console.log('\n--- TEST 6: Critical Flaw Caps Enforcement ---');
-const badHookFactors = {
-  ...tierCFactors,
-  HK1: { V: 1.0, raw: 2.0 },
-  HK2: { V: 1.0, raw: 2.0 },
-  HK3: { V: 1.0, raw: 2.0 },
-  HK4: { V: 1.0, raw: 2.0 },
+console.log('\n--- TEST 4: Demo 2 (The Certified Thirst Trap / Aesthetic Flex) ---');
+
+const result2 = evaluateUnifiedContent(DEMO_AESTHETIC_FLEX);
+console.log(`Demo 2 Raw Score: ${result2.rawScore}`);
+console.log(`Demo 2 Final Curved Score: ${result2.contentScore}`);
+console.log(`Demo 2 Verdict Badge: "${result2.verdictBadge}"`);
+console.log(`Demo 2 S6 (Bookmark Bait): ${result2.scores.S6}, S1 (Main Character): ${result2.scores.S1}`);
+
+assert(result2.scores.S6 >= 78, `S6 meets or exceeds 78 (got ${result2.scores.S6})`);
+assert(result2.scores.S1 >= 75, `S1 meets or exceeds 75 (got ${result2.scores.S1})`);
+assert(result2.verdictBadge === 'Certified Thirst Trap / Aesthetic Flex', `Priority 2 Badge is awarded (got "${result2.verdictBadge}")`);
+
+// -------------------------------------------------------------
+// TEST 5: Demo 3 (3 AM Goblin Hours Chaos Dump)
+// -------------------------------------------------------------
+console.log('\n--- TEST 5: Demo 3 (3 AM Goblin Hours Chaos Dump) ---');
+
+const result3 = evaluateUnifiedContent(DEMO_GOBLIN_HOURS);
+console.log(`Demo 3 Raw Score: ${result3.rawScore}`);
+console.log(`Demo 3 Final Curved Score: ${result3.contentScore}`);
+console.log(`Demo 3 Verdict Badge: "${result3.verdictBadge}"`);
+console.log(`Demo 3 S8 (Upload Timing): ${result3.scores.S8}`);
+console.log(`Demo 3 S4 (Caption Poetry vs Cringe): ${result3.scores.S4}`);
+
+assert(DEMO_GOBLIN_HOURS.uploadHourLocal === 3, 'Post upload hour is 3 AM');
+assert(result3.scores.S4 <= 60, `Caption score penalized by hashtag and slang soup (got ${result3.scores.S4})`);
+assert(result3.verdictBadge === '3 AM Unhinged Chaos Dump', `Priority 6 Badge is awarded (got "${result3.verdictBadge}")`);
+assert(result3.archetypeTier === 'Goblin Hours Shitposter', `Archetype tier matches goblin hours (got "${result3.archetypeTier}")`);
+
+// -------------------------------------------------------------
+// TEST 6: Viral Ego Curve Range
+// -------------------------------------------------------------
+console.log('\n--- TEST 6: Calibrated Score Range (0 to 100) ---');
+
+const lowPost = {
+  ...DEMO_GOBLIN_HOURS,
+  llmEvaluations: {
+    subjectSpotlight: 1,
+    poseAudacity: 1,
+    lighting: 1,
+    colorGrading: 1,
+    composition: 1,
+    stylingDrip: 1,
+    visualHook: 1,
+    openingLinePunch: 1,
+    captionWit: 0,
+    shareRelatability: 0,
+    saveUtilityEnvy: 0,
+    commentVibe: 0,
+    conceptOriginality: 0,
+  },
 };
 
-const cappedResult = evaluateUnifiedContent(DEMO_VIRAL_SHORT, badHookFactors);
-console.log(`Capped Content Score with Hook < 4: ${cappedResult.contentScore} (Cap: 75)`);
-assert(cappedResult.contentScore <= 75.0, `Hook rating < 4 caps Content Score at 75 (got ${cappedResult.contentScore})`);
+const lowResult = evaluateUnifiedContent(lowPost);
+console.log(`Worst-case Post Curved Score: ${lowResult.contentScore}`);
+assert(lowResult.contentScore >= 0 && lowResult.contentScore <= 100, `Calibrated score stays within 0..100 range (got ${lowResult.contentScore})`);
+
+// -------------------------------------------------------------
+// TEST 7: Raw Flat Scraper Object Parity (Direct User Code Snippet Test)
+// -------------------------------------------------------------
+console.log('\n--- TEST 7: Raw Flat Scraper Object Parity ---');
+
+const flatScraperPost = {
+  likes: 2400,
+  comments: 180,
+  shares: 420,
+  saves: 310,
+  reposts: 85,
+  views: 35000,
+  authorFollowers: 12000,
+  uploadHourLocal: 19, // 7 PM peak time
+  firstPersonWords: 3,
+  wordCount: 25,
+  emojiCount: 2,
+  hashtagCount: 3,
+  isTrendingAudio: false,
+  slangMatchCount: 0,
+};
+
+const flatLlm = {
+  subjectSpotlight: 9.0,
+  poseAudacity: 8.5,
+  lighting: 9.0,
+  colorGrading: 8.8,
+  composition: 8.5,
+  stylingDrip: 9.2,
+  visualHook: 8.5,
+  openingLinePunch: 8.0,
+  captionWit: 22,
+  shareRelatability: 30,
+  saveUtilityEnvy: 28,
+  commentVibe: 32,
+  conceptOriginality: 52,
+};
+
+const flatResult = scoreSinglePost(flatScraperPost, flatLlm);
+
+console.log('Flat Post Telemetry:', flatResult.telemetry);
+console.log('Flat Post Parameter Scores (S1-S9):', flatResult.scores);
+console.log('Flat Post Verdict Badge:', flatResult.badge);
+console.log('Flat Post Raw Score:', flatResult.rawScore);
+console.log('Flat Post Final Curved Score:', flatResult.finalCurvedScore);
+
+assert(flatResult.telemetry.likes === 2400, 'Flat post likes preserved');
+assert(flatResult.telemetry.shares === 420, 'Flat post shares preserved');
+assert(flatResult.telemetry.saves === 310, 'Flat post saves preserved');
+assert(flatResult.telemetry.trueEngagementRate === '9.70%', `True engagement rate formatted correctly (got ${flatResult.telemetry.trueEngagementRate})`);
+assert(flatResult.telemetry.groupChatMultiplier === '21.0%', `Group chat multiplier formatted correctly (got ${flatResult.telemetry.groupChatMultiplier})`);
+assert(flatResult.telemetry.bookmarkRate === '12.9%', `Bookmark rate formatted correctly (got ${flatResult.telemetry.bookmarkRate})`);
+assert(flatResult.scores.S1 >= 85, `S1 Main character energy calculated properly (got ${flatResult.scores.S1})`);
+assert(flatResult.scores.S2 >= 85, `S2 Visual aura calculated properly (got ${flatResult.scores.S2})`);
+assert(flatResult.scores.S5 >= 78, `S5 Group chat forwardability calculated properly (got ${flatResult.scores.S5})`);
+assert(flatResult.badge === 'Group-Chat Hall of Famer', `S5 >= 78 awards Group-Chat Hall of Famer (got "${flatResult.badge}")`);
+assert(flatResult.finalCurvedScore >= 0 && flatResult.finalCurvedScore <= 100, `Final score in 0..100 range (got ${flatResult.finalCurvedScore})`);
 
 console.log('\n================================================================');
-console.log('🎉 ALL CONTENT SCORING ENGINE CALIBRATION TESTS PASSED!');
+console.log('🎉 ALL SINGLE-POST CONTENT SCORING ENGINE TESTS PASSED!');
 console.log('================================================================\n');

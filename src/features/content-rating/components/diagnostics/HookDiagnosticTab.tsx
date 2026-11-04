@@ -32,21 +32,21 @@ export function HookDiagnosticTab({ scoreData }: DiagnosticTabProps) {
       {/* Visual Timeline Bar */}
       <div className="content-hook-timeline-card">
         <div className="timeline-header">
-          <span className="timeline-title">ATTENTION TIMELINE (00:00 - 00:08)</span>
-          <span className="timeline-tag">FIRST VALUE DELAYED (00:06)</span>
+          <span className="timeline-title">ATTENTION TIMELINE (FIRST 8 SECONDS)</span>
+          <span className="timeline-tag">CRITICAL RETENTION WINDOW</span>
         </div>
         <div className="timeline-track">
           <div className="track-segment hook-window" style={{ width: '37.5%' }}>
             <span className="segment-label">0–3s Golden Hook</span>
-            <span className="segment-desc">Initial Verbal Hook</span>
+            <span className="segment-desc">Initial Visual / Hook</span>
           </div>
           <div className="track-segment build-window" style={{ width: '37.5%' }}>
-            <span className="segment-label">3–6s Explanation</span>
-            <span className="segment-desc">Talking Head Transition</span>
+            <span className="segment-label">3–6s Narrative Build</span>
+            <span className="segment-desc">Context &amp; Transition</span>
           </div>
           <div className="track-segment payoff-window" style={{ width: '25%' }}>
             <span className="segment-label">6s+ Payoff</span>
-            <span className="segment-desc">First Visual Shortcut</span>
+            <span className="segment-desc">Core Value Insight</span>
           </div>
         </div>
       </div>

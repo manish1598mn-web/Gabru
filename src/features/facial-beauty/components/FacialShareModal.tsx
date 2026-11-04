@@ -1,8 +1,16 @@
 'use client';
 
-import React from 'react';
-import { Modal } from '@/shared/components/ui/Modal';
-import { Button } from '@/shared/components/ui/Button';
+/**
+ * GABRU — FACIAL BEAUTY SHARE LIGHTBOX MODAL
+ * 
+ * Content-focused, frameless lightbox:
+ * - Pure focus on the Facial Beauty Share Card
+ * - Zero outer modal border, zero header boxes, zero technical subtitle clutter
+ * - Single clean action button to download the card
+ */
+
+import React, { useEffect } from 'react';
+import { getPlatformShareUrl } from '@/shared';
 
 export interface FacialShareModalProps {
   isOpen: boolean;
@@ -11,17 +19,9 @@ export interface FacialShareModalProps {
   generatedCardUrl: string | null;
   shareCardCopied: boolean;
   onShare: () => void;
+  onDownload?: () => void;
 }
 
-/**
- * FacialShareModal
- *
- * 1080x1350 High-Resolution Social Media Beauty Scorecard Preview & Share modal:
- * - Unified accessible Modal primitive with escape handler and focus trapping
- * - Card generation spinner placeholder
- * - High-DPI canvas preview image
- * - Standardized primary action button
- */
 export function FacialShareModal({
   isOpen,
   onClose,
@@ -29,77 +29,114 @@ export function FacialShareModal({
   generatedCardUrl,
   shareCardCopied,
   onShare,
+  onDownload,
 }: FacialShareModalProps) {
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Facial Beauty Scorecard (1080 × 1350)"
-      subtitle="High-resolution verified biometric breakdown optimized for 4:5 social cards."
-      maxWidth="620px"
-      id="share-card-modal"
-      footer={
-        <div className="share-modal-footer">
-          {shareCardCopied && (
-            <div className="share-feedback-toast">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>Card Downloaded &amp; Ready to Share!</span>
-            </div>
-          )}
+  // Lock scroll and handle Escape key
+  useEffect(() => {
+    if (!isOpen) return;
 
-          <Button
-            variant="primary"
-            size="md"
-            onClick={onShare}
-            disabled={isGeneratingCard || !generatedCardUrl}
-            id="btn-share-with-friends"
-            title="Download card and share with friends"
-            leftIcon={
-              <svg
-                width="17"
-                height="17"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="18" cy="5" r="3" />
-                <circle cx="6" cy="12" r="3" />
-                <circle cx="18" cy="19" r="3" />
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-              </svg>
-            }
-          >
-            Download &amp; Share
-          </Button>
-        </div>
-      }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="share-frameless-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Facial Beauty Share Card Preview"
+      id="facial-share-modal"
     >
-      <div className="share-card-modal-body">
+      <div
+        className="share-frameless-content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Floating Close Button */}
+        <button
+          type="button"
+          className="share-frameless-close-btn focus-ring touch-target"
+          onClick={onClose}
+          aria-label="Close dialog"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        {/* Card Stage — Pure Content Focus */}
         {isGeneratingCard || !generatedCardUrl ? (
-          <div className="share-card-generating-box">
-            <div className="share-card-spinner-ring" />
-            <h4 className="generating-title">Generating Facial Style Card...</h4>
-            <p className="generating-sub">
-              Composing your portrait and 10-parameter attractiveness breakdown...
-            </p>
+          <div className="share-frameless-loading">
+            <div className="share-spinner" />
+            <p>Composing facial beauty card...</p>
           </div>
         ) : (
-          <div className="share-card-preview-wrapper">
+          <div className="share-frameless-card-stage">
             <img
               src={generatedCardUrl}
               alt="Gabru Facial Beauty Scorecard"
-              className="share-card-preview-img"
+              className="share-frameless-image"
               id="share-card-preview-img"
             />
           </div>
         )}
+
+        {/* Action Group: Share Card & Link + Download PNG */}
+        {!isGeneratingCard && generatedCardUrl && (
+          <div className="share-action-group">
+            <div className="share-frameless-action-bar">
+              <button
+                type="button"
+                className="share-frameless-download-btn focus-ring tactile-press"
+                onClick={onShare}
+                id="btn-share-with-friends"
+                title="Share card with platform URL auto-attached"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                </svg>
+                <span>{shareCardCopied ? 'Link Copied to Clipboard!' : 'Share Card & Link'}</span>
+              </button>
+
+              <button
+                type="button"
+                className="share-frameless-secondary-btn focus-ring tactile-press"
+                onClick={onDownload || onShare}
+                id="btn-download-card-png"
+                title="Download high-resolution 1080x1350 card"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Download PNG</span>
+              </button>
+            </div>
+
+            <span className="share-url-pill">
+              🔗 Auto-attached: {getPlatformShareUrl('/beauty-rating')}
+            </span>
+          </div>
+        )}
       </div>
-    </Modal>
+    </div>
   );
 }

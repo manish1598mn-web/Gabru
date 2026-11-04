@@ -34,14 +34,15 @@ export function CtaDiagnosticTab({ scoreData }: DiagnosticTabProps) {
         <div className="cta-audit-status flagged">
           <span className="cta-flag-icon">⚠️</span>
           <div>
-            <div className="cta-flag-title">Passive Closing Directive Detected</div>
+            <div className="cta-flag-title">Engagement Call-To-Action Assessment</div>
             <div className="cta-flag-desc">
-              &ldquo;Try it right now and tell me how many clicks you saved today.&rdquo;
+              {scoreData.suggestions.find((s) => s.parameterId === 6)?.description ||
+                'Audits whether the post concludes with a clear conversational prompt to catalyze comments.'}
             </div>
           </div>
         </div>
         <div className="cta-fix-recommendation">
-          💡 <strong>Recommended Rewrite:</strong> &ldquo;Which keyboard shortcut can you not code without? Drop your favorite in the comments below!&rdquo;
+          💡 <strong>High-Conversion Pattern:</strong> Conclude with a specific, low-friction question that viewers can respond to immediately.
         </div>
       </div>
 

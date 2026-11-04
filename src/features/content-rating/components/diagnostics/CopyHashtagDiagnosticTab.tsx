@@ -37,10 +37,16 @@ export function CopyHashtagDiagnosticTab({ scoreData }: DiagnosticTabProps) {
           <span className="caption-tag-count">{item.hashtags.length} Hashtags Used</span>
         </div>
         <div className="caption-body-preview">
-          &ldquo;{item.caption || 'Stop wasting clicks in VS Code. Here is the hidden keybinding that saves 30 minutes a day #vscode'}&rdquo;
+          &ldquo;{item.caption || 'Authentic caption highlighting core themes with clean formatting.'}&rdquo;
         </div>
         <div className="caption-warning-strip">
-          ⚠️ <strong>Optimization Opportunity:</strong> Only 1 hashtag used. Expanding to 3–5 targeted tags improves discoverability without triggering spam filters.
+          {item.hashtags.length === 0 ? (
+            <>💡 <strong>Opportunity:</strong> Adding 3–5 targeted niche hashtags improves discoverability in search feeds.</>
+          ) : item.hashtags.length > 8 ? (
+            <>⚠️ <strong>Opportunity:</strong> {item.hashtags.length} hashtags detected. Trimming to 3–5 focused tags avoids clutter.</>
+          ) : (
+            <>✓ <strong>Optimal Band:</strong> {item.hashtags.length} hashtags falls within the recommended 3–5 tag range.</>
+          )}
         </div>
       </div>
 

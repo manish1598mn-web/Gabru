@@ -18,10 +18,10 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>📐 Parameter 3: Facial Harmony &amp; Proportions</span>
-            <span className="diag-stat-code">13 Pts Max · β = 0.10 · Fixed</span>
+            <span className="diag-stat-code">13 Pts Max &bull; Fixed Architecture</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates vertical facial thirds (Tr-G, G-Sn, Sn-Gn), transverse fifths canon, overall face shape balance (width ÷ height), lateral profile angle, and divine golden ratio φ (≈ 1.618).
+            Evaluates vertical facial thirds, transverse fifths balance, overall facial width-to-height ratio, and golden ratio proportions (φ ≈ 1.618).
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -70,7 +70,6 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Facial Thirds</span>
-            <span className="diag-stat-code">HP1 · W=25</span>
           </div>
           <div className="diag-stat-val">
             m = {harmMetrics?.thirdsDev.toFixed(3) ?? '0.015'}
@@ -85,7 +84,6 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Feature Spacing</span>
-            <span className="diag-stat-code">HP2 · W=20</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.subfactorRatings?.['HP2']?.raw?.toFixed(1) ?? '8.8'}/10
@@ -98,39 +96,36 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Face Shape Balance</span>
-            <span className="diag-stat-code">HP3 · W=20</span>
           </div>
           <div className="diag-stat-val">
             {harmMetrics?.faceShapeRatio.toFixed(2) ?? '0.74'}
           </div>
           <div className="diag-stat-status status-ideal">
-            ✓ Cheekbone width ÷ face height in ideal 0.66–0.82 band
+            ✓ Cheekbone width ÷ face height in ideal band
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Profile Alignment</span>
-            <span className="diag-stat-code">HP4 · W=20</span>
           </div>
           <div className="diag-stat-val">
             {scoreData.hasSideProfilePhoto ? 'Evaluated' : 'Frontal Renorm'}
           </div>
           <div className="diag-stat-status status-ideal">
-            {scoreData.hasSideProfilePhoto ? '✓ Lateral profile angles scored' : '✓ V = 0 excluded and renormalised'}
+            {scoreData.hasSideProfilePhoto ? '✓ Lateral profile angles scored' : '✓ Excluded & renormalised'}
           </div>
         </div>
 
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Golden Ratio (φ)</span>
-            <span className="diag-stat-code">HP5 · W=15</span>
           </div>
           <div className="diag-stat-val">
-            {scoreData.metrics.goldenRatioAdherence}%
+            {scoreData.metrics.goldenRatioAdherence}% Match
           </div>
           <div className="diag-stat-status status-ideal">
-            ✓ Strong geometric adherence to φ ≈ 1.618
+            ✓ Strong geometric match to φ ≈ 1.618
           </div>
         </div>
       </div>
@@ -162,7 +157,7 @@ export function HarmonyDiagnosticTab({ scoreData }: HarmonyDiagnosticTabProps) {
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>{item.value.toFixed(3)}</div>
                   <div style={{ fontSize: '10.5px', color: item.adherence >= 80 ? '#34d399' : '#fbbf24' }}>
-                    {item.adherence}% φ fit
+                    {item.adherence}% Match
                   </div>
                 </div>
               </div>

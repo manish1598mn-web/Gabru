@@ -18,10 +18,10 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>🧬 Parameter 8: Averageness</span>
-            <span className="diag-stat-code">7 Pts Max · β = 0.10 · Fixed</span>
+            <span className="diag-stat-code">7 Pts Max &bull; Fixed Architecture</span>
           </div>
           <div className="diag-panel-desc">
-            Quantifies proximity to evolutionary population median via 16-landmark Procrustes shape distance D and 6 anthropometric size distributions. Protected by Rule A4 against double penalty.
+            Quantifies alignment with population averages across 16 facial landmark positions and 6 feature size ratios.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -34,7 +34,6 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Procrustes Shape Distance</span>
-            <span className="diag-stat-code">AV1 · W=55</span>
           </div>
           <div className="diag-stat-val">
             D = {avgMetrics?.procrustesDistance.toFixed(3) ?? '0.076'}
@@ -47,7 +46,6 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Shape Typicality Z-Score</span>
-            <span className="diag-stat-code">AV1 · W=55</span>
           </div>
           <div className="diag-stat-val">
             z = {avgMetrics?.shapeZ.toFixed(2) ?? '0.25'}
@@ -64,7 +62,7 @@ export function AveragenessDiagnosticTab({ scoreData }: AveragenessDiagnosticTab
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
           <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>
-            6 Anthropometric Feature-Size Ratios &amp; Z-Scores (AV2, W=45)
+            6 Anthropometric Feature-Size Ratios &amp; Z-Scores
           </span>
           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.50)' }}>
             Target: |z| ≤ 1.50

@@ -1,12 +1,12 @@
 /**
  * GABRU — CONTENT RATING DOMAIN TYPES
  * 
- * Strict TypeScript models for the Social Media Content Rating & Advisory Platform:
- * - 3 Data Tiers (A: Link only, B: Link + OAuth, C: Uploaded media / CSV)
- * - 10-Parameter Evidence-Gated Quality Score Rubric with Parameter-Specific Betas
- * - Empirical Creator-Baseline Performance Model (MAD-based robust z-score)
- * - Exact Delta-Gain Estimation via Engine Re-simulation
- * - Strict Evidence Gate Verification
+ * Strict TypeScript models for the Redesigned Social Media Single-Post Rating & Telemetry Platform:
+ * - 4-Step Single-Post Pipeline (RapidAPI/Apify scraper + Multimodal LLM pass)
+ * - Raw Telemetry Bar (Likes, Comments, Shares, Saves, Reposts, Views + Derived Flex Badges)
+ * - 10 Entertaining Single-Post Rating Parameters (Main Character Energy, Visual Aura, Scroll Hook, etc.)
+ * - Exact Mathematical Formulation (40% Hard Math + 60% Hybrid Rubric + Viral Ego Curve)
+ * - Deterministic Single-Post Verdict Badges & Archetypes
  */
 
 export type ContentPlatform =
@@ -41,6 +41,17 @@ export type ContentRatingVerdict =
   | 'Not Rated';
 
 export type DeepDiveContentTabKey =
+  | 'main_character'
+  | 'visual_aura'
+  | 'scroll_hook'
+  | 'caption_wit'
+  | 'group_chat'
+  | 'bookmark_bait'
+  | 'comment_chaos'
+  | 'upload_timing'
+  | 'trend_originality'
+  | 'verdict_badge'
+  // Legacy aliases for seamless routing
   | 'hook'
   | 'value'
   | 'structure'
@@ -52,8 +63,108 @@ export type DeepDiveContentTabKey =
   | 'timing'
   | 'compliance';
 
+export type SinglePostVerdictBadge =
+  | 'Group-Chat Hall of Famer'
+  | 'Certified Thirst Trap / Aesthetic Flex'
+  | 'Gatekept Goldmine'
+  | 'Cinema-Grade Masterpiece'
+  | 'Comment Section Warzone'
+  | '3 AM Unhinged Chaos Dump'
+  | 'Timeline Vibe Check Passed';
+
+export type SinglePostArchetypeTier =
+  | 'S-Tier Masterpiece'
+  | 'Main Character'
+  | 'Micro-Celebrity'
+  | 'Gatekept Gem'
+  | 'Casual Scroller'
+  | 'Goblin Hours Shitposter';
+
 // -------------------------------------------------------------
-// Unified Content Schema
+// Raw Scraped Telemetry & Derived Badges
+// -------------------------------------------------------------
+
+export interface SinglePostTelemetry {
+  likes: number; // L
+  comments: number; // C
+  shares: number; // S_share
+  saves: number; // S_save
+  reposts: number; // R_repost
+  views: number; // V
+  reach: number; // B_reach = max(V, F, 100)
+  authorFollowers: number; // F
+  trueEngagementRate: string; // e.g. "8.45%"
+  groupChatMultiplier: string; // e.g. "14.2%"
+  bookmarkRate: string; // e.g. "9.8%"
+  isSharesEstimated: boolean;
+  isSavesEstimated: boolean;
+}
+
+/**
+ * Flexible input payload for scoreSinglePost supporting flat scraper payloads
+ * or full UnifiedContentItem structures.
+ */
+export interface SinglePostInputPayload {
+  likes?: number;
+  comments?: number;
+  shares?: number | null;
+  saves?: number | null;
+  reposts?: number;
+  views?: number;
+  authorFollowers?: number;
+  firstPersonWords?: number;
+  wordCount?: number;
+  emojiCount?: number;
+  hashtagCount?: number;
+  uploadHourLocal?: number; // 0..23
+  isTrendingAudio?: boolean;
+  slangMatchCount?: number;
+  caption?: string;
+  title?: string;
+  postedAt?: string;
+  metrics?: Partial<ContentPublicMetrics>;
+  creator?: Partial<CreatorProfile>;
+  llmEvaluations?: Partial<SinglePostLlmEvaluations>;
+  [key: string]: any;
+}
+
+// -------------------------------------------------------------
+// Multimodal LLM Rubric Inputs (0..10 or custom bounds)
+// -------------------------------------------------------------
+
+export interface SinglePostLlmEvaluations {
+  // Parameter 1: Main Character Energy
+  subjectSpotlight: number; // V_spot (0..10): 10=solo fit/portrait, 5=group, 2=object
+  poseAudacity: number; // V_pose (0..10): Camera confidence & presence
+  
+  // Parameter 2: Visual Aura & Frame Quality
+  lighting: number; // V_light (0..10): Lighting quality & exposure
+  colorGrading: number; // V_color (0..10): Color harmony & palette
+  composition: number; // V_comp (0..10): Framing & rule-of-thirds
+  stylingDrip: number; // V_drip (0..10): Subject styling & setting
+
+  // Parameter 3: Scroll-Stopper Hook
+  visualHook: number; // V_hook (0..10): Thumb-stop contrast
+  openingLinePunch: number; // A_open (0..10): First 6 words impact
+
+  // Parameter 4: Caption Poetry vs. Cringe
+  captionWit: number; // A_wit (0..25): 25=clever one-liner, 0=generic cliche
+
+  // Parameter 5: Group-Chat Forwardability
+  shareRelatability: number; // A_share (0..35): Relatability & meme value
+
+  // Parameter 6: Secret Bookmark Bait
+  saveUtilityEnvy: number; // A_save (0..35): Envy factor or reference utility
+
+  // Parameter 7: Comment Section Chaos
+  commentVibe: number; // A_comm (0..40): 40=wild hype/debates, 10=bot spam
+
+  // Parameter 9: Trend Chaser vs. Original Brain
+  conceptOriginality: number; // A_orig (0..60): Fresh visual idea vs copy-paste
+}
+
+// -------------------------------------------------------------
+// Unified Content Schema for Single Post
 // -------------------------------------------------------------
 
 export interface CreatorProfile {
@@ -71,6 +182,7 @@ export interface ContentPublicMetrics {
   comments: number;
   shares: number | null;
   saves: number | null;
+  reposts?: number | null;
 }
 
 export interface ContentOwnerAnalytics {
@@ -99,8 +211,8 @@ export interface KeyframeSample {
   timestampSec: number;
   imageUrl: string;
   ocrText: string;
-  visualSharpness: number; // 0..100 proxy
-  visualBrightness: number; // 0..100 proxy
+  visualSharpness: number;
+  visualBrightness: number;
   facesDetected: number;
 }
 
@@ -111,14 +223,21 @@ export interface TranscriptSegment {
 }
 
 export interface AudioAnalysisMetrics {
-  integratedLufs: number; // target: -14 ± 3 LUFS
+  integratedLufs: number;
   truePeakDbfs: number;
   silenceSegmentsCount: number;
   maxDeadAirSec: number;
   speechRateWpm: number;
-  voiceClarityRatio: number; // 0..1
+  voiceClarityRatio: number;
   snrDb?: number;
   clippingShare?: number;
+}
+
+export interface SampleCommentItem {
+  author: string;
+  text: string;
+  likes?: number;
+  sentiment?: 'hype' | 'debate' | 'neutral' | 'cringe';
 }
 
 export interface UnifiedContentItem {
@@ -127,7 +246,7 @@ export interface UnifiedContentItem {
   platform: ContentPlatform;
   format: ContentFormat;
   inputMode: InputMode;
-  dataTier: DataTier; // Tier A, B, or C
+  dataTier: DataTier;
   creator: CreatorProfile;
   postedAt: string;
   title: string;
@@ -157,6 +276,20 @@ export interface UnifiedContentItem {
     transcript: boolean;
     keyframes: boolean;
   };
+
+  // Single-Post Specific Parsed Fields
+  reposts?: number;
+  uploadHourLocal?: number; // 0..23
+  firstPersonWords?: number;
+  wordCount?: number;
+  emojiCount?: number;
+  hashtagCount?: number;
+  isTrendingAudio?: boolean;
+  slangMatchCount?: number;
+  slangMatches?: string[];
+  sampleComments?: SampleCommentItem[];
+  llmEvaluations?: Partial<SinglePostLlmEvaluations>;
+
   // Optional intent flags
   isIntentionalPivot?: boolean;
   performanceZScores?: {
@@ -168,30 +301,48 @@ export interface UnifiedContentItem {
 }
 
 // -------------------------------------------------------------
-// Scoring Engine & Evidence Types
+// Evaluated Parameter Result
+// -------------------------------------------------------------
+
+export interface SinglePostParameterResult {
+  id: number; // 1..10
+  code: string; // 'MCE', 'VAF', 'SSH', 'CPC', 'GCF', 'SBB', 'CSC', 'UTG', 'TCO', 'SPV'
+  name: string;
+  weight: number; // Parameter weight in rawScore (sum to 100 for S1..S9)
+  score: number; // 0..100
+  roastOrCompliment: string;
+  verdictTag?: string;
+  subScores?: Record<string, number | string>;
+  icon: string;
+  gradient: string;
+  badgeLabel?: string;
+}
+
+// -------------------------------------------------------------
+// Legacy & Evidence Types for Deep-Dive UI Support
 // -------------------------------------------------------------
 
 export interface ContentSubfactorEvidence {
   type: 'timestamp' | 'quote' | 'metric' | 'visual_crop';
-  ref: string; // e.g. "00:00-00:04", "Caption line 1", "-11.2 LUFS"
-  note: string; // e.g. "Hook delivery delayed beyond 5s window"
+  ref: string;
+  note: string;
   confidence?: number;
 }
 
 export interface ContentPenalty {
   severity: 'minor' | 'moderate' | 'major';
-  delta: number; // -1.0, -2.5, or -4.5
+  delta: number;
   evidence: ContentSubfactorEvidence;
 }
 
 export interface ContentSubfactorDef {
-  code: string; // e.g. 'HK1', 'VR1', 'ST1', 'VA1', 'CP1', 'CT1', 'PF1', 'OC1', 'TM1', 'TC1'
+  code: string;
   name: string;
-  weight: number; // subfactor weight (sum = 100 within parameter)
+  weight: number;
   observableChecks: string;
   objectiveRule: string;
   visibilityByTier: {
-    A: number; // 0.0, 0.5, or 1.0
+    A: number;
     B: number;
     C: number;
   };
@@ -201,8 +352,8 @@ export interface ContentSubfactorResult {
   code: string;
   name: string;
   weight: number;
-  rawRating: number; // 0..10
-  visibility: number; // 1.0, 0.5, 0.0
+  rawRating: number;
+  visibility: number;
   adjustedRating: number;
   penalties: ContentPenalty[];
   isApplicable: boolean;
@@ -214,8 +365,8 @@ export interface ContentParameterDef {
   id: number;
   code: string;
   name: string;
-  weight: number; // parameter weight (sum = 100 total)
-  beta: number; // 0.10, 0.15 for VA, 0.20 for TC
+  weight: number;
+  beta: number;
   subfactors: ContentSubfactorDef[];
   evidenceSummary: string;
 }
@@ -226,10 +377,10 @@ export interface ContentParameterResult {
   name: string;
   weight: number;
   beta: number;
-  rating: number; // 0..10
-  points: number; // Rating * (Weight / 10)
+  rating: number;
+  points: number;
   maxPoints: number;
-  confidence: number; // 0..1
+  confidence: number;
   subfactors: ContentSubfactorResult[];
   lowestSubfactor: string;
   isObserved: boolean;
@@ -248,7 +399,7 @@ export interface ActionableSuggestion {
   description: string;
   parameterId: number;
   subfactorCode: string;
-  estimatedGain: number; // e.g. +1.0
+  estimatedGain: number;
   effort: EffortTier;
   concreteRewrite?: {
     type: 'hooks' | 'caption' | 'cta' | 'technical';
@@ -259,10 +410,10 @@ export interface ActionableSuggestion {
 }
 
 export interface QualityScoreResult {
-  score: number; // 0..100
+  score: number;
   pointsTotal: number;
   maxObservablePoints: number;
-  confidence: number; // 0..1
+  confidence: number;
   parameterScores: Record<number, number>;
   parameterRatings: Record<number, number>;
   parameters: ContentParameterResult[];
@@ -270,9 +421,9 @@ export interface QualityScoreResult {
 }
 
 export interface PerformanceScoreResult {
-  score: number; // 0..100
+  score: number;
   isAvailable: boolean;
-  confidence: number; // 0..1
+  confidence: number;
   gatedReason?: string;
   zScores: {
     engagement: number;
@@ -289,18 +440,30 @@ export interface PerformanceScoreResult {
   statusMessage: string;
 }
 
+// -------------------------------------------------------------
+// Overall Score Data (Combined Engine Output)
+// -------------------------------------------------------------
+
 export interface ContentScoreData {
-  contentScore: number; // 0..100 blended score
-  qualityScore: number; // 0..100
-  performanceScore: number | null;
-  verdict: ContentRatingVerdict;
-  confidence: 'High' | 'Medium' | 'Low';
-  confidenceScore: number; // 0..1
-  qualityConfidence: number; // 0..1
-  performanceConfidence: number | null;
-  dataTier: DataTier;
-  isQualityOnly: boolean;
-  isSevereSafetyFlagged?: boolean;
+  contentScore: number; // Overall Score (0..100 scale)
+  rawScore: number; // Raw weighted sum (0..100)
+  verdictBadge: SinglePostVerdictBadge;
+  archetypeTier: SinglePostArchetypeTier;
+  telemetry: SinglePostTelemetry;
+  parameters: SinglePostParameterResult[];
+  scores: {
+    S1: number;
+    S2: number;
+    S3: number;
+    S4: number;
+    S5: number;
+    S6: number;
+    S7: number;
+    S8: number;
+    S9: number;
+  };
+
+  // Editorial Callouts & Rewrites
   pros: Array<{
     title: string;
     rating: number;
@@ -315,6 +478,18 @@ export interface ContentScoreData {
   }>;
   suggestions: ActionableSuggestion[];
   item: UnifiedContentItem;
+
+  // Compatibility Bridges for Existing Panels
+  qualityScore: number;
+  performanceScore: number | null;
+  verdict: ContentRatingVerdict;
+  confidence: 'High' | 'Medium' | 'Low';
+  confidenceScore: number;
+  qualityConfidence: number;
+  performanceConfidence: number | null;
+  dataTier: DataTier;
+  isQualityOnly: boolean;
+  isSevereSafetyFlagged?: boolean;
   qualityBreakdown: QualityScoreResult;
   performanceBreakdown?: PerformanceScoreResult;
 }

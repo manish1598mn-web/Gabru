@@ -1,356 +1,415 @@
 /**
- * ContentShareCardUtil
- * Generates an ultra-premium 1080x1350 (4:5 vertical portrait) social share card
- * for Gabru Social Media Content Rating audits using HTML5 Canvas.
+ * GABRU — CONTENT RATING SOCIAL SHARE CARD GENERATOR
+ * 
+ * Generates an informative, ultra-crisp social share card stamped with:
+ * - Center Hero Content Stage ($528 \times 1030\text{px}$)
+ * - 10 Parameter Scores arranged around the card (5 Left, 5 Right)
+ * - Sleek, unified executive glass floating dock displaying the master viral score,
+ *   verdict badge, platform attribution, and creator handle.
+ * - Ultra-HD 2x super-sampling (2160 x 2700px) for maximum mobile & retina clarity.
  */
 
 import { ContentScoreData } from '../types/ContentRatingTypes';
+import { CONTENT_PARAMETERS } from '../constants/ContentRatingConstants';
+import { drawRoundedRect, drawImageCover } from '@/shared/utils/CanvasUtil';
+
+const CONTENT_PARAM_ICONS: Record<number, string> = {
+  1: '👑',
+  2: '✨',
+  3: '🛑',
+  4: '✍️',
+  5: '🚀',
+  6: '🔖',
+  7: '💬',
+  8: '⏰',
+  9: '🧠',
+  10: '🏆',
+};
+
+function loadCardImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    if (!src) return resolve(null);
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
 
 export async function generateContentShareCard(
   scoreData: ContentScoreData
 ): Promise<HTMLCanvasElement> {
   const width = 1080;
   const height = 1350;
+  const scale = 2; // Ultra-HD 2x (2160 x 2700)
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = width * scale;
+  canvas.height = height * scale;
 
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     throw new Error('Unable to create canvas 2D rendering context');
   }
 
-  // 1. Deep Obsidian Background
-  ctx.fillStyle = '#09090d';
+  ctx.scale(scale, scale);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  // 1. Deep Obsidian Studio Canvas Background
+  ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, width, height);
 
-  // 2. Ambient Gradient Glows
-  const grad1 = ctx.createRadialGradient(900, 200, 50, 900, 200, 600);
-  grad1.addColorStop(0, 'rgba(168, 85, 247, 0.22)');
-  grad1.addColorStop(1, 'rgba(168, 85, 247, 0)');
+  // Subtle ambient backdrop glows
+  const grad1 = ctx.createRadialGradient(width / 2, 500, 80, width / 2, 500, 680);
+  grad1.addColorStop(0, 'rgba(168, 85, 247, 0.16)');
+  grad1.addColorStop(1, 'rgba(10, 10, 15, 0)');
   ctx.fillStyle = grad1;
   ctx.fillRect(0, 0, width, height);
 
-  const grad2 = ctx.createRadialGradient(200, 1100, 50, 200, 1100, 650);
-  grad2.addColorStop(0, 'rgba(99, 102, 241, 0.18)');
-  grad2.addColorStop(1, 'rgba(99, 102, 241, 0)');
-  ctx.fillStyle = grad2;
-  ctx.fillRect(0, 0, width, height);
-
-  // Subtle border frame
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.lineWidth = 2;
-  roundRect(ctx, 30, 30, width - 60, height - 60, 28);
-  ctx.stroke();
-
-  // 3. Header Section
+  // 2. Slim Top Header Bar (Single baseline, y = 44)
+  const headerY = 44;
   ctx.save();
-  // Brand Logo Text
-  ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText('GABRU', 70, 95);
-
-  // Dot Accent
-  ctx.fillStyle = '#a855f7';
-  ctx.beginPath();
-  ctx.arc(205, 90, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Sub-header title
-  ctx.font = '600 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-  ctx.fillText('CONTENT INTELLIGENCE AUDIT', 225, 93);
-
-  // Verified Pill
-  const pillX = width - 330;
-  ctx.fillStyle = 'rgba(168, 85, 247, 0.12)';
-  ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
-  ctx.lineWidth = 1.5;
-  roundRect(ctx, pillX, 64, 260, 42, 21);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = '#10b981';
-  ctx.beginPath();
-  ctx.arc(pillX + 22, 85, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#e2e8f0';
-  ctx.fillText('VERIFIED CRAFT RUBRIC v1.0', pillX + 38, 90);
-  ctx.restore();
-
-  // 4. Content Metadata Card
-  ctx.save();
-  ctx.fillStyle = 'rgba(18, 18, 26, 0.75)';
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.lineWidth = 1.5;
-  roundRect(ctx, 70, 135, width - 140, 120, 20);
-  ctx.fill();
-  ctx.stroke();
-
-  // Platform Tag
-  const platform = scoreData.item.platform.toUpperCase();
-  ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#a855f7';
-  ctx.fillText(`${platform} • ${scoreData.item.format.replace('_', ' ').toUpperCase()}`, 100, 172);
-
-  // Title
-  ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#ffffff';
-  const cleanTitle = scoreData.item.title || scoreData.item.caption || 'Social Media Video Audit';
-  const truncatedTitle = cleanTitle.length > 55 ? cleanTitle.substring(0, 52) + '...' : cleanTitle;
-  ctx.fillText(truncatedTitle, 100, 206);
-
-  // Creator & Specs
-  ctx.font = '500 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-  const creator = scoreData.item.creator.handle || scoreData.item.creator.name || '@creator';
-  const duration = scoreData.item.media.durationSec ? `${scoreData.item.media.durationSec}s` : 'Video';
-  const res = `${scoreData.item.media.width}x${scoreData.item.media.height}`;
-  ctx.fillText(`${creator}  •  ${duration}  •  ${res}  •  Public Audio & Keyframe Inspection`, 100, 234);
-  ctx.restore();
-
-  // 5. Central Score Dial Area (Y: 280 to 520)
-  ctx.save();
-  const dialCenterX = 240;
-  const dialCenterY = 410;
-  const dialRadius = 95;
-
-  // Background ring
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.lineWidth = 14;
-  ctx.beginPath();
-  ctx.arc(dialCenterX, dialCenterY, dialRadius, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Glowing Progress Arc
-  const scorePct = Math.min(Math.max(scoreData.contentScore, 0), 100) / 100;
-  const startAngle = -Math.PI / 2;
-  const endAngle = startAngle + scorePct * Math.PI * 2;
-
-  const arcGrad = ctx.createLinearGradient(dialCenterX - dialRadius, dialCenterY, dialCenterX + dialRadius, dialCenterY);
-  arcGrad.addColorStop(0, '#8b5cf6');
-  arcGrad.addColorStop(1, '#06b6d4');
-  ctx.strokeStyle = arcGrad;
-  ctx.lineWidth = 14;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.arc(dialCenterX, dialCenterY, dialRadius, startAngle, endAngle);
-  ctx.stroke();
-
-  // Score Number
-  ctx.textAlign = 'center';
-  ctx.font = 'bold 54px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(scoreData.contentScore.toFixed(1), dialCenterX, dialCenterY + 14);
-
-  ctx.font = '500 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-  ctx.fillText('OUT OF 100', dialCenterX, dialCenterY + 40);
-
-  // Verdict Pill under dial
-  const verdict = scoreData.verdict.toUpperCase();
-  ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
-  ctx.strokeStyle = 'rgba(168, 85, 247, 0.5)';
-  ctx.lineWidth = 1;
-  roundRect(ctx, dialCenterX - 65, dialCenterY + 60, 130, 32, 16);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#c084fc';
-  ctx.fillText(verdict, dialCenterX, dialCenterY + 81);
   ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
 
-  // Right Side of Dial: Score breakdown & Confidence
-  const infoX = 390;
-  ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  // Brand Logo Text
+  ctx.font = '900 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText('Executive Rating Breakdown', infoX, 335);
+  ctx.fillText('GABRU', 24, headerY);
 
-  ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.fillText('Deterministic blend of intrinsic craft quality and creator baseline reach.', infoX, 362);
+  const brandWidth = ctx.measureText('GABRU').width;
+  ctx.font = '700 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+  ctx.fillText('•', 24 + brandWidth + 10, headerY);
 
-  // Mini stat cards
-  drawMetricBlock(ctx, infoX, 385, 180, 75, 'Craft Quality (70%)', `${scoreData.qualityScore.toFixed(1)}/100`, '#a855f7');
-  const perfVal = scoreData.performanceScore !== null ? `${scoreData.performanceScore.toFixed(1)}/100` : 'Provisional';
-  drawMetricBlock(ctx, infoX + 200, 385, 180, 75, 'Reach Benchmark (30%)', perfVal, '#06b6d4');
-  drawMetricBlock(ctx, infoX + 400, 385, 180, 75, 'Confidence Level', `${Math.round(scoreData.confidenceScore * 100)}% (${scoreData.confidence})`, '#10b981');
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+  ctx.fillText('CONTENT INTELLIGENCE AUDIT', 24 + brandWidth + 24, headerY);
+
+  // Right Header: Platform & Creator Handle Pill
+  const platform = (scoreData.item?.platform || 'INSTAGRAM').toUpperCase();
+  const creator = scoreData.item?.creator?.handle || scoreData.item?.creator?.name || '@creator';
+  const handlePillText = `${platform}  •  ${creator}`;
+  ctx.font = '700 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  const pillW = ctx.measureText(handlePillText).width + 28;
+  const pillH = 30;
+  const pillX = width - 24 - pillW;
+  const pillY = headerY - pillH / 2;
+
+  drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 8);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#f3e8ff';
+  ctx.fillText(handlePillText, pillX + pillW / 2, headerY);
   ctx.restore();
 
-  // 6. 10-Parameter Performance Matrix (Y: 535 to 975)
+  // 3. Center Hero Content Stage (x = 276, w = 528, y = 76, h = 1030)
+  const photoX = 276;
+  const photoY = 76;
+  const photoW = 528;
+  const photoH = 1030;
+  const photoR = 20;
+
   ctx.save();
-  ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+  ctx.shadowBlur = 36;
+  ctx.shadowOffsetY = 14;
+  drawRoundedRect(ctx, photoX, photoY, photoW, photoH, photoR);
+  ctx.fillStyle = '#14141c';
+  ctx.fill();
+  ctx.restore();
+
+  // Load content media thumbnail or fallback blueprint sketch
+  const imageSource = scoreData.item?.media?.thumbnailUrl || '/content_rating_sketch.jpg';
+  let img = await loadCardImage(imageSource);
+  if (!img) {
+    img = await loadCardImage('/content_rating_sketch.jpg');
+  }
+
+  if (img) {
+    drawImageCover(ctx, img, photoX, photoY, photoW, photoH, photoR, 'Content Media Preview');
+  }
+
+  // Elegant hairline border around the hero content
+  drawRoundedRect(ctx, photoX, photoY, photoW, photoH, photoR);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Subtle bottom gradient vignette over photo so it transitions into the dock
+  ctx.save();
+  drawRoundedRect(ctx, photoX, photoY, photoW, photoH, photoR);
+  ctx.clip();
+  const bottomVignette = ctx.createLinearGradient(0, photoY + photoH - 200, 0, photoY + photoH);
+  bottomVignette.addColorStop(0, 'rgba(10, 10, 15, 0)');
+  bottomVignette.addColorStop(1, 'rgba(10, 10, 15, 0.65)');
+  ctx.fillStyle = bottomVignette;
+  ctx.fillRect(photoX, photoY + photoH - 200, photoW, 200);
+  ctx.restore();
+
+  // Floating Format Badge Inside Hero Photo (Top-Left)
+  const formatBadgeW = 160;
+  const formatBadgeH = 32;
+  const formatBadgeX = photoX + 18;
+  const formatBadgeY = photoY + 18;
+  drawRoundedRect(ctx, formatBadgeX, formatBadgeY, formatBadgeW, formatBadgeH, 8);
+  ctx.fillStyle = 'rgba(15, 15, 22, 0.88)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '700 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath();
+  ctx.arc(formatBadgeX + 16, formatBadgeY + formatBadgeH / 2, 4, 0, Math.PI * 2);
+  ctx.fill();
+
   ctx.fillStyle = '#ffffff';
-  ctx.fillText('10-PARAMETER CRAFT RUBRIC', 70, 560);
+  const formatText = scoreData.item?.format ? scoreData.item.format.replace('_', ' ').toUpperCase() : 'SINGLE POST';
+  ctx.fillText(formatText, formatBadgeX + formatBadgeW / 2 + 6, formatBadgeY + formatBadgeH / 2);
+  ctx.restore();
 
-  ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-  ctx.fillText('Weighted evaluation normalized across all observable features', 370, 560);
+  // 4. 10 Parameter Scores Around the Card (5 Left, 5 Right)
+  const cardW = 236;
+  const cardH = 194;
+  const cardGap = 15;
 
-  // 2 Columns of 5 parameters
-  const col1X = 70;
-  const col2X = 555;
-  const rowHeight = 72;
-  const startY = 580;
+  const leftParams = CONTENT_PARAMETERS.slice(0, 5);
+  const rightParams = CONTENT_PARAMETERS.slice(5, 10);
 
-  scoreData.qualityBreakdown.parameters.forEach((param, pIdx) => {
-    const isCol2 = pIdx >= 5;
-    const px = isCol2 ? col2X : col1X;
-    const py = startY + (pIdx % 5) * rowHeight;
-    const pWidth = 455;
+  const drawSideCard = (paramDef: typeof CONTENT_PARAMETERS[0], cx: number, cy: number) => {
+    const scored = scoreData.parameters.find((p) => p.id === paramDef.id);
+    const scoreVal = scored ? Math.round(scored.score) : 85;
+    const ratingVal = (scoreVal / 10).toFixed(1);
 
-    // Background card
-    ctx.fillStyle = 'rgba(24, 24, 32, 0.6)';
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
-    roundRect(ctx, px, py, pWidth, 62, 12);
+    ctx.save();
+    // Glass card background
+    drawRoundedRect(ctx, cx, cy, cardW, cardH, 14);
+    ctx.fillStyle = 'rgba(16, 16, 24, 0.82)';
     ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
+    ctx.lineWidth = 1.2;
     ctx.stroke();
 
-    // Param Name & Weight
-    ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = '#e2e8f0';
-    ctx.fillText(param.name, px + 18, py + 26);
-
-    ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.fillText(`${param.weight}% wt`, px + 18, py + 46);
-
-    // Score Text
-    ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = param.rating >= 8.0 ? '#10b981' : param.rating >= 6.0 ? '#fbbf24' : '#f43f5e';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${param.rating.toFixed(1)} / 10`, px + pWidth - 18, py + 27);
+    // Top Row: Icon + Name (Left) & Rating Pill (Right)
     ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = '#f8fafc';
 
-    // Mini Progress Bar
-    const barX = px + 130;
-    const barY = py + 38;
-    const barW = pWidth - 150;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-    roundRect(ctx, barX, barY, barW, 8, 4);
+    let shortName = paramDef.name;
+    if (shortName === 'Visual Aura & Frame Quality') shortName = 'Visual Aura';
+    if (shortName === 'Caption Poetry vs. Cringe') shortName = 'Caption Wit';
+    if (shortName === 'Group-Chat Forwardability') shortName = 'Forwardability';
+    if (shortName === 'Secret Bookmark Bait') shortName = 'Bookmark Bait';
+    if (shortName === 'Comment Chaos Magnetism') shortName = 'Comment Chaos';
+    if (shortName === 'Original Brain Energy') shortName = 'Original Brain';
+    if (shortName === 'Viral Longevity vs. 24h Rot') shortName = 'Longevity';
+
+    const icon = CONTENT_PARAM_ICONS[paramDef.id] || '✨';
+    ctx.fillText(`${icon} ${shortName}`, cx + 14, cy + 18);
+
+    // Rating Pill
+    const rText = `R: ${ratingVal}`;
+    ctx.font = 'bold 10.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    const rW = ctx.measureText(rText).width + 12;
+    const rH = 20;
+    const rX = cx + cardW - 14 - rW;
+    const rY = cy + 16;
+    drawRoundedRect(ctx, rX, rY, rW, rH, 5);
+    ctx.fillStyle = 'rgba(168, 85, 247, 0.16)';
     ctx.fill();
-
-    const fillW = Math.max(0, Math.min(barW, (param.rating / 10) * barW));
-    ctx.fillStyle = param.rating >= 8.0 ? '#10b981' : param.rating >= 6.0 ? '#fbbf24' : '#f43f5e';
-    roundRect(ctx, barX, barY, fillW, 8, 4);
-    ctx.fill();
-  });
-  ctx.restore();
-
-  // 7. Top Ranked Growth Suggestions (Y: 990 to 1210)
-  ctx.save();
-  ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText('HIGH-LEVERAGE OPTIMIZATIONS', 70, 1000);
-
-  const topSuggestions = scoreData.suggestions.slice(0, 2);
-  topSuggestions.forEach((sug, sIdx) => {
-    const sy = 1020 + sIdx * 90;
-    ctx.fillStyle = 'rgba(22, 22, 32, 0.8)';
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.25)';
+    ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
     ctx.lineWidth = 1;
-    roundRect(ctx, 70, sy, width - 140, 78, 14);
-    ctx.fill();
     ctx.stroke();
 
-    // Gain Pill
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
-    ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
-    roundRect(ctx, 90, sy + 18, 110, 42, 10);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillStyle = '#10b981';
     ctx.textAlign = 'center';
-    ctx.fillText(`+${sug.estimatedGain.toFixed(1)} pts`, 145, sy + 38);
-    ctx.font = '500 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillText('&Delta;Gain', 145, sy + 51);
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#c084fc';
+    ctx.fillText(rText, rX + rW / 2, rY + rH / 2);
+
+    // Middle Score Row
     ctx.textAlign = 'left';
-
-    // Title and description
-    ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.font = '900 38px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(sug.title, 220, sy + 35);
+    ctx.fillText(`${scoreVal}`, cx + 14, cy + 50);
 
-    ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    const sW = ctx.measureText(`${scoreVal}`).width;
+    ctx.font = '700 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.fillText('/ 100', cx + 14 + sW + 4, cy + 68);
+
+    // Progress Bar Track & Fill
+    const barW = cardW - 28;
+    const barY = cy + 112;
+    drawRoundedRect(ctx, cx + 14, barY, barW, 4, 2);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.fill();
+
+    const fillW = Math.min(barW, Math.max(0, (scoreVal / 100) * barW));
+    drawRoundedRect(ctx, cx + 14, barY, fillW, 4, 2);
+    const grad = ctx.createLinearGradient(cx + 14, barY, cx + 14 + fillW, barY);
+    grad.addColorStop(0, '#a855f7');
+    grad.addColorStop(1, '#38bdf8');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Bottom Subtitle
+    ctx.font = '600 11.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-    const cleanDesc = sug.description.length > 80 ? sug.description.substring(0, 77) + '...' : sug.description;
-    ctx.fillText(cleanDesc, 220, sy + 58);
+    const statusText = scoreVal >= 90 ? 'Standout Execution' : scoreVal >= 75 ? 'Strong Resonance' : 'Optimization Room';
+    ctx.fillText(statusText, cx + 14, cy + 132);
+
+    ctx.font = '500 10.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.fillText(`Weight: ${paramDef.weight}%`, cx + 14, cy + 154);
+
+    ctx.restore();
+  };
+
+  // Draw 5 Cards on Left (x = 24)
+  leftParams.forEach((param, i) => {
+    const cy = photoY + i * (cardH + cardGap);
+    drawSideCard(param, 24, cy);
   });
+
+  // Draw 5 Cards on Right (x = 820)
+  rightParams.forEach((param, i) => {
+    const cy = photoY + i * (cardH + cardGap);
+    drawSideCard(param, 820, cy);
+  });
+
+  // 5. Unified Executive Glass Dock at Bottom (x = 24, w = 1032, y = 1124, h = 166)
+  const dockX = 24;
+  const dockY = 1124;
+  const dockW = 1032;
+  const dockH = 166;
+  const dockR = 20;
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+  ctx.shadowBlur = 28;
+  ctx.shadowOffsetY = 10;
+  drawRoundedRect(ctx, dockX, dockY, dockW, dockH, dockR);
+  ctx.fillStyle = 'rgba(16, 16, 24, 0.92)';
+  ctx.fill();
   ctx.restore();
 
-  // 8. Footer Watermark & Privacy Guarantee (Y: 1240 to 1310)
+  drawRoundedRect(ctx, dockX, dockY, dockW, dockH, dockR);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Master Score Calculation
+  const scoreVal = typeof scoreData.contentScore === 'number'
+    ? scoreData.contentScore
+    : Math.round(scoreData.rawScore || 86);
+
   ctx.save();
+  // Score Label
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.font = '800 11.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = '#c084fc';
+  ctx.fillText('CONTENT AUDIT INDEX', dockX + 28, dockY + 22);
+
+  // Big Score Number
+  ctx.font = '900 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(`${scoreVal}`, dockX + 28, dockY + 42);
+
+  const scoreW = ctx.measureText(`${scoreVal}`).width;
+  ctx.font = '700 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+  ctx.fillText('/ 100', dockX + 28 + scoreW + 6, dockY + 66);
+
+  // Verdict Pill (Top Right of Dock)
+  const verdictText = (scoreData.verdictBadge || scoreData.verdict || 'GROUP-CHAT HALL OF FAMER').toUpperCase();
+  ctx.font = '800 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  const vPillTextW = ctx.measureText(verdictText).width;
+  const vPillW = vPillTextW + 36;
+  const vPillH = 38;
+  const vPillX = dockX + dockW - 28 - vPillW;
+  const vPillY = dockY + 36;
+
+  drawRoundedRect(ctx, vPillX, vPillY, vPillW, vPillH, 10);
+  ctx.fillStyle = 'rgba(168, 85, 247, 0.16)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(168, 85, 247, 0.38)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath();
+  ctx.arc(vPillX + 18, vPillY + vPillH / 2, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#f3e8ff';
+  ctx.fillText(verdictText, vPillX + 30, vPillY + vPillH / 2);
+
+  // Subtle Hairline Divider Inside Dock
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(70, 1240);
-  ctx.lineTo(width - 70, 1240);
+  ctx.moveTo(dockX + 24, dockY + 104);
+  ctx.lineTo(dockX + dockW - 24, dockY + 104);
   ctx.stroke();
 
-  ctx.font = '500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-  ctx.fillText('Deterministic Content Intelligence • 100% Client-Side Private • No server storage of media', 70, 1280);
+  // Bottom Line of Dock: Caption Snippet
+  const rawCaption = scoreData.item?.title || scoreData.item?.caption || 'Single Post Intelligence Audit';
+  const cleanSnippet = rawCaption.length > 95 ? rawCaption.substring(0, 92) + '...' : rawCaption;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.font = '500 12.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+  ctx.fillText(`“${cleanSnippet}”`, dockX + 28, dockY + 134);
 
-  ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = '#a855f7';
-  ctx.textAlign = 'right';
-  ctx.fillText('GABRU.AI', width - 70, 1280);
+  ctx.restore();
+
+  // 6. Platform URL & Viral Reach Footer Pill (y = 1300)
+  ctx.save();
+  const ctaPillW = 560;
+  const ctaPillH = 34;
+  const ctaPillX = (width - ctaPillW) / 2;
+  const ctaPillY = 1300;
+
+  drawRoundedRect(ctx, ctaPillX, ctaPillY, ctaPillW, ctaPillH, 17);
+  ctx.fillStyle = 'rgba(217, 70, 239, 0.14)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(217, 70, 239, 0.42)';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '700 12.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+  const promptPart = '🚀 Audit your post hook & virality score free at ';
+  const urlPart = 'gabru.app/content-rating';
+  const fullW = ctx.measureText(promptPart + urlPart).width;
+  const startX = (width - fullW) / 2;
+
+  ctx.textAlign = 'left';
+  ctx.fillText(promptPart, startX, ctaPillY + ctaPillH / 2);
+  const promptW = ctx.measureText(promptPart).width;
+  ctx.font = '900 12.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillStyle = '#f0abfc';
+  ctx.fillText(urlPart, startX + promptW, ctaPillY + ctaPillH / 2);
   ctx.restore();
 
   return canvas;
-}
-
-function drawMetricBlock(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  title: string,
-  val: string,
-  accentColor: string
-) {
-  ctx.fillStyle = 'rgba(24, 24, 32, 0.7)';
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
-  ctx.lineWidth = 1;
-  roundRect(ctx, x, y, w, h, 12);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.font = '500 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-  ctx.fillText(title, x + 16, y + 26);
-
-  ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillStyle = accentColor;
-  ctx.fillText(val, x + 16, y + 54);
-}
-
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number
-) {
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(x + width - radius, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-  ctx.lineTo(x + width, y + height - radius);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  ctx.lineTo(x + radius, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
-  ctx.closePath();
 }
 
 export function downloadCanvasAsPng(canvas: HTMLCanvasElement, filename: string): void {
@@ -381,4 +440,3 @@ export async function copyCanvasToClipboard(canvas: HTMLCanvasElement): Promise<
     }, 'image/png');
   });
 }
-

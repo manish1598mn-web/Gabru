@@ -8,12 +8,6 @@ export interface FacialMethodologyModalProps {
   onClose: () => void;
 }
 
-/**
- * FacialMethodologyModal
- *
- * Explains the scientific governance, evidence allocation (Strong vs Moderate),
- * frontal renormalisation mathematics, and 100% private local processing.
- */
 export const FacialMethodologyModal: React.FC<FacialMethodologyModalProps> = ({
   isOpen,
   onClose,
@@ -23,36 +17,71 @@ export const FacialMethodologyModal: React.FC<FacialMethodologyModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="About Gabru Facial Attractiveness Framework"
-      maxWidth="640px"
+      maxWidth="580px"
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', lineHeight: 1.6 }}>
-        <p>
-          <strong>Gabru</strong> implements the scientific 10-parameter Facial Attractiveness Framework (v2), built on
-          the 29 Beauty Points on a 100-point calibrated scale.
-        </p>
-        <p>
-          Measurements separate <strong>Changeable Factors (~43 pts)</strong> (Skin Quality &amp; Glow, Expression &amp; Gaze,
-          Grooming &amp; Styling, Under-Eye Vitality, Eyebrow Grooming, Head Posture) from <strong>Fixed Structural Architecture (~57 pts)</strong> (Harmony &amp; Thirds,
-          Eye Geometry, Central Features, Facial Symmetry, Averageness, Jaw &amp; Chin).
-        </p>
-        <p>
-          Every beauty point lands in exactly one parameter without double counting. When a frontal photo is provided,
-          unseen profile angles are excluded and visible parameters are mathematically renormalised to 100 points.
-        </p>
-        <div
-          style={{
-            padding: '12px 16px',
-            background: 'var(--glass)',
-            borderRadius: '8px',
-            color: 'var(--accent)',
-            fontSize: '13px',
-            fontWeight: 600,
-          }}
-        >
-          ✓ Zero signup &bull; Fast local preview &bull; 100% Client-side privacy
+      <div className="governance-modal-body">
+        {/* Hero Highlight */}
+        <div className="governance-highlight-card highlight-fun">
+          <span className="gov-icon" aria-hidden="true">🎉</span>
+          <div>
+            <strong>Built for Entertainment &amp; Fun — Never to Hurt Feelings</strong>
+            <p>
+              Our platform is built for entertainment and fun, not to hurt anyone&apos;s feelings. This is the core vibe of Gabru! We translate classical Renaissance art canons into an uplifting digital sandbox.
+            </p>
+          </div>
+        </div>
+
+        {/* 4 Bite-Sized Cards */}
+        <div className="gov-cards-grid">
+          <div className="gov-card-item">
+            <div className="gov-card-header">
+              <span className="gov-card-icon" aria-hidden="true">📐</span>
+              <h4 className="gov-card-title">10 Balanced Parameters</h4>
+            </div>
+            <p className="gov-card-text">
+              Evaluates Neoclassical thirds, golden ratio (&phi; &asymp; 1.618), bilateral symmetry, eye aperture, and jawline definition on a 100-point scale.
+            </p>
+          </div>
+
+          <div className="gov-card-item">
+            <div className="gov-card-header">
+              <span className="gov-card-icon" aria-hidden="true">🎯</span>
+              <h4 className="gov-card-title">Controllable Levers First</h4>
+            </div>
+            <p className="gov-card-text">
+              Suggestions isolate changeable cues (skin vitality, grooming, smile, and posture) from fixed bone structure so tips remain fun and actionable.
+            </p>
+          </div>
+
+          <div className="gov-card-item">
+            <div className="gov-card-header">
+              <span className="gov-card-icon" aria-hidden="true">📏</span>
+              <h4 className="gov-card-title">Transparent Golden Ratio</h4>
+            </div>
+            <p className="gov-card-text">
+              Proportions are compared against ideal &phi; = 1.618 with transparent math:
+            </p>
+            <div className="gov-formula-chip">
+              Match % = (Measured / 1.618) &times; 100
+            </div>
+          </div>
+
+          <div className="gov-card-item">
+            <div className="gov-card-header">
+              <span className="gov-card-icon" aria-hidden="true">🔒</span>
+              <h4 className="gov-card-title">100% In-Browser Privacy</h4>
+            </div>
+            <p className="gov-card-text">
+              MediaPipe 468-point tracking runs completely inside your browser sandbox. Zero photos are sent to servers or saved in databases.
+            </p>
+          </div>
+        </div>
+
+        {/* Confidence Footer */}
+        <div className="gov-footer-badge footer-badge-fun">
+          <span>✨ Good Energy Only · Celebrate Your Unique Look · Share the Fun</span>
         </div>
       </div>
     </BaseModal>
   );
 };
-

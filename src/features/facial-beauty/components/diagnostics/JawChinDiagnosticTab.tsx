@@ -23,11 +23,11 @@ export function JawChinDiagnosticTab({
       <div className="diag-panel-header">
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
-            <span>📐 Parameter 9: Jaw, Chin &amp; Gender-Typical Cues</span>
-            <span className="diag-stat-code">7 Pts Max · β = 0.10 · Fixed</span>
+            <span>📐 Parameter 9: Jaw, Chin &amp; Reference Cues</span>
+            <span className="diag-stat-code">7 Pts Max &bull; Fixed Architecture</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates mandibular border clarity, bigonial jaw width vs cheekbones, vertical chin projection, and voluntary gender-typical dimorphic cues (or Skip to renormalise without penalty).
+            Evaluates jawline definition, jaw width relative to cheekbones, vertical chin projection, and voluntary gender-typical reference cues.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -68,7 +68,6 @@ export function JawChinDiagnosticTab({
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Jawline Definition</span>
-            <span className="diag-stat-code">JC1 · W=40</span>
           </div>
           <div className="diag-stat-val">
             {((jawMetrics?.jawWidthRatio ?? 0.76) * 100).toFixed(1)}%
@@ -81,7 +80,6 @@ export function JawChinDiagnosticTab({
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Chin Projection</span>
-            <span className="diag-stat-code">JC2 · W=35</span>
           </div>
           <div className="diag-stat-val">
             {((jawMetrics?.chinProjectionRatio ?? 0.33) * 100).toFixed(1)}%
@@ -94,7 +92,6 @@ export function JawChinDiagnosticTab({
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Gender-Typical Balance</span>
-            <span className="diag-stat-code">JC3 · W=25</span>
           </div>
           <div className="diag-stat-val">
             {dimorphismRef === 'skip' ? 'Renormalised' : `${dimorphismRef}`}
@@ -119,7 +116,6 @@ export function JawChinDiagnosticTab({
             <div key={item.id} className="diag-stat-card">
               <div className="diag-stat-header">
                 <span className="diag-stat-label">{item.name}</span>
-                <span className="diag-stat-code">{item.id}</span>
               </div>
               <div className="diag-stat-val">
                 {item.rating.toFixed(1)}/10

@@ -38,12 +38,12 @@ export function ContentEvidenceSection({
     <section className="content-evidence-section" id="content-evidence-section">
       <div className="section-header-compact">
         <div className="about-section-eyebrow">
-          <span>OBJECTIVE EVIDENCE AUDIT</span>
+          <span>SINGLE-POST EVIDENCE MATRIX</span>
         </div>
-        <h3 className="section-title-gradient">Evidence Matrix: Strengths &amp; Flaws</h3>
+        <h3 className="section-title-gradient">Where This Post Shined vs. High-Leverage Opportunities</h3>
         <p className="section-sub-clean">
-          Ground-truth pros and cons derived directly from keyframe timestamps, audio metrics, and transcript analysis.
-          Every score is substantiated by concrete physical evidence.
+          Objective diagnostic signals derived from post telemetry, visual frame balance, and engagement velocity.
+          Every rating is grounded in concrete post metrics.
         </p>
       </div>
 
@@ -57,8 +57,8 @@ export function ContentEvidenceSection({
               </svg>
             </div>
             <div>
-              <h4 className="evidence-column-title">Key Craft Strengths</h4>
-              <span className="evidence-column-subtitle">Subfactors rated &ge; 8.0/10 with strong execution</span>
+              <h4 className="evidence-column-title">Where This Post Shined</h4>
+              <span className="evidence-column-subtitle">Signals rated &ge; 8.0/10 with standout execution</span>
             </div>
             <span className="evidence-count-badge pros-badge font-tabular-nums">{pros.length} Identified</span>
           </div>
@@ -72,18 +72,16 @@ export function ContentEvidenceSection({
                     <span className="evidence-score-pill pro-pill font-tabular-nums">{pro.rating.toFixed(1)} / 10</span>
                   </div>
 
-                  <h5 className="evidence-card-title">{pro.title}</h5>
+                  {pro.title && pro.title.trim().toLowerCase() !== pro.parameter.trim().toLowerCase() && (
+                    <h5 className="evidence-card-title">{pro.title}</h5>
+                  )}
 
                   <div className="evidence-box pro-evidence-box">
-                    <div className="evidence-box-label">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                      </svg>
-                      <span>Evidence Reference:</span>
+                    <p className="evidence-box-note">{pro.evidence.note}</p>
+                    <div className="evidence-box-label" style={{ marginTop: '8px' }}>
+                      <span>Reference:</span>
                       <strong className="evidence-ref-code">{pro.evidence.ref}</strong>
                     </div>
-                    <p className="evidence-box-note">{pro.evidence.note}</p>
                   </div>
 
                   <div className="evidence-card-footer">
@@ -121,8 +119,8 @@ export function ContentEvidenceSection({
               </svg>
             </div>
             <div>
-              <h4 className="evidence-column-title">Priority Craft Flaws</h4>
-              <span className="evidence-column-subtitle">Subfactors rated &le; 6.0/10 pulling down total score</span>
+              <h4 className="evidence-column-title">High-Leverage Opportunities</h4>
+              <span className="evidence-column-subtitle">Signals rated &le; 6.0/10 with room for viral gains</span>
             </div>
             <span className="evidence-count-badge cons-badge font-tabular-nums">{cons.length} Detected</span>
           </div>
@@ -136,19 +134,16 @@ export function ContentEvidenceSection({
                     <span className="evidence-score-pill con-pill font-tabular-nums">{con.rating.toFixed(1)} / 10</span>
                   </div>
 
-                  <h5 className="evidence-card-title">{con.title}</h5>
+                  {con.title && con.title.trim().toLowerCase() !== con.parameter.trim().toLowerCase() && (
+                    <h5 className="evidence-card-title">{con.title}</h5>
+                  )}
 
                   <div className="evidence-box con-evidence-box">
-                    <div className="evidence-box-label con-label">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
-                        <line x1="12" y1="8" x2="12" y2="12" />
-                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                      </svg>
-                      <span>Flaw Location:</span>
+                    <p className="evidence-box-note">{con.evidence.note}</p>
+                    <div className="evidence-box-label con-label" style={{ marginTop: '8px' }}>
+                      <span>Diagnostic Ref:</span>
                       <strong className="evidence-ref-code">{con.evidence.ref}</strong>
                     </div>
-                    <p className="evidence-box-note">{con.evidence.note}</p>
                   </div>
 
                   <div className="evidence-card-footer">

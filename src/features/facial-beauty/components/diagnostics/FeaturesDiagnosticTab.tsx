@@ -18,10 +18,10 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>👃 Parameter 6: Nose, Cheeks, Lips &amp; Philtrum</span>
-            <span className="diag-stat-code">10 Pts Max · β = 0.10 · Fixed</span>
+            <span className="diag-stat-code">10 Pts Max &bull; Fixed Architecture</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates anatomical balance of individual central facial features: nasal dorsal bridge and alar width, malar cheekbone projection, lip vermilion fullness and contour, and philtral column length.
+            Evaluates balance of central features: nasal bridge and width, cheekbone definition, lip contour, and philtrum proportion.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -34,7 +34,6 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Nose Proportions</span>
-            <span className="diag-stat-code">NC1 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {feat?.nasalWidthRatio.toFixed(2) ?? '0.26'}
@@ -47,7 +46,6 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Cheeks &amp; Cheekbones</span>
-            <span className="diag-stat-code">NC2 · W=25</span>
           </div>
           <div className="diag-stat-val">
             Defined Malar
@@ -60,7 +58,6 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Lips &amp; Vermilion</span>
-            <span className="diag-stat-code">NC3 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {feat?.lipFullnessRatio.toFixed(2) ?? '0.35'}
@@ -73,7 +70,6 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Philtrum Column</span>
-            <span className="diag-stat-code">NC4 · W=15</span>
           </div>
           <div className="diag-stat-val">
             {feat?.philtrumRatio.toFixed(2) ?? '0.24'}
@@ -99,7 +95,6 @@ export function FeaturesDiagnosticTab({ scoreData }: FeaturesDiagnosticTabProps)
             <div key={item.id} className="diag-stat-card">
               <div className="diag-stat-header">
                 <span className="diag-stat-label">{item.name}</span>
-                <span className="diag-stat-code">{item.id}</span>
               </div>
               <div className="diag-stat-val">
                 {item.rating.toFixed(1)}/10

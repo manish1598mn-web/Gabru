@@ -44,7 +44,7 @@ export function ComplianceDiagnosticTab({ scoreData }: DiagnosticTabProps) {
         <div className="compliance-row pass">
           <span className="comp-icon">✓</span>
           <span className="comp-label">Claim Veracity:</span>
-          <span className="comp-val">Factual keyboard shortcuts verified against official software docs</span>
+          <span className="comp-val">Clear, authentic assertions with no deceptive clickbait</span>
         </div>
       </div>
 

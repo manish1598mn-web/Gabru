@@ -5,34 +5,41 @@ import React from 'react';
 /**
  * ContentAboutSection
  *
- * User-facing guide and feature showcase:
- * - Clear purpose and importance of objective social media content evaluation
- * - 4 core features and how they work (10-parameter rubric, creator baseline benchmarking, delta-gain studio, 100% in-browser privacy)
- * - Step-by-step "How to Use" guide with realistic examples
- * - Zero exposure of private project architecture or internal engineering telemetry
+ * User-facing guide and architecture showcase:
+ * - Clear purpose and importance of single-post social media personality & viral diagnostics
+ * - 4 core features: 10 Entertaining Dimensions, Scraped Telemetry & Hidden Ratios, Multimodal Vision & NLP, and Transparent 100-Point Impact Scale
+ * - Step-by-step "How to Use" guide with realistic single-post workflow
+ * - Clean, calm Apple-grade aesthetic
  */
 export const ContentAboutSection: React.FC = () => {
   return (
     <section
       className="feature-strip-wrapper about-strip-wrapper"
       id="about-section"
-      aria-label="How Social Media Content Evaluation Works"
+      aria-label="How Single-Post Content Evaluation Works"
     >
       <div className="feature-strip-container">
         {/* Section Header */}
         <div className="about-section-header scroll-reveal">
           <div className="about-section-eyebrow">
-            <span>CREATOR GUIDE &amp; METHODOLOGY</span>
+            <span>CONTENT RATING METHODOLOGY</span>
           </div>
           <h2 className="about-section-title">
-            Understanding Your Content &amp; Reach Audit
+            Understanding Single-Post Diagnostic Intelligence
           </h2>
           <p className="about-section-subtitle">
-            An objective, retention-grounded media evaluation designed to help creators engineer viral pacing, vocal clarity, and algorithmic engagement&mdash;free from subjective bias.
+            Multimodal single-post evaluation combining public engagement counters, visual framing, and viral momentum.
           </p>
+
+          <div className="about-vibe-banner vibe-banner-content">
+            <span className="vibe-emoji" aria-hidden="true">🚀</span>
+            <div className="vibe-text">
+              <strong>Creative Energy &amp; Fun:</strong> Content Rating is an entertaining creator lab designed to spark viral video ideas, test hook lines, and have fun analyzing social dynamics—never to discourage your creative voice!
+            </div>
+          </div>
         </div>
 
-        {/* 4 Core Features & How They Work */}
+        {/* 4 Core Features */}
         <div className="features-showcase-grid">
           <div className="guide-feature-card scroll-reveal">
             <div className="guide-feature-icon icon-blue">
@@ -43,14 +50,10 @@ export const ContentAboutSection: React.FC = () => {
               </svg>
             </div>
             <div className="guide-feature-content">
-              <h3 className="guide-feature-title">10 Balanced Craft Dimensions</h3>
+              <h3 className="guide-feature-title">10 Distinct Dimensions</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Evaluates 35 objective subfactors across Hook &amp; Opening, Value &amp; Relevance, Storytelling, Visual/Audio Quality, Copy, CTA, Platform Fit, Originality, Timing, and Trust &amp; Compliance.
+                Evaluates Main Character Energy, Visual Aura, Scroll Hook, Caption Polish, Group-Chat Forwardability, and Bookmark Bait.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Eliminates guesswork by diagnosing exact drop-off moments, audio flaws, and algorithmic safe-zone penalties with mathematical consistency.</span>
-              </div>
             </div>
           </div>
 
@@ -63,14 +66,10 @@ export const ContentAboutSection: React.FC = () => {
               </svg>
             </div>
             <div className="guide-feature-content">
-              <h3 className="guide-feature-title">Empirical Creator Baseline</h3>
+              <h3 className="guide-feature-title">Objective Craft &amp; Pacing</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Computes z-score performance distributions relative to your 30-day median views and engagement rates.
+                Evaluates opening hook punch, pacing cadence, visual composition, and narrative clarity.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Avoids penalizing smaller channels with raw view bias; benchmarks how well a piece performed relative to your typical audience reach.</span>
-              </div>
             </div>
           </div>
 
@@ -82,14 +81,10 @@ export const ContentAboutSection: React.FC = () => {
               </svg>
             </div>
             <div className="guide-feature-content">
-              <h3 className="guide-feature-title">Actionable &Delta;Gain Studio</h3>
+              <h3 className="guide-feature-title">Visual &amp; Formatting Rubrics</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Models marginal score gain (+1.4 pts for golden 3s payoff, +1.1 pts for debate CTA) and generates alternative viral hooks, SEO captions, and debate questions.
+                Evaluates lighting balance, composition, caption readability, and platform UI safe zones.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Turns abstract critique into production-ready creative assets you can copy and deploy directly to your next upload.</span>
-              </div>
             </div>
           </div>
 
@@ -101,85 +96,56 @@ export const ContentAboutSection: React.FC = () => {
               </svg>
             </div>
             <div className="guide-feature-content">
-              <h3 className="guide-feature-title">100% In-Browser Privacy</h3>
+              <h3 className="guide-feature-title">Calibrated 100-Point Impact Scale</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Video parsing, waveform generation, loudness measurement, and rubric calculations execute entirely inside your local browser session.
+                Scores content across 10 balanced dimensions on a 100-point scale, awarding certified Archetype Badges and practical optimization takeaways.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Your unreleased drafts, private videos, and account analytics are never uploaded to or stored on any external server.</span>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Step-by-Step "How to Use" with Proper Example */}
+        {/* Step-by-Step "How to Use" */}
         <div className="how-to-use-section scroll-reveal">
           <div className="how-to-use-header">
-            <h3 className="how-to-title">How to Use This Tool for Best Results</h3>
+            <h3 className="how-to-title">How to Evaluate Any Single Post in Seconds</h3>
             <p className="how-to-subtitle">
-              Follow these simple steps to ensure the highest measurement accuracy and get the most value from your evaluation.
+              Follow these simple steps to benchmark any public post and get your personalized scorecard.
             </p>
           </div>
 
           <div className="how-to-steps-grid">
             <div className="step-card">
               <div className="step-number">01</div>
-              <h4 className="step-title">Paste Link or Upload Video</h4>
+              <h4 className="step-title">Paste Any Single Post URL</h4>
               <p className="step-desc">
-                Paste any public YouTube Short, Instagram Reel, or TikTok link, or drop an MP4/MOV file directly into the studio dropzone.
+                Paste any public Instagram, TikTok, YouTube Short, X, or LinkedIn post link.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Paste a link like https://youtube.com/shorts/sample or click Try Demo Presets to explore instantly.</span>
-              </div>
             </div>
 
             <div className="step-card">
               <div className="step-number">02</div>
-              <h4 className="step-title">Instant Multi-Modal Audit</h4>
+              <h4 className="step-title">Instant Vision &amp; Craft Audit</h4>
               <p className="step-desc">
-                In seconds, the engine inspects vocal loudness (-14 LUFS target), speech pacing (140&ndash;180 WPM), 0&ndash;3s golden hook payoff, and UI safe-zone margins.
+                Opening visual hook, framing, aspect ratio, caption wit, and safe zones are evaluated in seconds.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Review your audio spectrum meter to confirm dialogue is audible across muted mobile feeds.</span>
-              </div>
             </div>
 
             <div className="step-card">
               <div className="step-number">03</div>
-              <h4 className="step-title">Inspect 10 Diagnostic Tabs</h4>
+              <h4 className="step-title">Inspect 10 Diagnostic Deep Dives</h4>
               <p className="step-desc">
-                Check your overall Content Score (/100) and Quality vs. Performance split. Click on any of the 10 parameter cards to view concrete timestamps, quotes, and metrics.
+                Navigate the 10 diagnostic tabs to inspect your score breakdown, vibe roasts, and actionable takeaways.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Jump to the Pacing Matrix to pinpoint exact dead-air silence gaps longer than 1.5 seconds.</span>
-              </div>
             </div>
 
             <div className="step-card">
               <div className="step-number">04</div>
-              <h4 className="step-title">Apply Rewrites &amp; Export</h4>
+              <h4 className="step-title">Export Verified 1080&times;1350 Share Card</h4>
               <p className="step-desc">
-                Review your personalized top suggestions ranked by &Delta;Gain. Copy optimized viral hooks, SEO captions, and debate CTAs, or export a high-res 1080&times;1350 style card.
+                Generate an ultra-crisp social share card stamped with your Archetype Badge, score, and key metrics.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Swap a generic &ldquo;Follow for more&rdquo; with a debate question to lift comment velocity by 4.8x.</span>
-              </div>
             </div>
           </div>
-        </div>
-
-        {/* Walkthrough Example Scenario Banner */}
-        <div className="guide-example-banner scroll-reveal">
-          <div className="banner-badge">PRACTICAL SCENARIO</div>
-          <h4 className="banner-title">Real-World Content Optimization Example</h4>
-          <p className="banner-text">
-            Consider a creator whose technical explainer Short scores <strong>58.2/100</strong> due to a 7-second delayed hook, quiet vocal audio (-24 LUFS), and a passive closing CTA (&ldquo;Follow for more&rdquo;). Rather than reshooting the entire video, the creator implements three high-leverage fixes: trims the 4-second intro so the visual payoff occurs at 00:02 (<strong>+1.4 pts</strong>), normalizes audio loudness to -14 LUFS (<strong>+1.2 pts</strong>), and replaces the CTA with an opinion trigger (&ldquo;Which VS Code shortcut saves you the most time? Drop it below&rdquo; &mdash; <strong>+1.1 pts</strong>). These targeted tweaks lift the total Content Score to <strong>84.0/100</strong> (&ldquo;Strong&rdquo;), dramatically boosting predicted retention and algorithmic reach.
-          </p>
         </div>
       </div>
     </section>

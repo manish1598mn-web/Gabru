@@ -262,6 +262,24 @@ export function createRollNormalisedCanvas(
 /**
  * Step 0: Intake Gate & Full Landmark Detection
  */
+function createRotatedFaceCanvas(src: HTMLCanvasElement, angleDeg: number): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  if (angleDeg === 90 || angleDeg === 270) {
+    c.width = src.height;
+    c.height = src.width;
+  } else {
+    c.width = src.width;
+    c.height = src.height;
+  }
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.translate(c.width / 2, c.height / 2);
+    ctx.rotate((angleDeg * Math.PI) / 180);
+    ctx.drawImage(src, -src.width / 2, -src.height / 2);
+  }
+  return c;
+}
+
 export async function detectFaceAndLandmarks(
   sourceImgOrCanvas: HTMLImageElement | HTMLCanvasElement
 ): Promise<FaceDetectionResult> {
@@ -327,7 +345,23 @@ export async function detectFaceAndLandmarks(
       return emptyResult;
     }
 
-    const detection = executeWithConsoleFilter(() => faceLandmarker.detect(canvas));
+    let detection = executeWithConsoleFilter(() => faceLandmarker.detect(canvas));
+    if (!detection || !detection.faceLandmarks || detection.faceLandmarks.length === 0) {
+      // 4-Way Multi-Orientation Search (90°, 270°, 180°) for rotated mobile selfies
+      for (const angle of [90, 270, 180]) {
+        const rotCanvas = createRotatedFaceCanvas(canvas, angle);
+        const rotDetection = executeWithConsoleFilter(() => faceLandmarker.detect(rotCanvas));
+        if (rotDetection?.faceLandmarks && rotDetection.faceLandmarks.length > 0) {
+          detection = rotDetection;
+          // Synchronize canvas to the detected upright orientation
+          canvas.width = rotCanvas.width;
+          canvas.height = rotCanvas.height;
+          ctx?.drawImage(rotCanvas, 0, 0);
+          break;
+        }
+      }
+    }
+
     if (!detection || !detection.faceLandmarks || detection.faceLandmarks.length === 0) {
       return emptyResult;
     }
@@ -387,23 +421,26 @@ export async function detectFaceAndLandmarks(
       notes.push(`Moderate resolution (IPD ${Math.round(ipdPx)}px < 100px: skin evaluated with neutral prior)`);
     }
 
-    // Yaw soft check: <= 5 deg -> V=1; 5-10 deg -> V=0.5; > 10 deg -> V=0
+    // Yaw soft check: <= 8 deg -> V=1; 8-16 deg -> V=0.65; > 16 deg -> V=0.35
     let vYaw = 1.0;
     const absYaw = Math.abs(yaw);
-    if (absYaw > 10) {
-      vYaw = 0.0;
-      notes.push(`Head turned ${absYaw.toFixed(1)}° (yaw > 10°: horizontal measures excluded)`);
-    } else if (absYaw > 5) {
-      vYaw = 0.5;
-      notes.push(`Slight head turn ${absYaw.toFixed(1)}° (yaw > 5°: horizontal measures evaluated at partial visibility)`);
+    if (absYaw > 16) {
+      vYaw = 0.35;
+      notes.push(`Head turned ${absYaw.toFixed(1)}° (yaw > 16°: horizontal measures evaluated at reduced confidence)`);
+    } else if (absYaw > 8) {
+      vYaw = 0.65;
+      notes.push(`Slight head turn ${absYaw.toFixed(1)}° (yaw > 8°: horizontal measures evaluated at partial visibility)`);
     }
 
-    // Pitch soft check: <= 5 deg -> V=1; > 5 deg -> V=0.5
+    // Pitch soft check: <= 8 deg -> V=1; 8-18 deg -> V=0.65; > 18 deg -> V=0.40
     let vPitch = 1.0;
     const absPitch = Math.abs(pitch);
-    if (absPitch > 5) {
-      vPitch = 0.5;
-      notes.push(`Head tilted ${absPitch.toFixed(1)}° (pitch > 5°: vertical ratios evaluated at partial visibility)`);
+    if (absPitch > 18) {
+      vPitch = 0.40;
+      notes.push(`Head tilted ${absPitch.toFixed(1)}° (pitch > 18°: vertical ratios evaluated at reduced confidence)`);
+    } else if (absPitch > 8) {
+      vPitch = 0.65;
+      notes.push(`Slight head tilt ${absPitch.toFixed(1)}° (pitch > 8°: vertical ratios evaluated at partial visibility)`);
     }
 
     // Lighting balance

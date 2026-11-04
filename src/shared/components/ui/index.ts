@@ -16,4 +16,12 @@ export type { ModalProps } from './Modal';
 export { BaseModal } from './BaseModal';
 export type { BaseModalProps } from './BaseModal';
 
+export { ThemeToggle } from './ThemeToggle';
+export type { ThemeToggleProps } from './ThemeToggle';
+
+export { ScanningReticleOverlay } from './ScanningReticleOverlay';
+export type { ScanningReticleOverlayProps } from './ScanningReticleOverlay';
+
+export { GabruLogoIcon, type GabruLogoIconProps } from './GabruLogoIcon';
+
 export { CssInspectorCompanion } from './CssInspectorCompanion';

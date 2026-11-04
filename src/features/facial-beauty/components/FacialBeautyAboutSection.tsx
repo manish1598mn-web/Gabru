@@ -2,37 +2,82 @@
 
 import React from 'react';
 
+export interface FacialBeautyAboutSectionProps {
+  onOpenPrivacyModal?: () => void;
+  onOpenTermsModal?: () => void;
+  onOpenMethodologyModal?: () => void;
+}
+
 /**
  * FacialBeautyAboutSection
  *
  * User-facing guide and feature showcase:
- * - Clear purpose and importance of objective facial harmony evaluation
- * - 4 core features and how they work (10-parameter audit, changeable vs fixed split, actionable levers, 100% private in-browser analysis)
- * - Step-by-step "How to Use" guide with realistic examples and photo best practices
- * - Zero exposure of private project architecture or internal engineering telemetry
+ * - Clear purpose: Entertainment, self-love, and constructive aesthetic sandbox
+ * - 4 core features (10-parameter audit, changeable vs fixed split, actionable levers, 100% private in-browser analysis)
+ * - Quick-access governance suite (Privacy Policy, Terms of Evaluation, Scientific Methodology)
+ * - Step-by-step "How to Use" guide with realistic examples
  */
-export const FacialBeautyAboutSection: React.FC = () => {
+export const FacialBeautyAboutSection: React.FC<FacialBeautyAboutSectionProps> = ({
+  onOpenPrivacyModal,
+  onOpenTermsModal,
+  onOpenMethodologyModal,
+}) => {
   return (
     <section
       className="feature-strip-wrapper about-strip-wrapper"
       id="about-section"
-      aria-label="How Facial Attractiveness Evaluation Works"
+      aria-label="About Gabru Facial Attractiveness Framework"
     >
       <div className="feature-strip-container">
         {/* Section Header */}
         <div className="about-section-header scroll-reveal">
           <div className="about-section-eyebrow">
-            <span>USER GUIDE &amp; METHODOLOGY</span>
+            <span>RENAISSANCE CANONS &bull; 100% RECREATIONAL SANDBOX</span>
           </div>
           <h2 className="about-section-title">
-            Understanding Your Facial Harmony Audit
+            About Gabru Facial Attractiveness Framework
           </h2>
           <p className="about-section-subtitle">
-            An objective, research-grounded aesthetic analysis designed to help you discover your natural facial proportions, skin vitality, and grooming potential—free from beauty filter distortion.
+            An aesthetic digital sandbox translating classical Renaissance proportions and computer vision into an engaging experience.
           </p>
+
+          <div className="about-vibe-banner vibe-banner-beauty">
+            <span className="vibe-emoji" aria-hidden="true">🎉</span>
+            <div className="vibe-text">
+              <strong>Built for Entertainment &amp; Fun — Never to Hurt Feelings:</strong> Our platform is built for entertainment and fun, not to hurt anyone&apos;s feelings. This is the core vibe of Gabru! Human beauty is infinite, diverse, and impossible to reduce to a single number. This audit translates historical art canons into an uplifting sandbox to celebrate your features and boost your confidence!
+            </div>
+          </div>
+
+          {/* Quick-Access Governance Pills Row */}
+          <div className="about-gov-pills-row" style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '16px' }}>
+            <button
+              type="button"
+              className="about-gov-btn focus-ring tactile-press"
+              onClick={onOpenPrivacyModal}
+            >
+              <span aria-hidden="true">🔒</span>
+              <span>Privacy Policy</span>
+            </button>
+            <button
+              type="button"
+              className="about-gov-btn focus-ring tactile-press"
+              onClick={onOpenTermsModal}
+            >
+              <span aria-hidden="true">🎉</span>
+              <span>Terms of Evaluation</span>
+            </button>
+            <button
+              type="button"
+              className="about-gov-btn focus-ring tactile-press"
+              onClick={onOpenMethodologyModal}
+            >
+              <span aria-hidden="true">📐</span>
+              <span>Scientific Methodology</span>
+            </button>
+          </div>
         </div>
 
-        {/* 4 Core Features & How They Work */}
+        {/* 4 Core Features */}
         <div className="features-showcase-grid">
           <div className="guide-feature-card scroll-reveal">
             <div className="guide-feature-icon icon-blue">
@@ -45,12 +90,8 @@ export const FacialBeautyAboutSection: React.FC = () => {
             <div className="guide-feature-content">
               <h3 className="guide-feature-title">10 Balanced Dimensions</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Evaluates 29 anatomical points across 10 balanced parameters—including skin tone uniformity, eye aperture geometry, facial thirds and fifths, smile dynamics, bilateral symmetry, and jaw contour.
+                Evaluates skin tone uniformity, eye geometry, facial thirds and fifths, smile dynamics, bilateral symmetry, and jaw contour for comprehensive proportion analysis.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Prevents over-fixating on any single trait by assessing complete craniofacial harmony in equilibrium.</span>
-              </div>
             </div>
           </div>
 
@@ -64,12 +105,8 @@ export const FacialBeautyAboutSection: React.FC = () => {
             <div className="guide-feature-content">
               <h3 className="guide-feature-title">Changeable vs. Fixed Split</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Automatically distinguishes controllable presentational cues (Skin, Expression, Grooming, Under-eye clarity, Posture — ~43 pts) from natural bone architecture (~57 pts).
+                Distinguishes controllable presentation cues (Skin, Expression, Grooming, Under-eye, Posture) from natural bone architecture so advice stays constructive.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Eliminates anxiety over unalterable genetics and directs your focus strictly toward realistic grooming habits.</span>
-              </div>
             </div>
           </div>
 
@@ -83,12 +120,8 @@ export const FacialBeautyAboutSection: React.FC = () => {
             <div className="guide-feature-content">
               <h3 className="guide-feature-title">Actionable Improvement Levers</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Identifies your top 3 highest-impact opportunities with calculated score gains (e.g. +0.6 pts for Duchenne eye-crinkle warmth, +0.4 pts for eyebrow arch definition).
+                Highlights your top 3 highest-impact opportunities with calculated score gains so you can focus on practical styling and lighting adjustments.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Turns an abstract rating into a personalized, practical styling and skincare roadmap you can implement immediately.</span>
-              </div>
             </div>
           </div>
 
@@ -100,24 +133,20 @@ export const FacialBeautyAboutSection: React.FC = () => {
               </svg>
             </div>
             <div className="guide-feature-content">
-              <h3 className="guide-feature-title">100% In-Browser Privacy</h3>
+              <h3 className="guide-feature-title">Local Biometric Privacy</h3>
               <p className="guide-feature-desc">
-                <strong>How it works:</strong> Facial landmark detection and colorimetric calculations execute completely inside your local browser memory. Your photo is never sent to or stored on any server.
+                Facial landmark detection and calculations run entirely on your local device. Your photo is never transmitted to any external server or stored.
               </p>
-              <div className="guide-feature-why">
-                <span className="why-label">Why it matters:</span>
-                <span>Ensures absolute data privacy with zero cloud retention, while letting you export a clean 1080×1350 style card anytime.</span>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Step-by-Step "How to Use" with Proper Example */}
+        {/* Step-by-Step "How to Use" */}
         <div className="how-to-use-section scroll-reveal">
           <div className="how-to-use-header">
             <h3 className="how-to-title">How to Use This Tool for Best Results</h3>
             <p className="how-to-subtitle">
-              Follow these simple steps to ensure the highest measurement accuracy and get the most value from your evaluation.
+              Follow these simple steps for measurement accuracy and constructive feedback.
             </p>
           </div>
 
@@ -126,59 +155,34 @@ export const FacialBeautyAboutSection: React.FC = () => {
               <div className="step-number">01</div>
               <h4 className="step-title">Take the Right Photo</h4>
               <p className="step-desc">
-                Face the camera directly at eye level in even, natural daylight. Maintain a neutral expression with relaxed lips and forehead. Keep hair lightly pulled back so your hairline, jaw, and ears are visible.
+                Face the camera directly at eye level in even, natural daylight with a neutral expression. Keep hair lightly pulled back so your jawline and forehead are visible.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>A well-lit passport-style portrait taken 1.5 m away without heavy filters or extreme angles.</span>
-              </div>
             </div>
 
             <div className="step-card">
               <div className="step-number">02</div>
               <h4 className="step-title">Upload &amp; Analyze</h4>
               <p className="step-desc">
-                Drop your photo into the studio or click <em>Browse Face Photo</em>. In seconds, 29 biometric landmark points are mapped to compute your facial thirds, aperture ratios, and skin tone.
+                Drop your photo or click Browse. Biometric landmark tracking maps your facial thirds, eye aperture, and skin tone in seconds.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>You can also click <em>Sample Portrait</em> or <em>Try Beauty Sketch</em> to instantly explore the dashboard.</span>
-              </div>
             </div>
 
             <div className="step-card">
               <div className="step-number">03</div>
               <h4 className="step-title">Inspect Your Deep Dives</h4>
               <p className="step-desc">
-                Check your overall Face Score (/100) and Changeable vs. Fixed breakdown. Click on any of the 10 parameter cards to view clinical ratios, such as vertical thirds deviation or canthal tilt.
+                Check your overall Face Score and review individual parameter cards to view proportions, symmetry, and skin tone analysis.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Inspect your sampled skin pigment swatches in CIELAB color space and copy their HEX codes directly.</span>
-              </div>
             </div>
 
             <div className="step-card">
               <div className="step-number">04</div>
               <h4 className="step-title">Apply Actionable Levers</h4>
               <p className="step-desc">
-                Review your personalized top 3 controllable levers. Focus your daily routine on these high-ROI styling adjustments to elevate your presentation score and overall aesthetic harmony.
+                Review your top controllable levers for practical styling and skincare adjustments with estimated score gains.
               </p>
-              <div className="step-example-pill">
-                <span className="example-tag">Example:</span>
-                <span>Target under-eye hydration with a peptide serum and maintain clean eyebrow perimeter edges for an instant gain.</span>
-              </div>
             </div>
           </div>
-        </div>
-
-        {/* Walkthrough Example Scenario Banner */}
-        <div className="guide-example-banner scroll-reveal">
-          <div className="banner-badge">PRACTICAL SCENARIO</div>
-          <h4 className="banner-title">Real-World Application Example</h4>
-          <p className="banner-text">
-            Consider a user whose structural bone harmony scores <strong>93.5%</strong> (well-balanced thirds, symmetrical features), but whose changeable score is <strong>82%</strong> due to periorbital fatigue shadows and slightly unkempt brow edges. Rather than worrying about fixed features, the system highlights two simple levers: hydrating under-eye care and lower brow arch cleanup. Executing these two controllable styling tweaks yields a projected gain of <strong>+1.2 points</strong>, lifting the total Face Score into the top tier.
-          </p>
         </div>
       </div>
     </section>

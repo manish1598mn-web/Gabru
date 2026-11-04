@@ -93,15 +93,15 @@ export const OUTFIT_PARAMETERS: ParameterDef[] = [
 ];
 
 export const OUTFIT_CARD_BACKGROUNDS: Record<number, string> = {
-  1: 'linear-gradient(135deg, #1f242d 0%, #303746 55%, #1f242d 100%)',
-  2: 'linear-gradient(135deg, #24222f 0%, #3d3950 55%, #24222f 100%)',
-  3: 'linear-gradient(135deg, #2a201c 0%, #46342c 55%, #2a201c 100%)',
-  4: 'linear-gradient(135deg, #1c2724 0%, #2a413b 55%, #1c2724 100%)',
-  5: 'linear-gradient(135deg, #2b1f24 0%, #47313b 55%, #2b1f24 100%)',
-  6: 'linear-gradient(135deg, #26241e 0%, #423d2f 55%, #26241e 100%)',
-  7: 'linear-gradient(135deg, #1d252a 0%, #2f3d46 55%, #1d252a 100%)',
-  8: 'linear-gradient(135deg, #232029 0%, #3a3344 55%, #232029 100%)',
-  9: 'linear-gradient(135deg, #2b221d 0%, #49382f 55%, #2b221d 100%)',
-  10: 'linear-gradient(135deg, #1f272a 0%, #314247 55%, #1f272a 100%)',
+  1: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  2: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  3: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  4: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  5: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  6: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  7: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  8: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  9: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
+  10: 'linear-gradient(145deg, rgba(24, 22, 30, 0.75) 0%, rgba(13, 12, 18, 0.88) 100%)',
 };
 

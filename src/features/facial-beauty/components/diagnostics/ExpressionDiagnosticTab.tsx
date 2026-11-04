@@ -18,10 +18,10 @@ export function ExpressionDiagnosticTab({ scoreData }: ExpressionDiagnosticTabPr
         <div className="diag-panel-header-left">
           <div className="diag-panel-name">
             <span>🎭 Parameter 4: Expression, Smile &amp; Gaze</span>
-            <span className="diag-stat-code">12 Pts Max · β = 0.15 · High Changeability</span>
+            <span className="diag-stat-code">12 Pts Max &bull; Controllable</span>
           </div>
           <div className="diag-panel-desc">
-            Evaluates neuromuscular warmth cues: AU12 zygomaticus smile contraction, AU6 eye-crinkle authentication (Duchenne smile), smile arc dental balance, direct optical gaze alignment, and facial relaxation.
+            Evaluates expression warmth, smile authenticity (Duchenne markers), smile arc symmetry, direct optical gaze alignment, and facial relaxation.
           </div>
         </div>
         <div className="diag-panel-score-badge">
@@ -34,7 +34,6 @@ export function ExpressionDiagnosticTab({ scoreData }: ExpressionDiagnosticTabPr
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Smile Genuineness</span>
-            <span className="diag-stat-code">EX1 · W=30</span>
           </div>
           <div className="diag-stat-val">
             {expr?.isSmiling ? `${expr.smileIntensityPct ?? 0}% AU12` : 'Neutral Rest'}
@@ -51,7 +50,6 @@ export function ExpressionDiagnosticTab({ scoreData }: ExpressionDiagnosticTabPr
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Smile &amp; Teeth</span>
-            <span className="diag-stat-code">EX2 · W=25</span>
           </div>
           <div className="diag-stat-val">
             {expr?.isSmiling ? 'Symmetric Arc' : 'Neutral State'}
@@ -66,7 +64,6 @@ export function ExpressionDiagnosticTab({ scoreData }: ExpressionDiagnosticTabPr
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Gaze &amp; Eye Contact</span>
-            <span className="diag-stat-code">EX3 · W=25</span>
           </div>
           <div className="diag-stat-val">
             {expr?.gazeDevDeg.toFixed(1) ?? '1.5'}° offset
@@ -81,7 +78,6 @@ export function ExpressionDiagnosticTab({ scoreData }: ExpressionDiagnosticTabPr
         <div className="diag-stat-card">
           <div className="diag-stat-header">
             <span className="diag-stat-label">Relaxation &amp; Warmth</span>
-            <span className="diag-stat-code">EX4 · W=20 · V=0.5</span>
           </div>
           <div className="diag-stat-val">
             {expr?.tensionState ?? 'Relaxed Natural Tone'}

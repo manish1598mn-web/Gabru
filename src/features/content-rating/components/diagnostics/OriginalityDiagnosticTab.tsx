@@ -33,10 +33,10 @@ export function OriginalityDiagnosticTab({ scoreData }: DiagnosticTabProps) {
       <div className="content-brand-voice-card">
         <div className="brand-voice-header">
           <span>BRAND VOICE PROFILE</span>
-          <span className="voice-badge">TECHNICAL MENTOR</span>
+          <span className="voice-badge">{scoreData.archetypeTier.toUpperCase()}</span>
         </div>
         <p className="brand-voice-desc">
-          Consistent tutorial cadence matching the creator&rsquo;s established authority in developer workflows. No intrusive sound trends or uncredited meme clips.
+          Distinctive delivery cadence and narrative framing consistent with the &ldquo;{scoreData.verdictBadge}&rdquo; persona.
         </p>
       </div>
 

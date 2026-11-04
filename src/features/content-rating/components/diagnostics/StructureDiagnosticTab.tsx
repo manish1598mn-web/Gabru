@@ -33,9 +33,13 @@ export function StructureDiagnosticTab({ scoreData }: DiagnosticTabProps) {
       {/* Pacing Speedometer Matrix */}
       <div className="content-pacing-matrix">
         <div className="pacing-metric-card">
-          <span className="pacing-label">CUT FREQUENCY</span>
-          <span className="pacing-value">1 cut / 3.2s</span>
-          <span className="pacing-status ideal">✓ Ideal Short Pacing</span>
+          <span className="pacing-label">TRANSITION DYNAMICS</span>
+          <span className="pacing-value">
+            {scoreData.item.media.durationSec > 0
+              ? `${Math.max(1, Math.round(scoreData.item.media.durationSec / 10))} Visual Shifts`
+              : 'Smooth Flow'}
+          </span>
+          <span className="pacing-status ideal">✓ Balanced Pacing</span>
         </div>
         <div className="pacing-metric-card">
           <span className="pacing-label">MAX SILENCE GAP</span>
