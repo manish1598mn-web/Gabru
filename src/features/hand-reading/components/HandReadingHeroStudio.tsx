@@ -254,9 +254,6 @@ export function HandReadingHeroStudio({
               </Button>
             </div>
 
-            <div className="hero-sub-actions" style={{ marginTop: '14px' }}>
-              <span className="privacy-pill">🔒 Zero Data Retention &bull; 100% Private</span>
-            </div>
           </div>
         ) : (
           /* Initial State: Clean Semantic Upload Dropzone */
@@ -300,9 +297,6 @@ export function HandReadingHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions">
-              <span className="privacy-pill">🔒 Zero Data Retention &bull; 100% Private</span>
-            </div>
           </>
         )}
 

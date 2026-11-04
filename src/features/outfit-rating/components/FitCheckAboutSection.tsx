@@ -20,9 +20,7 @@ export function FitCheckAboutSection() {
 
           <div className="about-vibe-banner">
             <span className="vibe-emoji" aria-hidden="true">🎉</span>
-            <div className="vibe-text">
-              <strong>Style is Personal &amp; Fun:</strong> Fit Check is an entertaining style sandbox designed to celebrate confidence, inspire outfit experimentation, and spark good vibes with friends—never to judge human worth or diminish anyone.
-            </div>
+
           </div>
         </div>
 

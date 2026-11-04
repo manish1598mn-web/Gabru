@@ -605,7 +605,7 @@ export function drawBeautySocialCard(
   ctx.textBaseline = 'middle';
   ctx.font = '500 11.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-  ctx.fillText(`🔒 100% In-Browser Private • Bilateral Parity: ${symm}% • Melanin & Ethnic Invariant • Zero Cloud Uploads`, dockX + 28, dockY + 158);
+  ctx.fillText(`Bilateral Parity: ${symm}% • Melanin & Ethnic Invariant`, dockX + 28, dockY + 158);
 
   ctx.restore();
 

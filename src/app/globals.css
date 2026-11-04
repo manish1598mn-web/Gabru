@@ -440,7 +440,11 @@
   background: currentColor;
 }
 
-/* --- Skeleton Shimmer --- */
+  /* --- Skeleton Shimmer --- */
+  .studio-hero-backdrop svg text {
+    display: none;
+  }
+
 .skeleton-shimmer {
   background: linear-gradient(90deg,
       rgba(255, 255, 255, 0.03) 0%,

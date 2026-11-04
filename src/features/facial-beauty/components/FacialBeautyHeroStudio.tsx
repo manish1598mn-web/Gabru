@@ -171,9 +171,6 @@ export function FacialBeautyHeroStudio({
           <span className="gradient-text">Objectively Scored</span>
         </h1>
 
-        <p className="hero-description scroll-reveal" id="hero-description">
-          Golden-ratio proportions, symmetry, and skin vitality metrics. 100% on-device.
-        </p>
 
         {scoreData ? (
           /* Evaluated State: Clean Executive Beauty Score Hub */
@@ -409,12 +406,6 @@ export function FacialBeautyHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions" style={{ flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <span className="privacy-pill">🔒 Zero Cloud Uploads · 100% In-Browser Biometric Analysis</span>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', textAlign: 'center', margin: 0, maxWidth: '420px', lineHeight: 1.4 }}>
-                By uploading, you confirm you are 18+ and consent to private on-device facial landmark processing. Photos are never stored or uploaded.
-              </p>
-            </div>
           </>
         ) : (
           /* Initial State: Clean Redesigned Dropzone */
@@ -452,7 +443,6 @@ export function FacialBeautyHeroStudio({
                   <p className="upload-title">
                     {isDragging ? 'Drop portrait photo to evaluate' : 'Drop your face photo here, or browse'}
                   </p>
-                  <p className="upload-subtitle">Frontal, direct eye contact • JPG, PNG, WEBP • 100% Private</p>
                 </div>
 
                 <Button
@@ -469,12 +459,6 @@ export function FacialBeautyHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions" style={{ flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <span className="privacy-pill">🔒 Zero Cloud Uploads · 100% In-Browser Biometric Analysis</span>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', textAlign: 'center', margin: 0, maxWidth: '420px', lineHeight: 1.4 }}>
-                By uploading, you confirm you are 18+ and consent to private on-device facial landmark processing. Photos are never stored or uploaded.
-              </p>
-            </div>
           </>
         )}
 
