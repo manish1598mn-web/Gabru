@@ -7,8 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
+    "test": "tsx src/features/content-rating/services/__tests__/ContentScoringEngine.test.ts && tsx src/features/content-rating/services/__tests__/ContentDeterministicPipeline.test.ts && tsx src/features/facial-beauty/services/__tests__/FacialScoringEngineCalibration.test.ts && tsx src/features/hand-reading/services/__tests__/HandScoringEngine.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,7 @@
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
 }
