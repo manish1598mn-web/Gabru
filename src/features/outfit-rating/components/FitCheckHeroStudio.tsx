@@ -51,7 +51,6 @@ export function FitCheckHeroStudio({
           <span className="gradient-text">Scored in Seconds</span>
         </h1>
 
-
         {photoScore ? (
           /* Evaluated State: Clean Executive Style Score Hub */
           <>
@@ -148,7 +147,6 @@ export function FitCheckHeroStudio({
                 </Button>
               </div>
             </div>
-
           </>
         ) : (
           /* Initial State: Accessible Semantic Upload Dropzone */
@@ -206,7 +204,6 @@ export function FitCheckHeroStudio({
                 </Button>
               </div>
             </div>
-
           </>
         )}
 

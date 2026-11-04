@@ -17,11 +17,6 @@ export function FitCheckAboutSection() {
           <p className="about-section-subtitle">
             Playful, objective analysis of garment tailoring, body proportions, color balance, and styling polish.
           </p>
-
-          <div className="about-vibe-banner">
-            <span className="vibe-emoji" aria-hidden="true">🎉</span>
-
-          </div>
         </div>
 
         {/* 3 Core Rating Pillars */}

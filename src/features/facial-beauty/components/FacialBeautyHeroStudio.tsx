@@ -405,7 +405,6 @@ export function FacialBeautyHeroStudio({
                 </Button>
               </div>
             </div>
-
           </>
         ) : (
           /* Initial State: Clean Redesigned Dropzone */
@@ -458,7 +457,6 @@ export function FacialBeautyHeroStudio({
                 </Button>
               </div>
             </div>
-
           </>
         )}
 

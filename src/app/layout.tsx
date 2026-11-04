@@ -3,7 +3,7 @@ import './globals.css';
 import { CssInspectorCompanion } from '@/shared';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://gabru.app'),
+  metadataBase: new URL('https://gabru.vercel.app'),
   title: {
     default: 'Gabru — Aesthetic & Visual Intelligence Studio',
     template: '%s | Gabru',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://gabru.app',
+    url: 'https://gabru.vercel.app',
     siteName: 'Gabru Studio',
     title: 'Gabru — Aesthetic & Visual Intelligence Studio',
     description:
@@ -57,7 +57,14 @@ export const metadata: Metadata = {
     images: ['/hero_fashion_mosaic.jpg'],
   },
   alternates: {
-    canonical: 'https://gabru.app',
+    canonical: 'https://gabru.vercel.app',
+  },
+  verification: {
+    google: [
+      '-X7HAURLF9GmMD8nXVhAvYAEWbA4mGfyEkaoPXIJ3Ew',
+      'j9D5_0jqiiuFQDykjHb5UhVSd2mpOujDeqOlm3Ktb94',
+      'UbGBsiwaVrXYGzC5XJCp-BxyS-x-R0qKgO2IRp0GXWA',
+    ],
   },
 };
 
@@ -76,6 +83,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="-X7HAURLF9GmMD8nXVhAvYAEWbA4mGfyEkaoPXIJ3Ew" />
+        <meta name="google-site-verification" content="j9D5_0jqiiuFQDykjHb5UhVSd2mpOujDeqOlm3Ktb94" />
+        <meta name="google-site-verification" content="UbGBsiwaVrXYGzC5XJCp-BxyS-x-R0qKgO2IRp0GXWA" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var stored=localStorage.getItem('gabru-theme');var theme=stored==='light'?'light':'dark';document.documentElement.setAttribute('data-theme',theme);document.documentElement.classList.add(theme);var meta=document.querySelector('meta[name="theme-color"]');if(meta){meta.setAttribute('content',theme==='light'?'#f8fafc':'#09090b');}}catch(e){}})();`,

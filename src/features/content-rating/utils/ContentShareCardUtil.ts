@@ -397,7 +397,7 @@ export async function generateContentShareCard(
   ctx.font = '700 12.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
   const promptPart = '🚀 Audit your post hook & virality score free at ';
-  const urlPart = 'gabru.app/content-rating';
+  const urlPart = 'gabru.vercel.app/content-rating';
   const fullW = ctx.measureText(promptPart + urlPart).width;
   const startX = (width - fullW) / 2;
 

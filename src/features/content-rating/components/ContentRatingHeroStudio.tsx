@@ -259,13 +259,6 @@ export function ContentRatingHeroStudio({
                 <span className="pillar-value" style={{ color: '#34d399' }}>{scoreData.verdict}</span>
               </div>
             </div>
-
-            <div className="hero-sub-actions" style={{ marginTop: '16px', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-              <span className="privacy-pill">🔒 Zero Server Retention · 100% In-Browser Privacy</span>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', margin: 0, lineHeight: 1.4 }}>
-                ⚖️ Ratings evaluate creative craft and public format mechanics; does not guarantee actual algorithm distribution.
-              </p>
-            </div>
           </div>
         ) : (
           /* Pre-Evaluated State: Clean Single-Post Link Input */
@@ -394,13 +387,6 @@ export function ContentRatingHeroStudio({
               <span className="platform-tag">YouTube Shorts</span>
               <span className="platform-tag">X / Twitter</span>
               <span className="platform-tag">LinkedIn</span>
-            </div>
-
-            <div className="hero-sub-actions" style={{ marginTop: '16px', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-              <span className="privacy-pill">🔒 Zero Server Retention · 100% In-Browser Privacy</span>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', margin: 0, lineHeight: 1.4 }}>
-                ⚖️ Ratings evaluate creative craft and public format mechanics; does not guarantee actual algorithm distribution.
-              </p>
             </div>
           </div>
         )}

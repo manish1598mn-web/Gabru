@@ -1018,6 +1018,7 @@ body {
    COMPACT INTERFACE COPY
    ========================================================== */
 /* Keep the studio focused on uploads, scores, and actionable results. */
+.visually-hidden,
 .hero-description,
 .upload-subtitle,
 .privacy-pill,

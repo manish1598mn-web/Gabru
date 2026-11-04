@@ -7,7 +7,7 @@ export const SITE_CONFIG = {
   tagline: 'AI Fashion Intelligence & Facial Attractiveness Studio',
   description:
     'Instant, private biometric evaluation across outfit tailoring, proportions, harmony, and facial aesthetic canons. Zero data retention.',
-  url: 'https://gabru.app',
+  url: 'https://gabru.vercel.app',
   ogImage: '/hero_fashion_mosaic.jpg',
   navLinks: [
     { label: 'Fit Check', href: '/', id: 'nav-link-home' },

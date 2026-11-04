@@ -10,7 +10,7 @@
  * - Interactive Palm Visualizer Dock
  */
 
-import React, { useId, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
   HandReadingResult,
   PalmTradition,
@@ -65,7 +65,6 @@ export function HandReadingHeroStudio({
   onShareClick,
   onRecalculate,
 }: HandReadingHeroStudioProps) {
-  const fileInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -253,7 +252,6 @@ export function HandReadingHeroStudio({
                 Clear
               </Button>
             </div>
-
           </div>
         ) : (
           /* Initial State: Clean Semantic Upload Dropzone */
@@ -280,7 +278,6 @@ export function HandReadingHeroStudio({
 
                 <div className="upload-text-block">
                   <p className="upload-title">Drop your palm photo here, or browse</p>
-                  <p className="upload-subtitle">Spread fingers slightly &bull; Diffuse lighting &bull; JPG, PNG, WebP</p>
                 </div>
 
                 <Button
@@ -296,16 +293,14 @@ export function HandReadingHeroStudio({
                 </Button>
               </div>
             </div>
-
           </>
         )}
 
         <input
           type="file"
-          id={fileInputId}
           ref={fileInputRef}
-          className="visually-hidden"
           accept="image/jpeg,image/png,image/webp"
+          style={{ display: 'none' }}
           onChange={handleFileChange}
         />
 
@@ -329,11 +324,6 @@ export function HandReadingHeroStudio({
             <span>{errorMessage}</span>
           </div>
         )}
-
-        {/* Subtle Non-Predictive Disclaimer */}
-        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '12px', lineHeight: 1.4 }}>
-          ⚖️ Traditional palmistry is for entertainment only &bull; Non-predictive.
-        </p>
       </div>
 
       {/* Right Column: Sticky Palm Preview / Landmark Visualizer */}

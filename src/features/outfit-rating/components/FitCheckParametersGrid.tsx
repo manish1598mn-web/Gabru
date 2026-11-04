@@ -172,7 +172,6 @@ export function FitCheckParametersGrid({
               <span>10-PARAMETER SARTORIAL MATRIX</span>
             </div>
             <h3 className="scorecard-strip-title">10-Parameter Outfit Breakdown</h3>
-
           </div>
 
           {/* 3 Tier Allocation & Score Indicators */}
