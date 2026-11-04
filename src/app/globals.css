@@ -1015,6 +1015,35 @@ body {
 }
 
 /* ==========================================================
+   COMPACT INTERFACE COPY
+   ========================================================== */
+/* Keep the studio focused on uploads, scores, and actionable results. */
+.hero-description,
+.upload-subtitle,
+.privacy-pill,
+.about-section-subtitle,
+.feature-description,
+.guide-feature-desc,
+.how-to-subtitle,
+.step-desc,
+.diag-panel-desc,
+.diag-suite-subtitle,
+.golden-ratio-desc,
+.levers-subtitle,
+.link-header-subtitle,
+.timing-notice-desc,
+.brand-voice-desc,
+.segment-desc,
+.cta-flag-desc,
+.evidence-column-subtitle,
+.sug-card-desc,
+.scorecard-strip-sub,
+.section-subtitle,
+.quote-eyebrow {
+  display: none !important;
+}
+
+/* ==========================================================
    MODE-REACTIVE STUDIO SKELETON SKETCH BACKDROPS
    ========================================================== */
 .studio-hero-backdrop,
