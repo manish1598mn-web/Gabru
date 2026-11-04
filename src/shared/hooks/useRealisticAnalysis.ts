@@ -121,11 +121,13 @@ export function useRealisticAnalysis<T>({
       // 1. Kick off actual background computation immediately at t=0
       let computedResult: T | null = null;
       let targetOverallScore = 82; // Default fallback score if not extractable
-      let computeError: any = null;
+      let computeError: unknown = null;
 
+      // Start the computation immediately, but keep the animation alive until it
+      // settles. MediaPipe/canvas work can take longer than the visual timeline.
       try {
-        const promise = computeFn();
-        promise
+        Promise.resolve()
+          .then(computeFn)
           .then((res) => {
             computedResult = res;
             if (targetScoreGetter) {
@@ -139,7 +141,7 @@ export function useRealisticAnalysis<T>({
               }
             }
           })
-          .catch((err) => {
+          .catch((err: unknown) => {
             computeError = err;
           });
       } catch (err) {
@@ -236,10 +238,11 @@ export function useRealisticAnalysis<T>({
           }
 
           // Animation Completion Gate
-          if (elapsed < totalDurationMs) {
+          if (elapsed < totalDurationMs || (computedResult === null && !computeError)) {
+            // Do not resolve with null when image/model computation outlives the
+            // visual timeline; keep the result promise pending until it settles.
             animationFrameRef.current = requestAnimationFrame(tick);
           } else {
-            // All cards lock in
             setCardLockStates(new Array(10).fill(true));
             setDisplayedScore(targetOverallScore);
             setIsAnalyzing(false);
