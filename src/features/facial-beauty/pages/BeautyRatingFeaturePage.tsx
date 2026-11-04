@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { AppNavbar, AppFooter, useScrollState, useIntersectionReveal, useNumberShuffle } from '@/shared';
+import {
+  AppNavbar,
+  AppFooter,
+  StudioHeroBackdrop,
+  useScrollState,
+  useIntersectionReveal,
+  useRealisticAnalysis,
+  buildViralSharePayload,
+  executeViralShare,
+} from '@/shared';
 
 import type {
   BeautyParameterDef,
@@ -26,8 +35,8 @@ import { FacialBeautyHeroStudio } from '../components/FacialBeautyHeroStudio';
 import { FacialBeautyScorecard } from '../components/FacialBeautyScorecard';
 import { FacialDeepDiveSection } from '../components/FacialDeepDiveSection';
 import { FacialBeautyAboutSection } from '../components/FacialBeautyAboutSection';
-import { FacialMethodologyModal } from '../components/FacialMethodologyModal';
 import { FacialShareModal } from '../components/FacialShareModal';
+import { PrivacyPolicyModal, TermsOfEvaluationModal, ScientificMethodologyModal } from '@/shared';
 
 export type { BeautyParameterDef, BeautySubfactor, BeautyScoreData, DeepDiveTabKey };
 export { BEAUTY_PARAMETERS, FRAMEWORK_LIMITS, PARAM_TO_TAB };
@@ -91,7 +100,15 @@ export default function BeautyRatingFeaturePage() {
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
   const [selectedPhotoName, setSelectedPhotoName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const analysis = useRealisticAnalysis<BeautyScoreData>({
+    studio: 'beauty-rating',
+    totalDurationMs: 3000,
+    onComplete: () => {
+      const scoreElem = document.getElementById('photo-score-section');
+      if (scoreElem) scoreElem.scrollIntoView({ behavior: 'smooth' });
+    },
+  });
+  const isAnalyzing = analysis.isAnalyzing;
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
@@ -102,7 +119,8 @@ export default function BeautyRatingFeaturePage() {
   const [generatedCardUrl, setGeneratedCardUrl] = useState<string | null>(null);
   const [generatedCardBlob, setGeneratedCardBlob] = useState<Blob | null>(null);
   const [shareCardCopied, setShareCardCopied] = useState<boolean>(false);
-  const [showAboutModal, setShowAboutModal] = useState<boolean>(false);
+
+  const [activeGovModal, setActiveGovModal] = useState<'privacy' | 'terms' | 'scientific' | null>(null);
   const [dimorphismRef, setDimorphismRef] = useState<'skip' | 'M-typical' | 'F-typical'>('skip');
   const [activeDeepDiveTab, setActiveDeepDiveTab] = useState<DeepDiveTabKey>('skin');
 
@@ -113,7 +131,6 @@ export default function BeautyRatingFeaturePage() {
   // Shared Hooks
   const isScrolled = useScrollState(20);
   useIntersectionReveal([scoreData, isAnalyzing]);
-  const shuffleScores = useNumberShuffle(isAnalyzing, BEAUTY_PARAMETERS);
 
   // Memory Leak Prevention: Revoke ObjectURLs on unmount or replace
   useEffect(() => {
@@ -147,6 +164,7 @@ export default function BeautyRatingFeaturePage() {
       return;
     }
 
+    setScoreData(null);
     setIsLoading(true);
     if (selectedPhotoUrl && selectedPhotoUrl.startsWith('blob:')) {
       URL.revokeObjectURL(selectedPhotoUrl);
@@ -157,7 +175,6 @@ export default function BeautyRatingFeaturePage() {
     setSelectedPhotoName(file.name);
     setIsLoading(false);
 
-    setIsAnalyzing(true);
     const tempImg = new Image();
     tempImg.crossOrigin = 'anonymous';
     tempImg.onload = async () => {
@@ -169,29 +186,30 @@ export default function BeautyRatingFeaturePage() {
             // Decoded asynchronously or fallback
           }
         }
-        const result = await analyzeFacialBeauty(tempImg, {
-          dimorphismRef,
-          hasSideProfilePhoto: false,
-          smilePhotoProvided: false,
-        });
-        lastDetectionRef.current = result.rawDetection ?? null;
-        lastImgRef.current = tempImg;
-        setTimeout(() => {
+        const result = await analysis.startAnalysis(
+          async () =>
+            analyzeFacialBeauty(tempImg, {
+              dimorphismRef,
+              hasSideProfilePhoto: false,
+              smilePhotoProvided: false,
+            }),
+          (res) => res.faceScore
+        );
+        if (result) {
+          lastDetectionRef.current = result.rawDetection ?? null;
+          lastImgRef.current = tempImg;
           setScoreData(result);
-          setIsAnalyzing(false);
           setErrorMessage(null);
-          const scoreElem = document.getElementById('photo-score-section');
-          if (scoreElem) scoreElem.scrollIntoView({ behavior: 'smooth' });
-        }, 600);
+        }
       } catch (err: any) {
         console.warn('Facial analysis error:', err);
-        setIsAnalyzing(false);
+        analysis.reset();
         setScoreData(null);
         setErrorMessage(err?.message || 'Face detection check failed. Please upload a clear photo of your face.');
       }
     };
     tempImg.onerror = () => {
-      setIsAnalyzing(false);
+      analysis.reset();
       setErrorMessage('Failed to load image for face detection.');
     };
     tempImg.src = objectUrl;
@@ -247,43 +265,90 @@ export default function BeautyRatingFeaturePage() {
     }
   };
 
-  const loadSampleFace = async () => {
-    try {
-      setIsLoading(true);
-      const resp = await fetch('/face_beauty_sketch.jpg');
-      const blob = await resp.blob();
-      const file = new File([blob], 'divine-proportions-sketch.jpg', { type: 'image/jpeg' });
-      processFile(file);
-    } catch {
-      setIsLoading(false);
-    }
-  };
+  const handleRecalculate = useCallback(async () => {
+    if (!selectedPhotoUrl) return;
+    setErrorMessage(null);
 
-  const loadSamplePortrait = async () => {
-    try {
-      setIsLoading(true);
-      const resp = await fetch('/sample_face.png');
-      const blob = await resp.blob();
-      const file = new File([blob], 'gabru-sample-face.png', { type: 'image/png' });
-      processFile(file);
-    } catch {
-      setIsLoading(false);
+    const imageToUse = lastImgRef.current;
+    if (imageToUse && imageToUse.complete && imageToUse.naturalWidth > 0) {
+      try {
+        const result = await analysis.startAnalysis(
+          async () =>
+            analyzeFacialBeauty(imageToUse, {
+              dimorphismRef,
+              hasSideProfilePhoto: false,
+              smilePhotoProvided: false,
+            }),
+          (res) => res.faceScore
+        );
+        if (result) {
+          lastDetectionRef.current = result.rawDetection ?? null;
+          setScoreData(result);
+          setErrorMessage(null);
+        }
+      } catch (err: any) {
+        console.warn('Facial recalculate error:', err);
+        analysis.reset();
+        setErrorMessage(err?.message || 'Face detection check failed. Please ensure your face is clearly visible.');
+      }
+      return;
     }
-  };
+
+    const tempImg = new Image();
+    tempImg.onload = async () => {
+      try {
+        if ('decode' in tempImg) {
+          try {
+            await tempImg.decode();
+          } catch {
+            // Decoded asynchronously or fallback
+          }
+        }
+        const result = await analysis.startAnalysis(
+          async () =>
+            analyzeFacialBeauty(tempImg, {
+              dimorphismRef,
+              hasSideProfilePhoto: false,
+              smilePhotoProvided: false,
+            }),
+          (res) => res.faceScore
+        );
+        if (result) {
+          lastDetectionRef.current = result.rawDetection ?? null;
+          lastImgRef.current = tempImg;
+          setScoreData(result);
+          setErrorMessage(null);
+        }
+      } catch (err: any) {
+        console.warn('Facial recalculate error:', err);
+        analysis.reset();
+        setErrorMessage(err?.message || 'Face detection check failed. Please ensure your face is clearly visible.');
+      }
+    };
+    tempImg.onerror = () => {
+      analysis.reset();
+      setErrorMessage('Failed to reload photo for recalculation.');
+    };
+    tempImg.src = selectedPhotoUrl;
+  }, [selectedPhotoUrl, dimorphismRef, analysis]);
 
   const generateSocialCard = useCallback(() => {
     if (!scoreData) return;
     setIsGeneratingCard(true);
     setShareCardCopied(false);
 
+    const width = 1080;
+    const height = 1350;
+    const scale = 2; // Ultra-HD 2x (2160 x 2700)
     const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1350;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
     const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) {
       setIsGeneratingCard(false);
       return;
     }
+    ctx.scale(scale, scale);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
@@ -318,9 +383,7 @@ export default function BeautyRatingFeaturePage() {
   const handleShareScore = () => {
     if (!scoreData) return;
     setShowShareModal(true);
-    setTimeout(() => {
-      generateSocialCard();
-    }, 40);
+    generateSocialCard();
   };
 
   const handleDownloadCard = () => {
@@ -337,55 +400,33 @@ export default function BeautyRatingFeaturePage() {
   const handleShareCardWithFriends = async () => {
     if (!scoreData) return;
 
-    handleDownloadCard();
-    setShareCardCopied(true);
-    setTimeout(() => setShareCardCopied(false), 3500);
-
-    if (!generatedCardBlob) return;
+    const payload = buildViralSharePayload({
+      featureName: 'Facial Attractiveness Scorecard',
+      path: '/beauty-rating',
+      scoreText: `My facial beauty score is ${scoreData.faceScore}/100`,
+      verdictText: scoreData.verdict,
+      ctaText: 'Test your facial symmetry & golden ratio free',
+    });
 
     const fileName = `gabru-beauty-card-${scoreData.faceScore}pts.png`;
-    const file = new File([generatedCardBlob], fileName, { type: 'image/png' });
-    const shareTitle = `Gabru Facial Attractiveness Scorecard • ${scoreData.faceScore}/100`;
-    const shareText = `My facial beauty score is ${scoreData.faceScore}/100 (${scoreData.verdict}) on Gabru. Rate yours: https://www.gabru.ai/beauty-rating`;
+    const result = await executeViralShare(payload, generatedCardBlob, fileName);
 
-    if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({
-          title: shareTitle,
-          text: shareText,
-          files: [file],
-        });
-        return;
-      } catch (err: any) {
-        if (err?.name === 'AbortError') return;
-      }
-    }
-
-    if (typeof navigator !== 'undefined' && navigator.clipboard && typeof ClipboardItem !== 'undefined') {
-      try {
-        const item = new ClipboardItem({ 'image/png': generatedCardBlob });
-        await navigator.clipboard.write([item]);
-        return;
-      } catch (clipErr) {
-        console.warn('Direct image clipboard write failed:', clipErr);
-      }
-    }
-
-    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      try {
-        await navigator.clipboard.writeText(shareText);
-      } catch {
-        // Fallback
-      }
+    if (result.copiedToClipboard || result.sharedViaNative) {
+      setShareCardCopied(true);
+      setTimeout(() => setShareCardCopied(false), 3500);
     }
   };
 
   const copyHex = (hex: string) => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(hex);
-      setCopiedColor(hex);
-      setTimeout(() => setCopiedColor(null), 1800);
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(hex).catch(() => {});
+      }
+    } catch {
+      // fallback
     }
+    setCopiedColor(hex);
+    setTimeout(() => setCopiedColor(null), 1800);
   };
 
   return (
@@ -418,16 +459,8 @@ export default function BeautyRatingFeaturePage() {
             2. HERO & BIOMETRIC BEAUTY STUDIO (2-COLUMN UNIFIED SECTION)
             ========================================================== */}
         <section className="hero-wrapper unified-studio-section beauty-hero-section" id="hero-section">
-          {/* Luxury Facial Beauty Studio Hero Backdrop */}
-          <div className="hero-beauty-backdrop" aria-hidden="true">
-            <img
-              src="/face_beauty_hero_bg.jpg"
-              alt=""
-              className="hero-beauty-bg-img"
-            />
-            <div className="hero-beauty-gradient-overlay" />
-            <div className="hero-beauty-ambient-glow" />
-          </div>
+          {/* Mode-Reactive Classical Divine Proportions Skeleton Backdrop */}
+          <StudioHeroBackdrop studio="beauty-rating" />
 
           <div className="unified-studio-container">
             <FacialBeautyHeroStudio
@@ -436,31 +469,35 @@ export default function BeautyRatingFeaturePage() {
               selectedPhotoName={selectedPhotoName}
               isDragging={isDragging}
               isAnalyzing={isAnalyzing}
+              scanPhase={analysis.phase}
+              scanProgress={analysis.progressRatio}
+              scanStatusMessage={analysis.statusMessage}
               errorMessage={errorMessage}
               onTriggerUpload={triggerUpload}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              onSampleSketch={loadSampleFace}
-              onSamplePortrait={loadSamplePortrait}
               onShareClick={handleShareScore}
-              onReevaluate={triggerUpload}
+              onReevaluate={handleRecalculate}
             />
 
-            {/* Integrated 10-Parameter Beauty Rating Scorecard Area */}
+            {/* Integrated 10-Parameter Beauty Rating Scorecard Area (Always Visible) */}
             <div className="integrated-photo-score-area" id="photo-score-section">
               <div className={`scorecard-wrapper ${isAnalyzing ? 'analyzing' : ''}`} id="photo-score-dashboard">
                 <FacialBeautyScorecard
                   scoreData={scoreData}
                   isAnalyzing={isAnalyzing}
-                  shuffleScores={shuffleScores}
+                  shuffleScores={analysis.cardShuffleScores}
+                  cardLockStates={analysis.cardLockStates}
+                  justLockedCardId={analysis.justLockedCardId}
+                  displayedHeroScore={analysis.displayedScore}
                   dimorphismRef={dimorphismRef}
                   onSelectDimorphism={handleSelectDimorphism}
                   onSelectTab={setActiveDeepDiveTab}
                   onShareScore={handleShareScore}
                 />
 
-                {/* Research-Grade Biometric Diagnostic Deep-Dive Suite */}
+                {/* Research-Grade Biometric Diagnostic Deep-Dive Suite (visible post-analysis) */}
                 {scoreData && !isAnalyzing && (
                   <FacialDeepDiveSection
                     scoreData={scoreData}
@@ -476,18 +513,34 @@ export default function BeautyRatingFeaturePage() {
             </div>
           </div>
         </section>
+
+        {/* About Gabru Facial Attractiveness Framework & Governance Section */}
+        <FacialBeautyAboutSection
+          onOpenPrivacyModal={() => setActiveGovModal('privacy')}
+          onOpenTermsModal={() => setActiveGovModal('terms')}
+          onOpenMethodologyModal={() => setActiveGovModal('scientific')}
+        />
       </main>
 
-      {/* Feature Strip & Scientific Platform Manifesto */}
-      <FacialBeautyAboutSection />
-
       {/* Universal Luxury Editorial Footer */}
-      <AppFooter onAboutClick={() => setShowAboutModal(true)} />
+      <AppFooter
+        onOpenPrivacyModal={() => setActiveGovModal('privacy')}
+        onOpenTermsModal={() => setActiveGovModal('terms')}
+        onOpenMethodologyModal={() => setActiveGovModal('scientific')}
+      />
 
-      {/* Scientific Governance & Methodology Modal */}
-      <FacialMethodologyModal
-        isOpen={showAboutModal}
-        onClose={() => setShowAboutModal(false)}
+      {/* Governance & Methodology Modals */}
+      <PrivacyPolicyModal
+        isOpen={activeGovModal === 'privacy'}
+        onClose={() => setActiveGovModal(null)}
+      />
+      <TermsOfEvaluationModal
+        isOpen={activeGovModal === 'terms'}
+        onClose={() => setActiveGovModal(null)}
+      />
+      <ScientificMethodologyModal
+        isOpen={activeGovModal === 'scientific'}
+        onClose={() => setActiveGovModal(null)}
       />
 
       {/* Social Media Scorecard Preview & Share Modal */}
@@ -498,6 +551,7 @@ export default function BeautyRatingFeaturePage() {
         generatedCardUrl={generatedCardUrl}
         shareCardCopied={shareCardCopied}
         onShare={handleShareCardWithFriends}
+        onDownload={handleDownloadCard}
       />
     </div>
   );

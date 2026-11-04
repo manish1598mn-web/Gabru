@@ -12,38 +12,46 @@
  * - High-Res 1080x1350 Verified Share Card Canvas
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { AppNavbar } from '@/shared/components/layout/AppNavbar';
 import { AppFooter } from '@/shared/components/layout/AppFooter';
+import { StudioHeroBackdrop } from '@/shared/components/layout/StudioHeroBackdrop';
 import { useIntersectionReveal } from '@/shared/hooks/useIntersectionReveal';
+import { useRealisticAnalysis } from '@/shared/hooks/useRealisticAnalysis';
 
 import {
   ContentScoreData,
-  InputMode,
   UnifiedContentItem,
   DeepDiveContentTabKey,
 } from '../types/ContentRatingTypes';
-import {
-  SAMPLE_DEMO_CONTENTS,
-  DEMO_VIRAL_SHORT,
-} from '../constants/ContentRatingConstants';
+
 import { evaluateUnifiedContent } from '../services/ContentScoringEngine';
 import { detectPlatformFromUrl } from '../utils/ContentPlatformUtil';
+import {
+  fetchUrlPreview,
+  getFastClientPreview,
+} from '../utils/ContentUrlPreviewUtil';
 import {
   ContentRatingHeroStudio,
   ContentRatingScorecard,
   ContentDeepDiveSection,
   ContentEvidenceSection,
-  ContentRewritesSection,
   ContentShareModal,
   ContentAboutSection,
 } from '../components';
 
 export default function ContentRatingFeaturePage() {
   const [contentUrl, setContentUrl] = useState<string>('');
-  const [inputMode, setInputMode] = useState<InputMode>('link');
-  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const analysis = useRealisticAnalysis<ContentScoreData>({
+    studio: 'content-rating',
+    totalDurationMs: 3000,
+    onComplete: () => {
+      const el = document.getElementById('scorecard-wrapper-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    },
+  });
+  const isAnalyzing = analysis.isAnalyzing;
+  const [isPreviewLoading, setIsPreviewLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [currentItem, setCurrentItem] = useState<UnifiedContentItem | null>(null);
@@ -57,142 +65,255 @@ export default function ContentRatingFeaturePage() {
   const handleUrlChange = useCallback((url: string) => {
     setContentUrl(url);
     if (errorMessage) setErrorMessage(null);
-  }, [errorMessage]);
 
-  const handleModeChange = useCallback((mode: InputMode) => {
-    setInputMode(mode);
-    setErrorMessage(null);
-  }, []);
+    const clean = url.trim();
+    if (!clean) {
+      if (!scoreData) setCurrentItem(null);
+      return;
+    }
 
-  const handleAnalyzeUrl = useCallback(() => {
-    if (!contentUrl.trim()) {
+    const platform = detectPlatformFromUrl(clean);
+    if (!platform) return;
+
+    // 0ms instant client-side heuristic extraction (e.g. YouTube video ID thumbnail)
+    const fast = getFastClientPreview(clean);
+    if (fast) {
+      setCurrentItem({
+        id: `preview:${clean}`,
+        url: clean,
+        platform: fast.platform,
+        format: fast.format,
+        inputMode: 'link',
+        dataTier: 'A',
+        ownerAnalytics: null,
+        title: fast.title,
+        caption: fast.caption || fast.title,
+        creator: {
+          id: fast.authorHandle,
+          handle: fast.authorHandle,
+          name: fast.authorName,
+          niche: `${fast.platform.toUpperCase()} Creator`,
+          followerCount: 0,
+        },
+        media: {
+          thumbnailUrl: fast.thumbnailUrl,
+          mediaUrl: fast.thumbnailUrl,
+          durationSec: fast.durationSec ?? 15,
+          width: fast.width || 1080,
+          height: fast.height || 1920,
+          aspectRatio: Number(((fast.width || 1080) / Math.max(1, fast.height || 1920)).toFixed(3)),
+        },
+        metrics: {
+          views: 0,
+          likes: 0,
+          comments: 0,
+          shares: null,
+          saves: null,
+          reposts: null,
+        },
+        hashtags: [],
+        mentions: [],
+        transcriptSegments: [],
+        keyframes: [],
+        dataCompleteness: {
+          publicMetrics: false,
+          ownerAnalytics: false,
+          mediaFile: !!fast.thumbnailUrl,
+          transcript: false,
+          keyframes: false,
+        },
+        postedAt: new Date().toISOString(),
+      });
+    }
+  }, [errorMessage, scoreData]);
+
+  // Debounced live preview fetch as the user pastes or finishes typing a URL
+  useEffect(() => {
+    const clean = contentUrl.trim();
+    if (!clean || !detectPlatformFromUrl(clean)) return;
+
+    let isCancelled = false;
+    const timer = setTimeout(async () => {
+      setIsPreviewLoading(true);
+      try {
+        const preview = await fetchUrlPreview(clean);
+        if (isCancelled) return;
+
+        setCurrentItem({
+          id: `preview:${clean}`,
+          url: clean,
+          platform: preview.platform,
+          format: preview.format,
+          inputMode: 'link',
+          dataTier: 'A',
+          ownerAnalytics: null,
+          title: preview.title,
+          caption: preview.caption || preview.title,
+          creator: {
+            id: preview.authorHandle,
+            handle: preview.authorHandle,
+            name: preview.authorName,
+            niche: `${preview.platform.toUpperCase()} Creator`,
+            followerCount: 0,
+          },
+          media: {
+            thumbnailUrl: preview.thumbnailUrl,
+            mediaUrl: preview.thumbnailUrl,
+            durationSec: preview.durationSec ?? (preview.format === 'short_video' ? 18 : 60),
+            width: preview.width || 1080,
+            height: preview.height || 1920,
+            aspectRatio: Number(((preview.width || 1080) / Math.max(1, preview.height || 1920)).toFixed(3)),
+          },
+          metrics: {
+            views: 0,
+            likes: 0,
+            comments: 0,
+            shares: null,
+            saves: null,
+            reposts: null,
+          },
+          hashtags: [],
+          mentions: [],
+          transcriptSegments: [],
+          keyframes: [],
+          dataCompleteness: {
+            publicMetrics: false,
+            ownerAnalytics: false,
+            mediaFile: !!preview.thumbnailUrl,
+            transcript: false,
+            keyframes: false,
+          },
+          postedAt: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.warn('Failed to live-preview content link:', err);
+      } finally {
+        if (!isCancelled) {
+          setIsPreviewLoading(false);
+        }
+      }
+    }, 350);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timer);
+    };
+  }, [contentUrl]);
+
+  const handleAnalyzeUrl = useCallback(async () => {
+    const cleanUrl = contentUrl.trim();
+    if (!cleanUrl) {
       setErrorMessage('Please enter a valid social media URL (e.g., YouTube Short, Instagram Reel, TikTok).');
       return;
     }
 
-    const platform = detectPlatformFromUrl(contentUrl);
+    const platform = detectPlatformFromUrl(cleanUrl);
     if (!platform) {
       setErrorMessage('Unsupported platform. Please provide a link from YouTube, Instagram, TikTok, X, or LinkedIn.');
       return;
     }
 
-    setIsAnalyzing(true);
     setErrorMessage(null);
+    setScoreData(null);
 
-    // Simulate multi-model ingestion pipeline latency (650ms)
-    setTimeout(() => {
-      // Synthesize resolved content item based on the link (Tier A: Link Only)
+    try {
+      // 1. Fetch live preview image & metadata from backend resolver
+      const preview = await fetchUrlPreview(cleanUrl);
+
+      // 2. Synthesize resolved content item based on the link (Tier A: Link Only)
       const resolvedItem: UnifiedContentItem = {
-        ...DEMO_VIRAL_SHORT,
-        id: `url:${Date.now()}`,
-        url: contentUrl,
-        platform,
+        id: `url:${cleanUrl}`,
+        url: cleanUrl,
+        platform: preview.platform,
+        format: preview.format,
         inputMode: 'link',
         dataTier: 'A',
         ownerAnalytics: null,
-        title: `Public ${platform.toUpperCase()} Post Analysis`,
+        title: preview.title,
+        caption: preview.caption || preview.title,
+        creator: {
+          id: preview.authorHandle,
+          handle: preview.authorHandle,
+          name: preview.authorName,
+          niche: `${preview.platform.toUpperCase()} Creator`,
+          followerCount: 0,
+        },
+        media: {
+          thumbnailUrl: preview.thumbnailUrl,
+          mediaUrl: preview.thumbnailUrl,
+          durationSec: preview.durationSec ?? (preview.format === 'short_video' ? 18 : 60),
+          width: preview.width || 1080,
+          height: preview.height || 1920,
+          aspectRatio: Number(((preview.width || 1080) / Math.max(1, preview.height || 1920)).toFixed(3)),
+        },
+        metrics: {
+          views: 0,
+          likes: 0,
+          comments: 0,
+          shares: null,
+          saves: null,
+          reposts: null,
+        },
+        hashtags: [],
+        mentions: [],
+        transcriptSegments: [],
+        keyframes: [],
+        dataCompleteness: {
+          publicMetrics: false,
+          ownerAnalytics: false,
+          mediaFile: true,
+          transcript: false,
+          keyframes: false,
+        },
         postedAt: new Date().toISOString(),
       };
 
-      try {
-        const evaluated = evaluateUnifiedContent(resolvedItem);
-        setCurrentItem(resolvedItem);
+      setCurrentItem(resolvedItem);
+
+      // 3. Run realistic 3.0-second analysis orchestration
+      const evaluated = await analysis.startAnalysis(
+        async () => evaluateUnifiedContent(resolvedItem),
+        (res) => res.contentScore
+      );
+      if (evaluated) {
         setScoreData(evaluated);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Analysis failed. Please check the link and try again.';
-        setErrorMessage(msg);
-      } finally {
-        setIsAnalyzing(false);
       }
-    }, 650);
-  }, [contentUrl]);
-
-  const handleSelectDemo = useCallback((demoKey: 'short_video' | 'carousel' | 'long_video') => {
-    setIsAnalyzing(true);
-    setErrorMessage(null);
-
-    const demoItem = SAMPLE_DEMO_CONTENTS[demoKey] || DEMO_VIRAL_SHORT;
-    setContentUrl(demoItem.url || '');
-
-    setTimeout(() => {
-      try {
-        const evaluated = evaluateUnifiedContent(demoItem);
-        setCurrentItem(demoItem);
-        setScoreData(evaluated);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Failed to load demo preset.';
-        setErrorMessage(msg);
-      } finally {
-        setIsAnalyzing(false);
-      }
-    }, 450);
-  }, []);
-
-  const handleFileUpload = useCallback((file: File) => {
-    setIsAnalyzing(true);
-    setErrorMessage(null);
-
-    // Create object URL for local media preview
-    const mediaUrl = URL.createObjectURL(file);
-    const isVideo = file.type.startsWith('video/');
-
-    setTimeout(() => {
-      const uploadItem: UnifiedContentItem = {
-        ...DEMO_VIRAL_SHORT,
-        id: `upload:${file.name}`,
-        inputMode: 'upload',
-        title: file.name.replace(/\.[^/.]+$/, ''),
-        caption: `Uploaded file: ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`,
-        media: {
-          ...DEMO_VIRAL_SHORT.media,
-          durationSec: isVideo ? 28 : 0,
-          thumbnailUrl: mediaUrl,
-          mediaUrl,
-        },
-      };
-
-      try {
-        const evaluated = evaluateUnifiedContent(uploadItem);
-        setCurrentItem(uploadItem);
-        setScoreData(evaluated);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Failed to analyze uploaded file.';
-        setErrorMessage(msg);
-      } finally {
-        setIsAnalyzing(false);
-      }
-    }, 550);
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFileUpload(file);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Analysis failed. Please check the link and try again.';
+      setErrorMessage(msg);
+      analysis.reset();
+    } finally {
+      setIsPreviewLoading(false);
     }
-  }, [handleFileUpload]);
+  }, [contentUrl, analysis]);
+
+  const handleRecalculate = useCallback(async () => {
+    if (!currentItem) return;
+    setErrorMessage(null);
+    setScoreData(null);
+    try {
+      const evaluated = await analysis.startAnalysis(
+        async () => evaluateUnifiedContent(currentItem),
+        (res) => res.contentScore
+      );
+      if (evaluated) {
+        setScoreData(evaluated);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Re-calculation failed. Please try again.';
+      setErrorMessage(msg);
+      analysis.reset();
+    }
+  }, [currentItem, analysis]);
 
   const handleReset = useCallback(() => {
+    analysis.reset();
     setScoreData(null);
     setCurrentItem(null);
     setContentUrl('');
     setErrorMessage(null);
-  }, []);
+    setScoreData(null);
+  }, [analysis]);
 
   const handleOpenShareModal = useCallback(() => {
     setIsShareModalOpen(true);
@@ -217,42 +338,46 @@ export default function ContentRatingFeaturePage() {
       <main className="main-content">
         {/* Top Hero Section: Link Input, File Dropzone & Media Dock */}
         <section className="hero-wrapper unified-studio-section content-hero-section" id="hero-section">
+          {/* Mode-Reactive Viral Architecture & Cinematography Skeleton Backdrop */}
+          <StudioHeroBackdrop studio="content-rating" />
+
           <div className="unified-studio-container">
             <ContentRatingHeroStudio
               scoreData={scoreData}
               currentItem={currentItem}
-              inputMode={inputMode}
               contentUrl={contentUrl}
               isAnalyzing={isAnalyzing}
-              isDragging={isDragging}
+              scanPhase={analysis.phase}
+              scanProgress={analysis.progressRatio}
+              scanStatusMessage={analysis.statusMessage}
+              isPreviewLoading={isPreviewLoading}
               errorMessage={errorMessage}
               onUrlChange={handleUrlChange}
-              onModeChange={handleModeChange}
               onAnalyzeUrl={handleAnalyzeUrl}
-              onSelectDemo={handleSelectDemo}
-              onFileUpload={handleFileUpload}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
               onReset={handleReset}
               onShareClick={handleOpenShareModal}
+              onRecalculate={handleRecalculate}
             />
           </div>
         </section>
 
+        {/* 10-Parameter Craft & Reach Scorecard (Always Visible) */}
+        <section className="content-scorecard-container" id="scorecard-wrapper-section">
+          <ContentRatingScorecard
+            scoreData={scoreData}
+            isAnalyzing={isAnalyzing}
+            shuffleScores={analysis.cardShuffleScores}
+            cardLockStates={analysis.cardLockStates}
+            justLockedCardId={analysis.justLockedCardId}
+            displayedHeroScore={analysis.displayedScore}
+            onSelectTab={setActiveTab}
+            onShareScore={handleOpenShareModal}
+          />
+        </section>
+
         {scoreData && (
           <>
-            {/* 10-Parameter Craft & Reach Scorecard */}
-            <section className="content-scorecard-container" id="scorecard-wrapper-section">
-              <ContentRatingScorecard
-                scoreData={scoreData}
-                isAnalyzing={isAnalyzing}
-                onSelectTab={setActiveTab}
-                onShareScore={handleOpenShareModal}
-              />
-            </section>
-
-            {/* 10 Biometric & Craft Diagnostic Deep Dives */}
+            {/* 10 Single-Post Diagnostic Deep Dives */}
             <section className="content-diagnostics-container" id="diagnostics-wrapper-section">
               <ContentDeepDiveSection
                 scoreData={scoreData}
@@ -268,18 +393,10 @@ export default function ContentRatingFeaturePage() {
                 onSelectTab={setActiveTab}
               />
             </section>
-
-            {/* AI Optimization Studio: Ranked Fixes & Interactive Rewrites */}
-            <section className="content-rewrites-container" id="rewrites-wrapper-section">
-              <ContentRewritesSection
-                scoreData={scoreData}
-                onSelectTab={setActiveTab}
-              />
-            </section>
           </>
         )}
 
-        {/* Clean Educational Guide: Core Features, How to Use It, Scenario & Privacy */}
+        {/* About Content Rating & Storyboard Methodology Section */}
         <ContentAboutSection />
       </main>
 

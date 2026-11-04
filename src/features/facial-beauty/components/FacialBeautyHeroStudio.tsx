@@ -3,6 +3,7 @@
 import React from 'react';
 import { BeautyScoreData } from '../types/FacialBeautyTypes';
 import { Button } from '@/shared/components/ui/Button';
+import { ScanningReticleOverlay } from '@/shared';
 
 export interface FacialBeautyHeroStudioProps {
   scoreData: BeautyScoreData | null;
@@ -10,13 +11,14 @@ export interface FacialBeautyHeroStudioProps {
   selectedPhotoName: string;
   isDragging: boolean;
   isAnalyzing: boolean;
+  scanPhase?: 1 | 2 | 3 | 4;
+  scanProgress?: number;
+  scanStatusMessage?: string;
   errorMessage: string | null;
   onTriggerUpload: () => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
-  onSampleSketch: () => void;
-  onSamplePortrait: () => void;
   onShareClick: () => void;
   onReevaluate: () => void;
 }
@@ -27,28 +29,40 @@ export function FacialBeautyHeroStudio({
   selectedPhotoName,
   isDragging,
   isAnalyzing,
+  scanPhase = 1,
+  scanProgress = 0,
+  scanStatusMessage,
   errorMessage,
   onTriggerUpload,
   onDragOver,
   onDragLeave,
   onDrop,
-  onSampleSketch,
-  onSamplePortrait,
   onShareClick,
   onReevaluate,
 }: FacialBeautyHeroStudioProps) {
+  const primaryGoldenRatio =
+    scoreData?.metrics?.phase3?.harmony?.goldenRatios?.[0]?.value ??
+    (scoreData?.metrics?.aspectRatio && scoreData.metrics.aspectRatio > 0
+      ? 1 / scoreData.metrics.aspectRatio
+      : 1.618);
+  const goldenRatioAdherence = scoreData?.metrics?.goldenRatioAdherence !== undefined
+    ? scoreData.metrics.goldenRatioAdherence
+    : primaryGoldenRatio > 0
+    ? Number((100 * Math.exp(-Math.pow(primaryGoldenRatio - 1.618, 2) / (2 * Math.pow(0.095, 2)))).toFixed(1))
+    : 72;
+
   return (
     <div className="hero-container">
       {/* Left Column — Clean Upload Studio & Score Hub */}
       <div className="hero-left-column">
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
-          Upload Face Photo,
+          Facial Harmony,
           <br />
-          <span className="gradient-text">Rate Facial Beauty</span>
+          <span className="gradient-text">Objectively Scored</span>
         </h1>
 
         <p className="hero-description scroll-reveal" id="hero-description">
-          Biometric analysis across skin health cues, facial harmony thirds and fifths, golden ratio φ (1.618), bilateral symmetry, and grooming refinement. 100% private in-browser evaluation.
+          Golden-ratio proportions, symmetry, and skin vitality metrics. 100% on-device.
         </p>
 
         {scoreData ? (
@@ -74,6 +88,7 @@ export function FacialBeautyHeroStudio({
                   variant="secondary"
                   size="sm"
                   onClick={onTriggerUpload}
+                  disabled={isAnalyzing}
                   id="btn-upload-direct"
                   title="Upload another face photo"
                   leftIcon={
@@ -97,23 +112,71 @@ export function FacialBeautyHeroStudio({
                 </Button>
               </div>
 
-              {/* Presentational vs Structural Breakdown Pill */}
-              <div className="beauty-summary-pills-row">
-                <div className="beauty-sub-pill">
-                  <span className="sub-pill-label">Presentational</span>
-                  <span className="sub-pill-val font-tabular-nums">
+              {/* Highlighted Big Golden Ratio (φ) Showcase Module */}
+              <div
+                className="beauty-golden-ratio-card"
+                id="golden-ratio-hero-card"
+                title={`Calculated Facial Golden Ratio: φ ${primaryGoldenRatio.toFixed(3)} (${goldenRatioAdherence}% biometric match to ideal φ ≈ 1.618)`}
+              >
+                <div className="golden-ratio-card-header">
+                  <div className="golden-ratio-badge">
+                    <span className="golden-ratio-icon" aria-hidden="true">⚜️</span>
+                    <span className="golden-ratio-eyebrow">GOLDEN RATIO ARCHITECTURE</span>
+                  </div>
+                  <div className="golden-ratio-adherence-pill">
+                    <span className="adherence-dot" />
+                    <span>{goldenRatioAdherence}% Match</span>
+                  </div>
+                </div>
+                <div className="golden-ratio-card-body">
+                  <div className="golden-ratio-phi-wrap">
+                    <span className="golden-ratio-phi-symbol">φ</span>
+                    <span className="golden-ratio-phi-val font-tabular-nums">
+                      {primaryGoldenRatio.toFixed(3)}
+                    </span>
+                    <span className="golden-ratio-match-badge font-tabular-nums">
+                      {goldenRatioAdherence}% Match
+                    </span>
+                    <span className="golden-ratio-ideal font-tabular-nums">(Ideal 1.618)</span>
+                  </div>
+                  <div className="golden-ratio-progress-track">
+                    <div
+                      className="golden-ratio-progress-bar"
+                      style={{ width: `${Math.min(100, Math.max(10, goldenRatioAdherence))}%` }}
+                    />
+                  </div>
+                  <p className="golden-ratio-desc">
+                    Neoclassical facial thirds (1:1:1) and divine horizontal proportion alignment across zygomatic width and lateral canthi.
+                  </p>
+                </div>
+              </div>
+
+              {/* Presentational, Structural, and Landmark Confidence Breakdown Pills */}
+              <div className="beauty-summary-pills-row" id="beauty-telemetry-pills">
+                <div className="beauty-sub-pill beauty-pill-presentational" title="Presentational Cues (Skin Vitality, Grooming, Expression)">
+                  <div className="sub-pill-leading">
+                    <span className="sub-pill-icon" aria-hidden="true">✨</span>
+                    <span className="sub-pill-name">Presentational</span>
+                  </div>
+                  <span className="sub-pill-score-chip font-tabular-nums">
                     {(scoreData.presentationalScore ?? 78.5).toFixed(1)}%
                   </span>
                 </div>
-                <div className="beauty-sub-pill">
-                  <span className="sub-pill-label">Structural</span>
-                  <span className="sub-pill-val font-tabular-nums">
+                <div className="beauty-sub-pill beauty-pill-structural" title="Structural Proportions (Bilateral Symmetry, Harmony, Jaw & Facial Architecture)">
+                  <div className="sub-pill-leading">
+                    <span className="sub-pill-icon" aria-hidden="true">📐</span>
+                    <span className="sub-pill-name">Structural</span>
+                  </div>
+                  <span className="sub-pill-score-chip font-tabular-nums">
                     {(scoreData.structuralScore ?? 78.8).toFixed(1)}%
                   </span>
                 </div>
-                <div className="beauty-sub-pill">
-                  <span className="sub-pill-label">Confidence</span>
-                  <span className="sub-pill-val font-tabular-nums">
+                <div className="beauty-sub-pill beauty-pill-confidence" title="Biometric Landmark Confidence Factor">
+                  <div className="sub-pill-leading">
+                    <span className="sub-pill-icon" aria-hidden="true">🎯</span>
+                    <span className="sub-pill-name">Confidence</span>
+                  </div>
+                  <span className="sub-pill-score-chip font-tabular-nums">
                     {Math.round((scoreData.confidence || 0.88) * 100)}%
                   </span>
                 </div>
@@ -165,8 +228,9 @@ export function FacialBeautyHeroStudio({
                   variant="secondary"
                   size="md"
                   onClick={onReevaluate}
+                  disabled={isAnalyzing}
                   id="btn-reanalyze"
-                  title="Re-evaluate facial beauty parameters"
+                  title="Re-calculate parameter scores"
                   leftIcon={
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <polyline points="23 4 23 10 17 10" />
@@ -174,30 +238,12 @@ export function FacialBeautyHeroStudio({
                     </svg>
                   }
                 >
-                  Re-evaluate
+                  Re-calculate
                 </Button>
               </div>
             </div>
 
-            <div className="hero-sub-actions">
-              <Button
-                variant="ghost"
-                size="sm"
-                id="btn-try-demo-face"
-                onClick={onSampleSketch}
-                className="btn-sample-link"
-              >
-                <span>🏛 Try Beauty Sketch</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                id="btn-try-portrait"
-                onClick={onSamplePortrait}
-                className="btn-sample-link btn-sample-secondary"
-              >
-                <span>✨ Sample Portrait</span>
-              </Button>
+            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
@@ -254,25 +300,7 @@ export function FacialBeautyHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions">
-              <Button
-                variant="ghost"
-                size="sm"
-                id="btn-try-demo-face"
-                onClick={onSampleSketch}
-                className="btn-sample-link"
-              >
-                <span>🏛 Try Beauty Sketch</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                id="btn-try-portrait"
-                onClick={onSamplePortrait}
-                className="btn-sample-link btn-sample-secondary"
-              >
-                <span>✨ Sample Portrait</span>
-              </Button>
+            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
@@ -324,14 +352,14 @@ export function FacialBeautyHeroStudio({
                 }}
               />
 
-              {isAnalyzing && (
-                <div className="photo-scanner-hud" aria-live="polite">
-                  <div className="scanner-status-chip">
-                    <span className="scanner-spin-icon" />
-                    <span>Evaluating Facial Biometrics...</span>
-                  </div>
-                </div>
-              )}
+              {/* Holographic Reticle & Biometric Laser Scanner Overlay */}
+              <ScanningReticleOverlay
+                studio="beauty-rating"
+                isAnalyzing={isAnalyzing}
+                phase={scanPhase}
+                progressRatio={scanProgress}
+                statusMessage={scanStatusMessage}
+              />
 
               {/* Post-Analysis Subject Verification Pill */}
               {!isAnalyzing && scoreData && (

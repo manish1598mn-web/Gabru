@@ -10,11 +10,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { AppNavbar } from '@/shared/components/layout/AppNavbar';
 import { AppFooter } from '@/shared/components/layout/AppFooter';
+import { StudioHeroBackdrop } from '@/shared/components/layout/StudioHeroBackdrop';
 import { BaseModal } from '@/shared/components/ui/BaseModal';
 import { useIntersectionReveal } from '@/shared/hooks/useIntersectionReveal';
-import { useNumberShuffle } from '@/shared/hooks/useNumberShuffle';
 import { useClipboard } from '@/shared/hooks/useClipboard';
+import { useRealisticAnalysis } from '@/shared/hooks/useRealisticAnalysis';
 import { formatFileSize } from '@/shared/utils/FormatUtil';
+import { buildViralSharePayload, executeViralShare } from '@/shared';
 
 import { OUTFIT_PARAMETERS } from '../constants/OutfitRatingConstants';
 import { OutfitScoreData } from '../types/OutfitRatingTypes';
@@ -23,8 +25,8 @@ import { drawOutfitSocialCard } from '../utils/OutfitShareCardUtil';
 
 import { FitCheckHeroStudio } from '../components/FitCheckHeroStudio';
 import { FitCheckParametersGrid } from '../components/FitCheckParametersGrid';
-import { FitCheckAboutSection } from '../components/FitCheckAboutSection';
 import { FitCheckShareModal } from '../components/FitCheckShareModal';
+import { FitCheckAboutSection } from '../components/FitCheckAboutSection';
 
 export default function FitCheckFeaturePage() {
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
@@ -33,11 +35,20 @@ export default function FitCheckFeaturePage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [showFullPreview, setShowFullPreview] = useState<boolean>(false);
-  const [showAboutModal, setShowAboutModal] = useState<boolean>(false);
 
-  // Photo Score Engine states
+
+  // Photo Score Engine states & Realistic 3.0s Analysis Orchestrator
   const [photoScore, setPhotoScore] = useState<OutfitScoreData | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const analysis = useRealisticAnalysis<OutfitScoreData>({
+    studio: 'fit-check',
+    totalDurationMs: 3000,
+    onComplete: () => {
+      const scoreElem = document.getElementById('photo-score-section');
+      if (scoreElem) scoreElem.scrollIntoView({ behavior: 'smooth' });
+    },
+  });
+  const isAnalyzing = analysis.isAnalyzing;
+
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
   const [isGeneratingCard, setIsGeneratingCard] = useState<boolean>(false);
   const [generatedCardUrl, setGeneratedCardUrl] = useState<string | null>(null);
@@ -49,10 +60,6 @@ export default function FitCheckFeaturePage() {
 
   // Scroll reveal observer
   useIntersectionReveal(photoScore);
-
-  // Fast number shuffling animation during evaluation
-  const shuffleItems = OUTFIT_PARAMETERS.map((p) => ({ id: p.id, max: p.maxPts }));
-  const shuffleScores = useNumberShuffle(isAnalyzing, shuffleItems, 50);
 
   // Clean up object URLs on unmount or before generating new card to avoid leaks
   useEffect(() => {
@@ -71,7 +78,7 @@ export default function FitCheckFeaturePage() {
     };
   }, [selectedPhotoUrl]);
 
-  const processFile = (file: File) => {
+  const processFile = (file: File, options?: { isSampleSketch?: boolean }) => {
     setErrorMessage(null);
 
     const validExtensions = ['image/jpeg', 'image/png', 'image/webp'];
@@ -93,6 +100,7 @@ export default function FitCheckFeaturePage() {
       return;
     }
 
+    setPhotoScore(null);
     setIsLoading(true);
 
     if (selectedPhotoUrl && selectedPhotoUrl.startsWith('blob:')) {
@@ -104,24 +112,37 @@ export default function FitCheckFeaturePage() {
     setSelectedPhotoName(file.name);
     setIsLoading(false);
 
-    // Compute comprehensive score across Set 1, Set 2, and Set 3
-    setIsAnalyzing(true);
+    // Compute comprehensive score across Set 1, Set 2, and Set 3 with realistic 3.0s analysis
     const tempImg = new Image();
     tempImg.crossOrigin = 'anonymous';
     tempImg.onload = async () => {
       try {
-        const calculatedResult = await calculatePhotoScore(tempImg);
-        setTimeout(() => {
+        if ('decode' in tempImg) {
+          try {
+            await tempImg.decode();
+          } catch {
+            // Decoded asynchronously or fallback
+          }
+        }
+        const calculatedResult = await analysis.startAnalysis(
+          async () => calculatePhotoScore(tempImg, options),
+          (res) => res.overallScore
+        );
+        if (calculatedResult) {
           setPhotoScore(calculatedResult);
-          setIsAnalyzing(false);
-        }, 650);
-      } catch (err) {
-        console.error('Photo scoring calculation failed:', err);
-        setIsAnalyzing(false);
+          setErrorMessage(null);
+        }
+      } catch (err: any) {
+        console.warn('Photo scoring calculation failed:', err);
+        setPhotoScore(null);
+        analysis.reset();
+        setErrorMessage(err?.message || 'No person or outfit detected. Please upload a clear photo of your outfit.');
       }
     };
     tempImg.onerror = () => {
-      setIsAnalyzing(false);
+      setPhotoScore(null);
+      analysis.reset();
+      setErrorMessage('Failed to load image file. Please choose a different photo.');
     };
     tempImg.src = objectUrl;
   };
@@ -160,31 +181,23 @@ export default function FitCheckFeaturePage() {
     }
   };
 
-  const loadSamplePhoto = async () => {
-    try {
-      setIsLoading(true);
-      const resp = await fetch('/fit_check_split.jpg');
-      const blob = await resp.blob();
-      const file = new File([blob], 'gabru-sample-portrait.jpg', { type: 'image/jpeg' });
-      processFile(file);
-    } catch {
-      setIsLoading(false);
-    }
-  };
-
   const generateSocialCard = useCallback(() => {
     if (!photoScore) return;
     setIsGeneratingCard(true);
     setShareCardCopied(false);
 
+    const width = 1080;
+    const height = 1350;
+    const scale = 2; // Ultra-HD 2x (2160 x 2700)
     const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1350;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
     const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) {
       setIsGeneratingCard(false);
       return;
     }
+    ctx.scale(scale, scale);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
@@ -223,9 +236,7 @@ export default function FitCheckFeaturePage() {
   const handleShareScore = () => {
     if (!photoScore) return;
     setShowShareModal(true);
-    setTimeout(() => {
-      generateSocialCard();
-    }, 40);
+    generateSocialCard();
   };
 
   const handleDownloadCard = () => {
@@ -242,42 +253,21 @@ export default function FitCheckFeaturePage() {
   const handleShareCardWithFriends = async () => {
     if (!photoScore) return;
 
-    handleDownloadCard();
-    setShareCardCopied(true);
-    setTimeout(() => setShareCardCopied(false), 3500);
-
-    if (!generatedCardBlob) return;
+    const payload = buildViralSharePayload({
+      featureName: 'Sartorial Scorecard',
+      path: '/',
+      scoreText: `My outfit scored ${photoScore.overallScore}/100`,
+      verdictText: photoScore.verdict,
+      ctaText: 'Rate your style & tailoring free',
+    });
 
     const fileName = `gabru-style-card-${photoScore.overallScore}pts.png`;
-    const file = new File([generatedCardBlob], fileName, { type: 'image/png' });
-    const shareTitle = `Gabru Sartorial Scorecard • ${photoScore.overallScore}/100`;
-    const shareText = `My outfit scored ${photoScore.overallScore}/100 (${photoScore.verdict}) on Gabru. Rate your style: https://www.gabru.ai`;
+    const result = await executeViralShare(payload, generatedCardBlob, fileName);
 
-    if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({
-          title: shareTitle,
-          text: shareText,
-          files: [file],
-        });
-        return;
-      } catch (err: unknown) {
-        if ((err as { name?: string })?.name === 'AbortError') return;
-        console.warn('Native file share failed/cancelled, trying clipboard copy:', err);
-      }
+    if (result.copiedToClipboard || result.sharedViaNative) {
+      setShareCardCopied(true);
+      setTimeout(() => setShareCardCopied(false), 3500);
     }
-
-    if (typeof navigator !== 'undefined' && navigator.clipboard && typeof ClipboardItem !== 'undefined') {
-      try {
-        const item = new ClipboardItem({ 'image/png': generatedCardBlob });
-        await navigator.clipboard.write([item]);
-        return;
-      } catch (clipErr) {
-        console.warn('Direct image clipboard write failed:', clipErr);
-      }
-    }
-
-    copyToClipboard(shareText);
   };
 
   return (
@@ -294,7 +284,10 @@ export default function FitCheckFeaturePage() {
       <AppNavbar activeFeature="fit-check" />
 
       {/* Hero & Style Intelligence Studio */}
-      <section className="hero-wrapper unified-studio-section" id="hero-section">
+      <section className="hero-wrapper unified-studio-section fit-hero-section" id="hero-section">
+        {/* Mode-Reactive Sartorial Architecture Skeleton Backdrop */}
+        <StudioHeroBackdrop studio="fit-check" />
+
         <div className="unified-studio-container">
           {/* Hidden File Input */}
           <input
@@ -312,54 +305,64 @@ export default function FitCheckFeaturePage() {
             selectedPhotoName={selectedPhotoName}
             isDragging={isDragging}
             isAnalyzing={isAnalyzing}
+            scanPhase={analysis.phase}
+            scanProgress={analysis.progressRatio}
+            scanStatusMessage={analysis.statusMessage}
             errorMessage={errorMessage}
             onTriggerUpload={triggerUpload}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            onSamplePhoto={loadSamplePhoto}
             onShareClick={handleShareScore}
             onRecalculate={() => {
               if (selectedPhotoUrl) {
-                setIsAnalyzing(true);
                 const temp = new Image();
                 temp.crossOrigin = 'anonymous';
                 temp.onload = async () => {
                   try {
-                    const calculatedResult = await calculatePhotoScore(temp);
-                    setTimeout(() => {
+                    const calculatedResult = await analysis.startAnalysis(
+                      async () => calculatePhotoScore(temp),
+                      (res) => res.overallScore
+                    );
+                    if (calculatedResult) {
                       setPhotoScore(calculatedResult);
-                      setIsAnalyzing(false);
-                    }, 400);
-                  } catch (err) {
-                    console.error('Re-calculate error:', err);
-                    setIsAnalyzing(false);
+                      setErrorMessage(null);
+                    }
+                  } catch (err: any) {
+                    console.warn('Re-calculate error:', err);
+                    setPhotoScore(null);
+                    analysis.reset();
+                    setErrorMessage(err?.message || 'No person or outfit detected. Please upload a clear photo of your outfit.');
                   }
                 };
-                temp.onerror = () => setIsAnalyzing(false);
+                temp.onerror = () => {
+                  setPhotoScore(null);
+                  analysis.reset();
+                  setErrorMessage('Failed to load image.');
+                };
                 temp.src = selectedPhotoUrl;
               }
             }}
           />
 
+          {/* 10-Parameter Matrix is Always Visible */}
           <FitCheckParametersGrid
             photoScore={photoScore}
             isAnalyzing={isAnalyzing}
-            shuffleScores={shuffleScores}
+            shuffleScores={analysis.cardShuffleScores}
+            cardLockStates={analysis.cardLockStates}
+            justLockedCardId={analysis.justLockedCardId}
+            displayedHeroScore={analysis.displayedScore}
             onShareClick={handleShareScore}
           />
         </div>
       </section>
 
-      {/* Architecture & Feature Strip */}
+      {/* About Fit Check & Sartorial Framework Section */}
       <FitCheckAboutSection />
 
       {/* Universal Luxury Footer */}
-      <AppFooter
-        onOpenPrivacyModal={() => setShowAboutModal(true)}
-        onOpenTermsModal={() => setShowAboutModal(true)}
-        onOpenMethodologyModal={() => setShowAboutModal(true)}
-      />
+      <AppFooter />
 
       {/* Full Photo Preview Modal */}
       <BaseModal
@@ -377,28 +380,6 @@ export default function FitCheckFeaturePage() {
         )}
       </BaseModal>
 
-      {/* About & Trust Dialog */}
-      <BaseModal
-        isOpen={showAboutModal}
-        onClose={() => setShowAboutModal(false)}
-        title="About Gabru"
-        maxWidth="520px"
-      >
-        <div style={{ padding: '24px', lineHeight: 1.6, fontSize: '14px', color: 'var(--text-secondary)' }}>
-          <p style={{ marginBottom: '14px' }}>
-            <strong style={{ color: 'var(--text-primary)' }}>Gabru</strong> is an instant photo preview and multi-model fashion aesthetic intelligence platform.
-          </p>
-          <p style={{ marginBottom: '14px' }}>
-            Upload any JPG, PNG, or WEBP photo to view it in full quality and receive comprehensive evaluations across{' '}
-            <strong>Tier 1 (Foundations — 71 pts)</strong>, <strong>Tier 2 (Details — 20 pts)</strong>, and{' '}
-            <strong>Tier 3 (Expert Polish — 9 pts)</strong> across all 10 rating parameters (100 points scale).
-          </p>
-          <div style={{ padding: '12px 16px', background: 'var(--glass)', borderRadius: '8px', color: 'var(--accent)', fontSize: '13px', fontWeight: 600 }}>
-            ✓ Zero signup &bull; Fast local preview &bull; 100% Client-side privacy
-          </div>
-        </div>
-      </BaseModal>
-
       {/* 1080x1350 Share Card Modal */}
       <FitCheckShareModal
         isOpen={showShareModal}
@@ -407,6 +388,7 @@ export default function FitCheckFeaturePage() {
         generatedCardUrl={generatedCardUrl}
         shareCardCopied={shareCardCopied}
         onShare={handleShareCardWithFriends}
+        onDownload={handleDownloadCard}
       />
     </div>
   );

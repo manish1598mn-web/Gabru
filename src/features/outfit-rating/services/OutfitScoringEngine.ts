@@ -14,8 +14,8 @@ import { clamp, roundTo } from '@/shared/utils/FormatUtil';
 import { OutfitScoreData, SubfactorDetail, LandmarkPoint } from '../types/OutfitRatingTypes';
 import { detectPose } from './PoseLandmarksService';
 
-const PENALTY: Record<number, number> = { 0: 0.0, 1: 1.0, 2: 2.5, 3: 4.5 };
-const PRIOR = 7.0;
+const PENALTY: Record<number, number> = { 0: 0.0, 1: 1.5, 2: 3.5, 3: 6.5 };
+const PRIOR = 5.5;
 
 interface EngineConfig {
   max: number;
@@ -354,13 +354,29 @@ export function runOriginality(
   };
 }
 
+export interface OutfitScoringOptions {
+  isSampleSketch?: boolean;
+}
+
 /**
  * Executes full computational analysis across pixel colors and skeletal landmarks
  */
-export async function calculatePhotoScore(img: HTMLImageElement): Promise<OutfitScoreData> {
+export async function calculatePhotoScore(
+  img: HTMLImageElement,
+  options?: OutfitScoringOptions
+): Promise<OutfitScoreData> {
   const naturalWidth = img.naturalWidth > 0 ? img.naturalWidth : 1080;
   const naturalHeight = img.naturalHeight > 0 ? img.naturalHeight : 1350;
+
+  // Gate 1: Resolution & Dimensions check
+  if (naturalWidth < 120 || naturalHeight < 120) {
+    throw new Error('Photo resolution is too low (minimum 120×120 required). Please upload a clearer outfit photo.');
+  }
+
   const aspect = naturalHeight > 0 ? naturalWidth / naturalHeight : 0.8;
+  if (aspect < 0.2 || aspect > 4.5) {
+    throw new Error('Image aspect ratio is unsuitable for outfit evaluation. Please upload a standard portrait or vertical photo.');
+  }
 
   // Phase 0: Canvas pixel analysis
   const canvas = document.createElement('canvas');
@@ -477,10 +493,29 @@ export async function calculatePhotoScore(img: HTMLImageElement): Promise<Outfit
     }
   }
 
+  // Gate 2: Blank / Uniform / Unreadable Image Check
+  if (contrastStdDev < 6.0 || (edgeVariance < 2.0 && verticalEdgeVariance < 2.0)) {
+    throw new Error('The uploaded image appears blank, solid, or unreadable. Please upload a clear photo of an outfit.');
+  }
+
   // Phase 1: Pose detection
   const poseResult = await detectPose(canvas);
   const humanDetected = poseResult.humanDetected;
   const landmarks = poseResult.primaryPose || [];
+
+  // Gate 3: Human & Outfit Subject Verification
+  if (!humanDetected) {
+    if (poseResult.serviceAvailable) {
+      throw new Error('No person or outfit detected in the photo. Please upload a clear photo of yourself or a model wearing an outfit.');
+    } else {
+      // Fallback when MediaPipe service is unavailable (e.g. offline sandbox)
+      if (contrastStdDev < 16 || edgeVariance < 8 || colorClusters.length < 2) {
+        throw new Error('No person or outfit could be identified. Please ensure the subject is well-lit and clearly visible.');
+      }
+    }
+  } else if (landmarks.length < 33) {
+    throw new Error('Incomplete body pose detected. Please upload a photo showing at least the upper body or full outfit.');
+  }
 
   let shoulderWidth = 0;
   let shoulderSymmetry = 1;
@@ -541,26 +576,32 @@ export async function calculatePhotoScore(img: HTMLImageElement): Promise<Outfit
     },
     F2: {
       V: humanDetected ? 1.0 : 0.5,
-      defects: edgeVariance > 42 ? [2] : edgeVariance > 24 ? [1] : [0],
-      note: edgeVariance > 42 ? 'Moderate fabric pulling across torso' : edgeVariance > 24 ? 'Minor fabric pinch at torso side seams' : 'Clean body-skimming torso contour',
+      defects: edgeVariance > 42 ? [3] : edgeVariance > 26 ? [2] : edgeVariance > 18 ? [1] : [0],
+      note: edgeVariance > 42 ? 'Pronounced fabric pulling or uneven fit across torso' : edgeVariance > 26 ? 'Minor fabric pinch at torso side seams' : 'Clean body-skimming torso contour',
       fixAction: 'Tailor torso side seams for a clean, body-skimming contour without button strain',
     },
     F3: {
       V: humanDetected && (lh.visibility ?? 0) > 0.25 ? 1.0 : 0.5,
-      defects: (lh.visibility ?? 0) > 0.3 ? [1] : [0],
-      note: 'Waistband and rise line sit naturally without seat bunching',
+      defects: proportionRatio > 0.52 ? [3] : proportionRatio > 0.46 ? [2] : (lh.visibility ?? 0) > 0.3 ? [0] : [1],
+      note: proportionRatio > 0.52
+        ? 'Low-slung waistband or untucked hem truncates lower leg line'
+        : proportionRatio > 0.46
+        ? 'Slight low-rise silhouette'
+        : 'Waistband and rise line sit naturally with balanced leg line',
       fixAction: 'Ensure waistband rests cleanly with zero bunching or waistband gap',
     },
     F4: {
       V: feetVisible ? 1.0 : 0.5,
-      defects: feetVisible ? [1] : [0],
-      note: feetVisible ? 'Hem break lands with slight classic break' : 'Lower hem partly visible (neutral prior applied)',
+      defects: feetVisible ? (verticalEdgeVariance > 36 ? [3] : verticalEdgeVariance > 24 ? [2] : [0]) : [1],
+      note: feetVisible
+        ? (verticalEdgeVariance > 36 ? 'Excessive fabric pooling and heavy ankle break' : verticalEdgeVariance > 24 ? 'Moderate ankle break pooling' : 'Clean classic slight break at shoe line')
+        : 'Lower hem partly visible (neutral prior applied)',
       fixAction: 'Hem trousers to a clean slight-break or no-break finish',
     },
     F5: {
       V: 1.0,
-      defects: verticalEdgeVariance > 36 ? [2] : verticalEdgeVariance > 20 ? [1] : [0],
-      note: verticalEdgeVariance > 36 ? 'Moderate fabric ripple lines' : 'Smooth fabric drape with clean vertical fall lines',
+      defects: verticalEdgeVariance > 40 ? [3] : verticalEdgeVariance > 28 ? [2] : verticalEdgeVariance > 18 ? [1] : [0],
+      note: verticalEdgeVariance > 40 ? 'Heavy fabric ripple lines and unpressed creases' : verticalEdgeVariance > 28 ? 'Moderate fabric ripple lines' : 'Smooth fabric drape with clean vertical fall lines',
       fixAction: 'Steam/press garment to maintain an unbroken vertical drape line',
     },
     F6: {
@@ -571,8 +612,8 @@ export async function calculatePhotoScore(img: HTMLImageElement): Promise<Outfit
     },
     F7: {
       V: 1.0,
-      defects: shoulderSymmetry > 0.88 ? [0] : [1],
-      note: shoulderSymmetry > 0.88 ? 'Crisp tailored finish & balanced jacket lapels' : 'Minor off-the-rack excess bulk',
+      defects: shoulderSymmetry > 0.88 ? [0] : shoulderSymmetry > 0.75 ? [2] : [3],
+      note: shoulderSymmetry > 0.88 ? 'Crisp tailored finish & balanced jacket lapels' : 'Noticeable asymmetrical bulk or drooping lapel slope',
       fixAction: 'Tailor sleeve taper and jacket waist for a bespoke finish',
     },
   };
@@ -581,26 +622,27 @@ export async function calculatePhotoScore(img: HTMLImageElement): Promise<Outfit
   // 2. Proportion & Silhouette (16 pts)
   const verticalSplit = proportionRatio;
   const dSplit = Math.max(0, 0.33 - verticalSplit, verticalSplit - 0.42);
-  const pr1Raw = Math.max(0, 10 - (dSplit <= 0.02 ? 0 : dSplit <= 0.04 ? 1.0 : dSplit <= 0.07 ? 2.5 : 4.5));
+  const pr1Raw = Math.max(0, 10 - (dSplit <= 0.02 ? 0 : dSplit <= 0.04 ? 2.0 : dSplit <= 0.08 ? 4.5 : 7.0));
   const hasLayers = hasDistinctUpperLower && contrastStdDev > 28;
 
+  const isBulkyVolume = (edgeVariance > 38 && verticalEdgeVariance > 38) || proportionRatio > 0.52;
   const propFactors: Record<string, FactorInput> = {
     PR1: {
       V: humanDetected && torsoLength > 0 && legLength > 0 ? 1.0 : 0.5,
       raw: pr1Raw,
-      note: `Vertical split ratio ${(verticalSplit * 100).toFixed(0)}% (${dSplit <= 0.02 ? 'ideal golden ratio' : 'within 2:3 silhouette band'})`,
+      note: `Vertical split ratio ${(verticalSplit * 100).toFixed(0)}% (${dSplit <= 0.02 ? 'ideal golden ratio (1:1.6)' : dSplit <= 0.05 ? 'slight proportion imbalance' : 'severely elongated torso / shortened leg line'})`,
       fixAction: 'Adjust waistline or tuck shirt to reach the golden 1:2 vertical ratio',
     },
     PR2: {
       V: 1.0,
-      raw: 10.0,
-      note: 'Harmonious volume pairing (structured regular upper with balanced lower)',
+      defects: isBulkyVolume ? [3] : (edgeVariance > 28 || verticalEdgeVariance > 28) ? [2] : [0],
+      note: isBulkyVolume ? 'Bulky, shapeless silhouette with competing garment volumes' : (edgeVariance > 28 || verticalEdgeVariance > 28) ? 'Slightly relaxed volume pairing' : 'Harmonious volume pairing (structured upper with balanced lower)',
       fixAction: 'Balance relaxed pieces with a tailored counterpiece',
     },
     PR3: {
       V: 1.0,
-      defects: (lh.visibility ?? 0) > 0.3 ? [0] : [1],
-      note: 'Defined waistline and leg line definition visible',
+      defects: (lh.visibility ?? 0) > 0.3 ? (proportionRatio > 0.50 ? [2] : [0]) : [1],
+      note: proportionRatio > 0.50 ? 'Waistline demarcation sits low' : 'Defined waistline and leg line definition visible',
       fixAction: 'Define waistline with a clean tuck or contrasting belt line',
     },
     PR4: {
@@ -611,56 +653,100 @@ export async function calculatePhotoScore(img: HTMLImageElement): Promise<Outfit
     },
     PR5: {
       V: 1.0,
-      defects: [1],
-      note: 'Neckline and hem lines flatter the natural frame',
+      defects: dSplit > 0.05 ? [2] : [0],
+      note: dSplit > 0.05 ? 'Garment hem lengths visually shorten the lower frame' : 'Neckline and hem lines flatter the natural frame',
       fixAction: 'Opt for vertical seam lines to visually lengthen the silhouette',
     },
   };
   const propResult = runEngine(ENGINE_CONFIGS.prop, propFactors);
 
+  // Dynamic Color Wheel & Harmony Analysis
+  const topUpperCluster = colorClusters.find((c) => upperColors.includes(c.hex)) || colorClusters[0];
+  const topLowerCluster = colorClusters.find((c) => lowerColors.includes(c.hex)) || colorClusters[1] || colorClusters[0];
+
+  let colorClashDefect = 0;
+  let colorPaletteDefect = 0;
+  let colorNote = 'Balanced tonal palette with natural contrast transitions';
+
+  if (topUpperCluster && topLowerCluster) {
+    const dHue = Math.min(Math.abs(topUpperCluster.h - topLowerCluster.h), 360 - Math.abs(topUpperCluster.h - topLowerCluster.h));
+    const bothSaturated = topUpperCluster.s > 0.35 && topLowerCluster.s > 0.35;
+    const isClashing = bothSaturated && (dHue > 45 && dHue < 145);
+    const saturatedCount = colorClusters.filter((c) => c.s > 0.40 && c.l > 0.15 && c.l < 0.85).length;
+
+    if (isClashing) {
+      colorClashDefect = 3;
+      colorNote = `Harsh chromatic clash between upper (hue ${Math.round(topUpperCluster.h)}°) and lower garment (hue ${Math.round(topLowerCluster.h)}°)`;
+    } else if (bothSaturated && dHue >= 145 && dHue <= 215) {
+      colorClashDefect = 0;
+      colorNote = 'High-contrast complementary color balance';
+    } else if (dHue <= 35) {
+      colorClashDefect = 0;
+      colorNote = 'Sophisticated analogous/monochromatic tonal flow';
+    } else if (bothSaturated) {
+      colorClashDefect = 2;
+      colorNote = 'Moderate chromatic tension between garments';
+    }
+
+    if (saturatedCount >= 4) {
+      colorPaletteDefect = 3;
+    } else if (saturatedCount === 3) {
+      colorPaletteDefect = 1;
+    }
+  }
+
+  // Dynamic Fabric Wrinkle & Crumpled Surface Analysis
+  const isFabricHeavilyWrinkled = verticalEdgeVariance > 40 || edgeVariance > 42;
+  const isFabricModeratelyWrinkled = verticalEdgeVariance > 28 || edgeVariance > 30;
+  const wrinkleDefect = isFabricHeavilyWrinkled ? 3 : isFabricModeratelyWrinkled ? 2 : 0;
+  const fabConditionDefect = isFabricHeavilyWrinkled ? 3 : isFabricModeratelyWrinkled ? 1 : 0;
+  const styleClashDefect = colorClashDefect >= 3 || isFabricHeavilyWrinkled ? 3 : (colorClashDefect >= 2 || isFabricModeratelyWrinkled) ? 2 : 0;
+  const postureDefect = shoulderOffsetPct > 0.08 ? 3 : shoulderOffsetPct > 0.04 ? 2 : shoulderOffsetPct > 0.02 ? 1 : 0;
+  const lightingDull = contrastStdDev < 22 || avgLuminance < 45 || avgLuminance > 215;
+
   // 3. Occasion Appropriateness (12 pts)
   const occFactors: Record<string, FactorInput> = {
-    OC1: { V: 1.0, defects: [1], note: 'Contemporary elevated smart-casual to business casual baseline' },
-    OC2: { V: 1.0, defects: [0], note: 'Standard dress codes fully respected with classic tailoring elements' },
+    OC1: { V: 1.0, defects: [lightingDull ? 2 : 0], note: lightingDull ? 'Dim lighting or extreme exposure limits garment definition' : 'Contemporary elevated smart-casual to business baseline' },
+    OC2: { V: 1.0, defects: [styleClashDefect >= 2 ? 2 : 0], note: styleClashDefect >= 2 ? 'Formality mismatch reduces versatile occasion utility' : 'Standard dress codes fully respected' },
     OC3: { V: 1.0, defects: [0], note: 'Fabric weight and coverage aligned with indoor and seasonal climate' },
     OC4: { V: 1.0, defects: [0], note: 'Culturally respectful and contextually appropriate attire' },
-    OC5: { V: 1.0, defects: [0], note: 'High functional mobility with zero restrictive fabric tension' },
+    OC5: { V: 1.0, defects: [isBulkyVolume ? 2 : 0], note: isBulkyVolume ? 'Excess fabric bulk restricts silhouette mobility' : 'High functional mobility with zero restrictive fabric tension' },
   };
   const occResult = runEngine(ENGINE_CONFIGS.occ, occFactors);
 
   // 4. Color Harmony (10 pts)
   const colorFactors: Record<string, FactorInput> = {
-    CH1: { V: 1.0, defects: [0], note: 'Balanced tonal palette with natural contrast transitions' },
-    CH2: { V: 1.0, defects: [0], note: 'Compliant 3-color rule (primary base, secondary support, accent)' },
-    CH3: { V: 1.0, defects: [1], note: 'Clean luminance step between upper and lower garment' },
-    CH4: { V: 1.0, defects: [0], note: 'Flattering contrast range enhances natural complexion' },
+    CH1: { V: 1.0, defects: [colorClashDefect], note: colorNote, fixAction: 'Anchor bold colors with a foundational neutral base (charcoal, navy, black, or beige)' },
+    CH2: { V: 1.0, defects: [colorPaletteDefect], note: colorPaletteDefect >= 2 ? 'Excessive competing saturated hues violate the 3-color rule' : 'Compliant 3-color rule (primary base, secondary support, accent)', fixAction: 'Limit the outfit to 3 core colors maximum' },
+    CH3: { V: 1.0, defects: Math.abs((topUpperCluster?.l || 0.5) - (topLowerCluster?.l || 0.5)) < 0.08 && colorClashDefect >= 2 ? [2] : [0], note: 'Luminance separation between upper and lower garment' },
+    CH4: { V: 1.0, defects: colorClashDefect >= 2 ? [2] : [0], note: colorClashDefect >= 2 ? 'Chromatic clash detracts from complexion contrast' : 'Flattering contrast range enhances natural complexion' },
   };
   const colResult = runEngine(ENGINE_CONFIGS.col, colorFactors);
 
   // 5. Style Cohesion (8 pts)
   const styleFactors: Record<string, FactorInput> = {
-    SC1: { V: 1.0, defects: [0], note: 'Cohesive elevated classic aesthetic throughout all pieces' },
-    SC2: { V: 1.0, defects: [0], note: 'Uniform formality tier with harmonious collar, jacket and trouser codes' },
-    SC3: { V: 1.0, defects: [0], note: 'Balanced texture language across woven and smooth fabric surfaces' },
-    SC4: { V: 1.0, defects: [0], note: 'Clear intentional fashion message without conflicting genre signals' },
-    SC5: { V: 1.0, defects: [0], note: 'Pieces elevate each other with unified garment proportions' },
+    SC1: { V: 1.0, defects: [styleClashDefect >= 2 ? 2 : 0], note: styleClashDefect >= 2 ? 'Inconsistent aesthetic language across garment pieces' : 'Cohesive aesthetic throughout all pieces' },
+    SC2: { V: 1.0, defects: [styleClashDefect >= 3 ? 3 : 0], note: styleClashDefect >= 3 ? 'Conflicting formality codes between upper and lower halves' : 'Uniform formality tier with harmonious collar, jacket and trouser codes' },
+    SC3: { V: 1.0, defects: [isFabricHeavilyWrinkled ? 2 : 0], note: 'Balanced texture language across surfaces' },
+    SC4: { V: 1.0, defects: [styleClashDefect], note: styleClashDefect >= 2 ? 'Conflicting genre signals detract from intended vibe' : 'Clear intentional fashion message without conflicting genre signals', fixAction: 'Align all pieces to a single intentional style genre' },
+    SC5: { V: 1.0, defects: [styleClashDefect >= 2 ? 1 : 0], note: 'Pieces elevate each other with unified silhouette' },
   };
   const cohResult = runEngine(ENGINE_CONFIGS.coh, styleFactors);
 
   // 6. Fabric & Condition (8 pts)
   const fabFactors: Record<string, FactorInput> = {
-    FT1: { V: 1.0, defects: [0], note: 'High natural fiber appearance with natural surface luster' },
-    FT2: { V: 1.0, defects: [0], note: 'Crisp pressing and immaculate garment condition' },
-    FT3: { V: 1.0, defects: [1], note: 'Subtle tactile interest between matte and woven textures' },
-    FT4: { V: 1.0, defects: [0], note: 'Consistent weight and weave density across all pieces' },
-    FT5: { V: 1.0, defects: [0], note: 'Retains clean structural integrity across moving seams' },
+    FT1: { V: 1.0, defects: isFabricHeavilyWrinkled ? [2] : [0], note: isFabricHeavilyWrinkled ? 'Garment surface displays heavy rumpled texture' : 'Natural fiber appearance with smooth surface luster' },
+    FT2: { V: 1.0, defects: [wrinkleDefect], note: isFabricHeavilyWrinkled ? 'Pronounced fabric creases, wrinkles, and rumpled condition' : isFabricModeratelyWrinkled ? 'Noticeable wear creases and light fabric bunching' : 'Crisp pressing and immaculate garment condition', fixAction: 'Steam or iron garment to eliminate creases and restore clean drape lines' },
+    FT3: { V: 1.0, defects: [fabConditionDefect], note: 'Tactile texture consistency across garment surfaces' },
+    FT4: { V: 1.0, defects: [isFabricHeavilyWrinkled ? 2 : 0], note: 'Consistent weight and weave density across pieces' },
+    FT5: { V: 1.0, defects: [wrinkleDefect >= 2 ? 2 : 0], note: 'Structural integrity along moving seams' },
   };
   const fabResult = runEngine(ENGINE_CONFIGS.fab, fabFactors);
 
   // 7. Accessories & Footwear (7 pts)
   const accFactors: Record<string, FactorInput> = {
     AF1: { V: feetVisible ? 1.0 : 0.5, defects: feetVisible ? [0] : [1], note: feetVisible ? 'Footwear silhouette matches trouser taper and cuff' : 'Footwear estimated from lower frame leg line' },
-    AF2: { V: 1.0, defects: [0], note: 'Coordinated hardware metals and leather tones' },
+    AF2: { V: 1.0, defects: [colorClashDefect >= 2 ? 1 : 0], note: 'Coordinated hardware metals and leather tones' },
     AF3: { V: 1.0, defects: [0], note: 'Refined curation without visual accessory clutter' },
     AF4: { V: 1.0, defects: [0], note: 'Proportional scale matches lapel width and wrist diameter' },
   };
@@ -668,25 +754,26 @@ export async function calculatePhotoScore(img: HTMLImageElement): Promise<Outfit
 
   // 8. Grooming & Presentation (5 pts)
   const groomFactors: Record<string, FactorInput> = {
-    GP1: { V: 1.0, defects: [0], note: 'Polished hair styling and clean facial framing' },
+    GP1: { V: 1.0, defects: [postureDefect >= 2 ? 1 : 0], note: 'Hair styling and facial framing' },
     GP2: { V: 1.0, defects: [0], note: 'Neat edge lines and well-maintained facial presentation' },
-    GP3: { V: 1.0, defects: [0], note: 'Impeccable cleanliness and lint-free garment finish' },
-    GP4: { V: 1.0, defects: [0], note: 'Upright confident spinal posture with open chest alignment' },
-    GP5: { V: 1.0, defects: [0], note: 'Natural, poised confidence and comfortable body posture' },
+    GP3: { V: 1.0, defects: [isFabricHeavilyWrinkled ? 2 : 0], note: isFabricHeavilyWrinkled ? 'Rumpled garment finish reduces polished presentation' : 'Impeccable cleanliness and lint-free garment finish' },
+    GP4: { V: 1.0, defects: [postureDefect], note: postureDefect >= 2 ? 'Slouched or uneven shoulder tilt reduces outfit presence' : 'Upright confident spinal posture with open chest alignment', fixAction: 'Roll shoulders back and align chest squarely to camera' },
+    GP5: { V: 1.0, defects: [postureDefect >= 2 ? 2 : 0], note: 'Natural, poised confidence and comfortable body posture' },
   };
   const grmResult = runEngine(ENGINE_CONFIGS.grm, groomFactors);
 
   // 9. Focal Point & Hierarchy (5 pts)
+  const hasMessyFocal = colorPaletteDefect >= 2 || (colorClashDefect >= 2 && isFabricHeavilyWrinkled);
   const focalFactors: Record<string, FactorInput> = {
-    FP1: { V: 1.0, defects: [0], note: 'Clear visual anchor commands attention with elegant priority' },
-    FP2: { V: 1.0, defects: [0], note: 'Supporting garments provide a calm background without competing' },
+    FP1: { V: 1.0, defects: [hasMessyFocal ? 3 : 0], note: hasMessyFocal ? 'Competing visual noise obscures clear hero piece' : 'Clear visual anchor commands attention with elegant priority', fixAction: 'Designate one hero piece and keep remaining pieces understated' },
+    FP2: { V: 1.0, defects: [hasMessyFocal ? 2 : 0], note: 'Supporting garments provide a calm background without competing' },
     FP3: { V: 1.0, defects: [0], note: 'Eye travels smoothly from face down to tailored hem line' },
-    FP4: { V: 1.0, defects: [0], note: 'Supporting pieces echo the primary tonal palette' },
+    FP4: { V: 1.0, defects: [colorClashDefect >= 2 ? 2 : 0], note: 'Supporting pieces echo the primary tonal palette' },
   };
   const focResult = runEngine(ENGINE_CONFIGS.foc, focalFactors);
 
   // 10. Originality & Expression (4 pts)
-  const origResult = runOriginality([1.0, 1.0, 1.0], [0], fitResult.R, cohResult.R, 3);
+  const origResult = runOriginality([1.0, 1.0, 1.0], [styleClashDefect >= 2 ? 2 : 0], fitResult.R, cohResult.R, styleClashDefect >= 2 ? 1 : 3);
 
   // Assemble composite score
   const parameterRatings: Record<number, any> = {
@@ -737,11 +824,38 @@ export async function calculatePhotoScore(img: HTMLImageElement): Promise<Outfit
     }
   }
 
-  const verdict = overallScore >= 88 ? 'HIGH FASHION' : overallScore >= 75 ? 'SHARP & POLISHED' : overallScore >= 60 ? 'SOLID BASICS' : 'NEEDS ELEVATION';
-  const fashionLevel = overallScore >= 88 ? 'Bespoke Sartorial' : overallScore >= 75 ? 'Elevated Contemporary' : 'Casual Baseline';
-  const summarySentence = overallScore >= 80
-    ? 'Well-executed tailoring with harmonious proportions, sharp silhouette lines, and immaculate styling polish.'
-    : 'Solid fashion foundation with high-impact opportunities to sharpen tailoring and elevate silhouette balance.';
+  const verdict =
+    overallScore >= 88
+      ? 'HIGH FASHION'
+      : overallScore >= 75
+      ? 'SHARP & POLISHED'
+      : overallScore >= 60
+      ? 'SOLID BASICS'
+      : overallScore >= 45
+      ? 'CASUAL MISMATCH'
+      : 'DISCORDANT FIT';
+
+  const fashionLevel =
+    overallScore >= 88
+      ? 'Bespoke Sartorial'
+      : overallScore >= 75
+      ? 'Elevated Contemporary'
+      : overallScore >= 60
+      ? 'Everyday Casual'
+      : overallScore >= 45
+      ? 'Uncoordinated Baseline'
+      : 'Needs Overhaul';
+
+  const summarySentence =
+    overallScore >= 88
+      ? 'Well-executed tailoring with harmonious proportions, sharp silhouette lines, and immaculate styling polish.'
+      : overallScore >= 75
+      ? 'Strong visual cohesion and flattering proportions with subtle opportunities for fine refinement.'
+      : overallScore >= 60
+      ? 'Balanced everyday foundation; sharpening trouser break and color cohesion will significantly elevate the aesthetic.'
+      : overallScore >= 45
+      ? 'Noticeable silhouette, proportion, or fabric friction; addressing fit discrepancies and palette contrast will improve cohesion.'
+      : 'Substantial fit, proportion, and color discordance detected. Prioritize tailored alterations and harmonizing primary garments.';
 
   return {
     overallScore,

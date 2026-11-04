@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button, Badge } from '@/shared';
+import { Button, Badge, ScanningReticleOverlay } from '@/shared';
 import { OutfitScoreData } from '../types/OutfitRatingTypes';
 
 export interface FitCheckHeroStudioProps {
@@ -10,12 +10,14 @@ export interface FitCheckHeroStudioProps {
   selectedPhotoName: string;
   isDragging: boolean;
   isAnalyzing: boolean;
+  scanPhase?: 1 | 2 | 3 | 4;
+  scanProgress?: number;
+  scanStatusMessage?: string;
   errorMessage: string | null;
   onTriggerUpload: () => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
-  onSamplePhoto: () => void;
   onShareClick: () => void;
   onRecalculate: () => void;
 }
@@ -26,12 +28,14 @@ export function FitCheckHeroStudio({
   selectedPhotoName,
   isDragging,
   isAnalyzing,
+  scanPhase = 1,
+  scanProgress = 0,
+  scanStatusMessage,
   errorMessage,
   onTriggerUpload,
   onDragOver,
   onDragLeave,
   onDrop,
-  onSamplePhoto,
   onShareClick,
   onRecalculate,
 }: FitCheckHeroStudioProps) {
@@ -42,14 +46,13 @@ export function FitCheckHeroStudio({
       {/* Left Column — Human-Grade Editorial Studio */}
       <div className="hero-left-column">
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
-          Upload Photo,
+          Precision Fit,
           <br />
-          <span className="gradient-text">Get a style Score</span>
+          <span className="gradient-text">Scored in Seconds</span>
         </h1>
 
         <p className="hero-description scroll-reveal" id="hero-description">
-          Instant multi-dimensional evaluation across fit, proportions, harmony, and grooming.
-          High-fashion intelligence that runs 100% privately in your browser.
+          10-point sartorial analysis across silhouette, harmony, and tailoring. 100% on-device.
         </p>
 
         {photoScore ? (
@@ -73,6 +76,7 @@ export function FitCheckHeroStudio({
                   variant="secondary"
                   size="sm"
                   onClick={onTriggerUpload}
+                  disabled={isAnalyzing}
                   id="btn-upload-direct"
                   title="Upload another outfit photo"
                   leftIcon={
@@ -148,15 +152,7 @@ export function FitCheckHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onSamplePhoto}
-                id="btn-try-demo"
-              >
-                <span>✨</span> Try Sample Photo
-              </Button>
+            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
@@ -201,7 +197,7 @@ export function FitCheckHeroStudio({
                   <p className="upload-title text-truncate">
                     {isDragging ? 'Drop outfit photo to analyze' : 'Drop your outfit photo here, or browse'}
                   </p>
-                  <p className="upload-subtitle">Supports JPG, PNG, WEBP • Max 15MB • Client-side private</p>
+                  <p className="upload-subtitle">JPG, PNG, or WebP &bull; Max 15MB</p>
                 </div>
 
                 <Button
@@ -218,15 +214,7 @@ export function FitCheckHeroStudio({
               </div>
             </div>
 
-            <div className="hero-sub-actions">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onSamplePhoto}
-                id="btn-try-demo"
-              >
-                <span>✨</span> Try Sample Photo
-              </Button>
+            <div className="hero-sub-actions" style={{ justifyContent: 'center' }}>
               <span className="privacy-pill">🔒 Zero Data Retention · 100% Private</span>
             </div>
           </>
@@ -268,36 +256,54 @@ export function FitCheckHeroStudio({
             <div className="preview-photo-canvas" id="preview-display-area">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={selectedPhotoUrl || '/fit_check_split.jpg'}
-                alt={cleanPhotoName}
+                src={selectedPhotoUrl || '/sample_female_outfit.jpg'}
+                alt={cleanPhotoName || 'High-fashion sartorial tailoring and silhouette reference'}
                 className={`preview-image ${isAnalyzing ? 'scanning-blur' : ''}`}
                 id="preview-rendered-image"
                 onError={(e) => {
                   const target = e.currentTarget;
-                  if (target.src !== `${window.location.origin}/fit_check_split.jpg`) {
-                    target.src = '/fit_check_split.jpg';
+                  if (target.src !== `${window.location.origin}/sample_female_outfit.jpg`) {
+                    target.src = '/sample_female_outfit.jpg';
                   }
                 }}
               />
 
-              {isAnalyzing && (
-                <div className="photo-scanner-hud" aria-live="polite">
-                  <div className="scanner-status-chip">
-                    <span className="scanner-spin-icon" />
-                    <span>Evaluating garments and silhouette...</span>
+              {/* Idle Editorial Stage Badge */}
+              {!selectedPhotoUrl && !isAnalyzing && (
+                <div className="preview-editorial-overlay">
+                  <div className="editorial-pill">
+                    <span className="editorial-sparkle">✨</span>
+                    <span>EDITORIAL FIT BENCHMARK</span>
                   </div>
                 </div>
               )}
 
-              {!isAnalyzing && photoScore && (
+              {/* Holographic Reticle & Biometric Laser Scanner Overlay */}
+              <ScanningReticleOverlay
+                studio="fit-check"
+                isAnalyzing={isAnalyzing}
+                phase={scanPhase}
+                progressRatio={scanProgress}
+                statusMessage={scanStatusMessage}
+              />
+
+              {!isAnalyzing && errorMessage && (
                 <div
-                  className={`subject-status-pill ${photoScore.humanDetected ? 'pill-human-detected' : 'pill-no-human'}`}
+                  className="subject-status-pill pill-no-human"
+                  id="subject-scan-status"
+                >
+                  <span className="status-dot-indicator" style={{ background: '#ef4444' }} />
+                  <span>✕ Invalid Outfit Image</span>
+                </div>
+              )}
+
+              {!isAnalyzing && !errorMessage && photoScore && (
+                <div
+                  className="subject-status-pill pill-human-detected"
                   id="subject-scan-status"
                 >
                   <span className="status-dot-indicator" />
-                  <span>
-                    {photoScore.humanDetected ? '✓ Outfit Scanned' : '⚠ Visual Estimate'}
-                  </span>
+                  <span>✓ Outfit Scanned</span>
                 </div>
               )}
             </div>
