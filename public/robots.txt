@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://gabru.online/sitemap.xml
+Sitemap: https://www.gabru.online/sitemap.xml

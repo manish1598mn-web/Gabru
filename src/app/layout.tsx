@@ -188,7 +188,7 @@ export default function RootLayout({
         <meta name="google-site-verification" content="UbGBsiwaVrXYGzC5XJCp-BxyS-x-R0qKgO2IRp0GXWA" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var stored=localStorage.getItem('gabru-theme');var theme=stored==='light'?'light':'dark';document.documentElement.setAttribute('data-theme',theme);document.documentElement.classList.add(theme);var meta=document.querySelector('meta[name="theme-color"]');if(meta){meta.setAttribute('content',theme==='light'?'#f8fafc':'#09090b');}}catch(e){}})();`,
+            __html: `(function(){try{var stored=localStorage.getItem('gabru-theme');var isDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;var theme=(stored==='light'||stored==='dark')?stored:(isDark?'dark':'light');document.documentElement.setAttribute('data-theme',theme);document.documentElement.classList.remove('light','dark');document.documentElement.classList.add(theme);var meta=document.querySelector('meta[name="theme-color"]');if(meta){meta.setAttribute('content',theme==='light'?'#f8fafc':'#09090b');}}catch(e){}})();`,
           }}
         />
         <link rel="icon" href="/favicon.ico" sizes="48x48" />

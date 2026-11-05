@@ -17,7 +17,7 @@ const THEME_CHANGE_EVENT = 'gabru-theme-change';
 
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === 'undefined') return 'dark';
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function applyThemeToDocument(resolved: ResolvedTheme, theme: Theme) {
@@ -36,26 +36,28 @@ function applyThemeToDocument(resolved: ResolvedTheme, theme: Theme) {
 }
 
 export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>('system');
   const [resolvedTheme, setResolvedThemeState] = useState<ResolvedTheme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // 1. Read initial state from DOM (set by inline FOUC script) or localStorage (Default: dark)
-    const stored = (localStorage.getItem(STORAGE_KEY) as Theme) || 'dark';
-    const initialResolved: ResolvedTheme = stored === 'light' ? 'light' : 'dark';
+    // 1. Read initial state from DOM or localStorage; default to system preference
+    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+    const hasUserPref = stored === 'light' || stored === 'dark';
+    const activeTheme: Theme = hasUserPref ? stored : 'system';
+    const initialResolved: ResolvedTheme = hasUserPref ? stored : getSystemTheme();
 
-    setThemeState(stored);
+    setThemeState(activeTheme);
     setResolvedThemeState(initialResolved);
-    applyThemeToDocument(initialResolved, stored);
+    applyThemeToDocument(initialResolved, activeTheme);
     setMounted(true);
 
-    // 2. Listen to system preference changes if in system mode
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+    // 2. Listen to system preference changes when in system mode
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleSystemChange = (e: MediaQueryListEvent) => {
-      const currentStored = (localStorage.getItem(STORAGE_KEY) as Theme) || 'system';
-      if (currentStored === 'system') {
-        const nextResolved: ResolvedTheme = e.matches ? 'light' : 'dark';
+      const currentStored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+      if (!currentStored || currentStored === 'system') {
+        const nextResolved: ResolvedTheme = e.matches ? 'dark' : 'light';
         setResolvedThemeState(nextResolved);
         applyThemeToDocument(nextResolved, 'system');
       }
