@@ -15,7 +15,7 @@ export interface FeatureShareConfig {
 
 /**
  * Returns the canonical platform URL for any feature route.
- * In production, it dynamically resolves to the active origin (or https://gabru.vercel.app).
+ * In production, it dynamically resolves to the active origin (or https://gabru.online).
  */
 export function getPlatformShareUrl(path: string = ''): string {
   const cleanPath = path ? (path.startsWith('/') ? path : `/${path}`) : '';
@@ -27,7 +27,7 @@ export function getPlatformShareUrl(path: string = ''): string {
       return `${window.location.origin}${cleanPath}`;
     }
   }
-  return `https://gabru.vercel.app${cleanPath}`;
+  return `https://gabru.online${cleanPath}`;
 }
 
 /**

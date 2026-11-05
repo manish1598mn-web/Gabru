@@ -154,7 +154,7 @@ export function drawBeautySocialCard(
   ctx.fillText('HUMAN-CALIBRATED FACIAL BEAUTY AUDIT', 36 + brandWidth + 24, headerY);
 
   // Right Header: Official Platform URL Pill
-  const platformUrl = 'gabru.vercel.app/beauty-rating';
+  const platformUrl = 'gabru.online/beauty-rating';
   ctx.font = '800 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   const tagW = ctx.measureText(platformUrl).width + 36;
   const tagH = 32;
@@ -765,7 +765,7 @@ export function drawBeautySocialCard(
   ctx.fillStyle = theme.textSecondary;
 
   const promptPart = '✨ Scan your facial symmetry & beauty free at ';
-  const urlPart = 'gabru.vercel.app/beauty-rating';
+  const urlPart = 'gabru.online/beauty-rating';
   const fullW = ctx.measureText(promptPart + urlPart).width;
   const startX = (width - fullW) / 2;
 

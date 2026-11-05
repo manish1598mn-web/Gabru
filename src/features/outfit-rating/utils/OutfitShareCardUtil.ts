@@ -126,7 +126,7 @@ export function drawOutfitSocialCard(
   ctx.fillText('SARTORIAL FIT CHECK AUDIT', 36 + brandWidth + 24, headerY);
 
   // Right Header: Official Platform URL Pill
-  const platformUrl = 'gabru.vercel.app';
+  const platformUrl = 'gabru.online';
   ctx.font = '800 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   const tagW = ctx.measureText(platformUrl).width + 36;
   const tagH = 32;
@@ -622,7 +622,7 @@ export function drawOutfitSocialCard(
   ctx.fillStyle = theme.textSecondary;
 
   const promptPart = '👔 Rate your outfit, silhouette & tailoring free at ';
-  const urlPart = 'gabru.vercel.app';
+  const urlPart = 'gabru.online';
   const fullW = ctx.measureText(promptPart + urlPart).width;
   const startX = (width - fullW) / 2;
 

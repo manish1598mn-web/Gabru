@@ -123,7 +123,7 @@ export async function generateHandShareCardCanvas(
   ctx.fillText('PALMISTRY & SAMUDRIKA SHASTRA', 36 + brandWidth + 24, headerY);
 
   // Right Header: Official Platform URL Pill
-  const platformUrl = 'gabru.vercel.app/hand-reading';
+  const platformUrl = 'gabru.online/hand-reading';
   ctx.font = '800 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   const tagW = ctx.measureText(platformUrl).width + 36;
   const tagH = 32;
@@ -554,7 +554,7 @@ export async function generateHandShareCardCanvas(
   ctx.fillStyle = theme.textSecondary;
 
   const promptPart = '🖐️ Read your palm lines & mounts free at ';
-  const urlPart = 'gabru.vercel.app/hand-reading';
+  const urlPart = 'gabru.online/hand-reading';
   const fullW = ctx.measureText(promptPart + urlPart).width;
   const startX = (width - fullW) / 2;
 

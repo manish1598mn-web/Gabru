@@ -3,7 +3,7 @@ import './globals.css';
 import { CssInspectorCompanion } from '@/shared';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://gabru.vercel.app'),
+  metadataBase: new URL('https://gabru.online'),
   title: {
     default: 'Gabru — AI Outfit Rater, Face Beauty & Palm Reading Studio',
     template: '%s | Gabru',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://gabru.vercel.app',
+    url: 'https://gabru.online',
     siteName: 'Gabru Studio',
     title: 'Gabru — AI Outfit Rater, Face Beauty & Palm Reading Studio',
     description:
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     images: ['/hero_fashion_mosaic.jpg'],
   },
   alternates: {
-    canonical: 'https://gabru.vercel.app',
+    canonical: 'https://gabru.online',
   },
   verification: {
     google: [
@@ -105,7 +105,7 @@ export default function RootLayout({
               '@type': 'WebApplication',
               name: 'Gabru',
               alternateName: 'Gabru AI Studio',
-              url: 'https://gabru.vercel.app',
+              url: 'https://gabru.online',
               applicationCategory: 'LifestyleApplication',
               operatingSystem: 'All',
               browserRequirements: 'Requires JavaScript. Requires HTML5.',
