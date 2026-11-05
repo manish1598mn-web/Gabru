@@ -93,7 +93,7 @@ async function analyzeFacialBeauty(
  * - 100% In-Browser MediaPipe 468-point 3D Mesh Landmark Detection
  * - 8 Scientific Parameters on a 100-Point Calibrated Scale
  * - Research-Grade Diagnostic Deep Dives
- * - Instant Social Media 1080x1350 Sharecard Generation
+ * - Instant Social Media 1080x1920 (9:16 Full Smartphone Screen) Sharecard Generation
  * - High-Performance Clean Architecture & Feature-Sliced Design
  */
 export default function BeautyRatingFeaturePage() {
@@ -338,8 +338,8 @@ export default function BeautyRatingFeaturePage() {
     setShareCardCopied(false);
 
     const width = 1080;
-    const height = 1350;
-    const scale = 2; // Ultra-HD 2x (2160 x 2700)
+    const height = 1920;
+    const scale = 2; // Ultra-HD 2x (2160 x 3840)
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
     canvas.height = height * scale;

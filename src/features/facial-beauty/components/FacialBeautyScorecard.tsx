@@ -294,7 +294,7 @@ export const FacialBeautyScorecard: React.FC<FacialBeautyScorecardProps> = ({
               size="sm"
               onClick={onShareScore}
               id="btn-strip-share-card"
-              title="Generate High-Res 1080x1350 Style Card"
+              title="Generate High-Res 1080x1920 (Story / 9:16) Style Card"
               leftIcon={
                 <svg
                   width="14"

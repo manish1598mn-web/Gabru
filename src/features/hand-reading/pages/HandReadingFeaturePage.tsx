@@ -9,7 +9,7 @@
  * - Quality Factor Gate (q) & Confidence Thresholds
  * - Zero vs Exclude Absent Line Policy
  * - 100% In-Browser Biometric Privacy with 1-Click Image Deletion
- * - High-Res 1080x1350 Verified Share Card Export
+ * - High-Res 1080x1920 (9:16 Full Smartphone Screen) Verified Share Card Export
  */
 
 import React, { useState, useCallback, useEffect } from 'react';

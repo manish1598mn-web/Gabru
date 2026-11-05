@@ -187,8 +187,8 @@ export default function FitCheckFeaturePage() {
     setShareCardCopied(false);
 
     const width = 1080;
-    const height = 1350;
-    const scale = 2; // Ultra-HD 2x (2160 x 2700)
+    const height = 1920;
+    const scale = 2; // Ultra-HD 2x (2160 x 3840)
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
     canvas.height = height * scale;
@@ -380,7 +380,7 @@ export default function FitCheckFeaturePage() {
         )}
       </BaseModal>
 
-      {/* 1080x1350 Share Card Modal */}
+      {/* 1080x1920 (9:16 Full Smartphone Screen) Share Card Modal */}
       <FitCheckShareModal
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}

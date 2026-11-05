@@ -179,7 +179,7 @@ export function ContentRatingHeroStudio({
                   size="sm"
                   onClick={onShareClick}
                   id="btn-content-share"
-                  title="Export 1080x1350 High-Res Share Card"
+                  title="Export 1080x1920 (Story / 9:16) Share Card"
                   leftIcon={
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="18" cy="5" r="3" />

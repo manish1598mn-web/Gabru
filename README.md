@@ -83,7 +83,7 @@ src/
     │   ├── pages/              # FitCheckFeaturePage (Clean ~350-line container)
     │   ├── services/           # OutfitScoringEngine, PoseLandmarksService (MediaPipe Pose)
     │   ├── types/              # OutfitRatingTypes
-    │   ├── utils/              # OutfitShareCardUtil (1080x1350 canvas generation)
+    │   ├── utils/              # OutfitShareCardUtil (1080x1920 9:16 canvas generation)
     │   └── index.ts            # Public feature barrel export
     │
     └── facial-beauty/          # BEAUTY RATING FEATURE MODULE (100 Pts Scale)
@@ -93,7 +93,7 @@ src/
         │   ├── FacialDeepDiveSection.tsx    # Dynamic tab switcher container
         │   ├── FacialBeautyAboutSection.tsx # Manifesto & 3 scientific pillars
         │   ├── FacialMethodologyModal.tsx   # Research boundary & limits dialog
-        │   ├── FacialShareModal.tsx         # 1080x1350 preview & Web Share dialog
+        │   ├── FacialShareModal.tsx         # 1080x1920 (9:16) preview & Web Share dialog
         │   └── diagnostics/                 # 8 ISOLATED BIOMETRIC DIAGNOSTIC TABS
         │       ├── SkinDiagnosticTab.tsx
         │       ├── ProportionsDiagnosticTab.tsx
@@ -107,7 +107,7 @@ src/
         ├── pages/              # BeautyRatingFeaturePage (Clean ~400-line orchestrator)
         ├── services/           # FacialScoringEngine (Bayesian priors, rule caps), FaceLandmarksService
         ├── types/              # CanonicalLandmarks, BeautyScoreData, CompleteFacialAnalysisResult
-        ├── utils/              # BeautyShareCardUtil (1080x1350 high-DPI social stylecard)
+        ├── utils/              # BeautyShareCardUtil (1080x1920 9:16 high-DPI social stylecard)
         └── index.ts            # Public feature barrel export
 ```
 

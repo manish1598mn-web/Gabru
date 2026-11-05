@@ -9,7 +9,7 @@
  * - 100-Point Performance Score (Empirical creator-baseline z-score model)
  * - Blended Content Score (70% Quality + 30% Performance)
  * - Actionable Advice, Prioritized Fixes, and Concrete AI Rewrites
- * - High-Res 1080x1350 Verified Share Card Canvas
+ * - High-Res 1080x1920 (9:16 Full Smartphone Screen) Verified Share Card Canvas
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -400,7 +400,7 @@ export default function ContentRatingFeaturePage() {
         <ContentAboutSection />
       </main>
 
-      {/* 1080x1350 High-Resolution Social Share Card Modal */}
+      {/* 1080x1920 (9:16 Full Smartphone Screen) Social Share Card Modal */}
       <ContentShareModal
         isOpen={isShareModalOpen}
         onClose={handleCloseShareModal}

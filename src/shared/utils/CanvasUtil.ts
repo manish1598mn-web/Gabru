@@ -87,3 +87,15 @@ export function drawImageCover(
   ctx.restore();
 }
 
+/**
+ * Detects whether the current user interface is rendered in Light Mode.
+ */
+export function isClientLightMode(): boolean {
+  if (typeof document === 'undefined') return false;
+  return (
+    document.documentElement.getAttribute('data-theme') === 'light' ||
+    document.documentElement.classList.contains('light') ||
+    (typeof localStorage !== 'undefined' && localStorage.getItem('gabru-theme') === 'light')
+  );
+}
+
