@@ -46,9 +46,9 @@ export function FitCheckHeroStudio({
       {/* Left Column — Human-Grade Editorial Studio */}
       <div className="hero-left-column">
         <h1 className="hero-headline scroll-reveal" id="hero-headline">
-          Precision Fit,
+          AI Outfit Rater:
           <br />
-          <span className="gradient-text">Scored in Seconds</span>
+          <span className="gradient-text">Precision Fit Scored in Seconds</span>
         </h1>
 
         {photoScore ? (
