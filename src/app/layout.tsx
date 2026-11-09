@@ -117,6 +117,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google Tag (GTM-NKPK5QPW) */}
+        <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-NKPK5QPW" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+`,
+          }}
+        />
         {/* Google Structured Data / WebApplication Rich Snippet */}
         <script
           type="application/ld+json"
